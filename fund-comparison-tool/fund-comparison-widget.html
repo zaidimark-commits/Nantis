@@ -1,0 +1,588 @@
+<!--
+  NANTIS FUND PERFORMANCE COMPARISON TOOL
+  ========================================
+  This code goes into your WordPress Elementor page.
+  See the SETUP-GUIDE.md file for step-by-step instructions.
+
+  HOW IT WORKS:
+  1. You put your fund data into a Google Sheet
+  2. This code reads that Google Sheet automatically
+  3. It builds a sortable comparison table on your website
+  4. Whenever you update the Google Sheet, the website updates too
+-->
+
+<style>
+  /* ===== NANTIS FUND COMPARISON TABLE STYLES ===== */
+  .nantis-fund-tool {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #333;
+  }
+
+  .nantis-fund-tool .tool-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .nantis-fund-tool .tool-header h2 {
+    font-size: 28px;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .nantis-fund-tool .tool-header p {
+    font-size: 14px;
+    color: #888;
+    margin: 0;
+  }
+
+  /* Filter / Search Bar */
+  .nantis-fund-tool .controls-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  .nantis-fund-tool .search-box {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .nantis-fund-tool .search-box:focus {
+    border-color: #2563eb;
+  }
+
+  .nantis-fund-tool .filter-select {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    cursor: pointer;
+    outline: none;
+    min-width: 160px;
+  }
+
+  /* Table Container */
+  .nantis-fund-tool .table-container {
+    overflow-x: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .nantis-fund-tool table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .nantis-fund-tool thead th {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    position: relative;
+  }
+
+  .nantis-fund-tool thead th:hover {
+    background: #2a2a4e;
+  }
+
+  .nantis-fund-tool thead th .sort-arrow {
+    margin-left: 6px;
+    font-size: 10px;
+    opacity: 0.5;
+  }
+
+  .nantis-fund-tool thead th.sorted-asc .sort-arrow,
+  .nantis-fund-tool thead th.sorted-desc .sort-arrow {
+    opacity: 1;
+  }
+
+  .nantis-fund-tool tbody tr {
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.15s;
+  }
+
+  .nantis-fund-tool tbody tr:hover {
+    background-color: #f0f4ff;
+  }
+
+  .nantis-fund-tool tbody td {
+    padding: 12px 16px;
+    vertical-align: middle;
+  }
+
+  /* Rank badge */
+  .nantis-fund-tool .rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .nantis-fund-tool .rank-1 { background: #ffd700; color: #333; }
+  .nantis-fund-tool .rank-2 { background: #c0c0c0; color: #333; }
+  .nantis-fund-tool .rank-3 { background: #cd7f32; color: #fff; }
+  .nantis-fund-tool .rank-other { background: #e8e8e8; color: #666; }
+
+  /* NAV % cell coloring */
+  .nantis-fund-tool .nav-positive { color: #16a34a; font-weight: 600; }
+  .nantis-fund-tool .nav-negative { color: #dc2626; font-weight: 600; }
+
+  /* Loading / Error states */
+  .nantis-fund-tool .loading-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+  }
+
+  .nantis-fund-tool .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #eee;
+    border-top: 4px solid #2563eb;
+    border-radius: 50%;
+    animation: nantis-spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes nantis-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .nantis-fund-tool .error-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #dc2626;
+    background: #fef2f2;
+    border-radius: 8px;
+  }
+
+  .nantis-fund-tool .no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #888;
+  }
+
+  .nantis-fund-tool .last-updated {
+    text-align: right;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 12px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .nantis-fund-tool table { font-size: 12px; }
+    .nantis-fund-tool thead th { padding: 10px 8px; }
+    .nantis-fund-tool tbody td { padding: 8px; }
+    .nantis-fund-tool .tool-header h2 { font-size: 22px; }
+  }
+</style>
+
+<div class="nantis-fund-tool" id="nantisFundTool">
+  <div class="tool-header">
+    <h2>Fund Performance Comparison</h2>
+    <p>Ranked by % of NAV (highest to lowest)</p>
+  </div>
+
+  <div class="controls-bar">
+    <input type="text" class="search-box" id="nantisSearch" placeholder="Search by fund name, category, or manager...">
+    <select class="filter-select" id="nantisCategoryFilter">
+      <option value="all">All Categories</option>
+    </select>
+  </div>
+
+  <div class="table-container">
+    <div class="loading-state" id="nantisLoading">
+      <div class="loading-spinner"></div>
+      <p>Loading fund data...</p>
+    </div>
+    <table id="nantisTable" style="display:none;">
+      <thead>
+        <tr id="nantisTableHead"></tr>
+      </thead>
+      <tbody id="nantisTableBody"></tbody>
+    </table>
+    <div class="no-results" id="nantisNoResults" style="display:none;">
+      No funds match your search.
+    </div>
+    <div class="error-state" id="nantisError" style="display:none;"></div>
+  </div>
+
+  <div class="last-updated" id="nantisLastUpdated"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // =====================================================================
+  // CONFIGURATION - YOU ONLY NEED TO CHANGE THIS ONE LINE
+  // =====================================================================
+  // Replace the URL below with YOUR Google Sheet's published CSV link.
+  // (See SETUP-GUIDE.md for how to get this link)
+  //
+  const GOOGLE_SHEET_CSV_URL = 'YOUR_GOOGLE_SHEET_CSV_URL_HERE';
+  //
+  // =====================================================================
+  // DO NOT EDIT BELOW THIS LINE
+  // =====================================================================
+
+  // Column definitions - these match the Google Sheet template columns
+  // The 'key' must match the exact column header in your Google Sheet
+  const COLUMNS = [
+    { key: 'Rank',              label: 'Rank',              type: 'rank' },
+    { key: 'Fund Name',         label: 'Fund Name',         type: 'text' },
+    { key: 'Category',          label: 'Category',          type: 'text' },
+    { key: 'Fund Manager',      label: 'Fund Manager',      type: 'text' },
+    { key: '% of NAV',          label: '% of NAV',          type: 'nav_percent' },
+    { key: 'NAV ($)',           label: 'NAV ($)',           type: 'currency' },
+    { key: 'YTD Return (%)',    label: 'YTD Return (%)',    type: 'percent' },
+    { key: '1Y Return (%)',     label: '1Y Return (%)',     type: 'percent' },
+    { key: '3Y Return (%)',     label: '3Y Return (%)',     type: 'percent' },
+    { key: '5Y Return (%)',     label: '5Y Return (%)',     type: 'percent' },
+    { key: 'MER (%)',           label: 'MER (%)',           type: 'percent' },
+    { key: 'Risk Level',        label: 'Risk Level',        type: 'text' },
+    { key: 'Inception Date',    label: 'Inception Date',    type: 'text' },
+  ];
+
+  const NAV_COLUMN_KEY = '% of NAV'; // Column used for ranking
+
+  let allFunds = [];
+  let currentSort = { key: NAV_COLUMN_KEY, direction: 'desc' };
+
+  // Parse CSV text into array of objects
+  function parseCSV(csvText) {
+    const lines = csvText.trim().split('\n');
+    if (lines.length < 2) return [];
+
+    // Parse header row
+    const headers = parseCSVLine(lines[0]);
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = parseCSVLine(lines[i]);
+      if (values.length === 0 || (values.length === 1 && values[0] === '')) continue;
+      const row = {};
+      headers.forEach(function(header, index) {
+        row[header.trim()] = (values[index] || '').trim();
+      });
+      data.push(row);
+    }
+    return data;
+  }
+
+  // Handle CSV fields that may contain commas inside quotes
+  function parseCSVLine(line) {
+    var result = [];
+    var current = '';
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var char = line[i];
+      if (inQuotes) {
+        if (char === '"') {
+          if (i + 1 < line.length && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = false;
+          }
+        } else {
+          current += char;
+        }
+      } else {
+        if (char === '"') {
+          inQuotes = true;
+        } else if (char === ',') {
+          result.push(current);
+          current = '';
+        } else {
+          current += char;
+        }
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  // Parse a numeric value from a string (removes $, %, commas)
+  function parseNum(str) {
+    if (!str) return NaN;
+    var cleaned = str.replace(/[$,%\s]/g, '');
+    return parseFloat(cleaned);
+  }
+
+  // Sort funds by a given column
+  function sortFunds(funds, key, direction) {
+    var col = COLUMNS.find(function(c) { return c.key === key; });
+    return funds.slice().sort(function(a, b) {
+      var aVal, bVal;
+      if (col && (col.type === 'nav_percent' || col.type === 'percent' || col.type === 'currency' || col.type === 'rank')) {
+        aVal = parseNum(a[key]);
+        bVal = parseNum(b[key]);
+        if (isNaN(aVal)) aVal = -Infinity;
+        if (isNaN(bVal)) bVal = -Infinity;
+      } else {
+        aVal = (a[key] || '').toLowerCase();
+        bVal = (b[key] || '').toLowerCase();
+      }
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+
+  // Render the table
+  function renderTable(funds) {
+    var thead = document.getElementById('nantisTableHead');
+    var tbody = document.getElementById('nantisTableBody');
+    var table = document.getElementById('nantisTable');
+    var noResults = document.getElementById('nantisNoResults');
+
+    // Build header
+    thead.innerHTML = '';
+    COLUMNS.forEach(function(col) {
+      var th = document.createElement('th');
+      var sortClass = '';
+      var arrow = '\u25B2\u25BC';
+      if (currentSort.key === col.key) {
+        sortClass = currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc';
+        arrow = currentSort.direction === 'asc' ? '\u25B2' : '\u25BC';
+      }
+      th.className = sortClass;
+      th.innerHTML = col.label + '<span class="sort-arrow">' + arrow + '</span>';
+      th.addEventListener('click', function() {
+        if (currentSort.key === col.key) {
+          currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+          currentSort.key = col.key;
+          currentSort.direction = (col.type === 'text') ? 'asc' : 'desc';
+        }
+        var sorted = sortFunds(getFilteredFunds(), currentSort.key, currentSort.direction);
+        renderTableBody(sorted);
+        renderTableHead();
+      });
+      thead.appendChild(th);
+    });
+
+    // Build body
+    if (funds.length === 0) {
+      table.style.display = 'none';
+      noResults.style.display = 'block';
+    } else {
+      table.style.display = 'table';
+      noResults.style.display = 'none';
+      renderTableBody(funds);
+    }
+  }
+
+  function renderTableHead() {
+    var ths = document.querySelectorAll('#nantisTableHead th');
+    ths.forEach(function(th, index) {
+      var col = COLUMNS[index];
+      var sortClass = '';
+      var arrow = '\u25B2\u25BC';
+      if (currentSort.key === col.key) {
+        sortClass = currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc';
+        arrow = currentSort.direction === 'asc' ? '\u25B2' : '\u25BC';
+      }
+      th.className = sortClass;
+      th.innerHTML = col.label + '<span class="sort-arrow">' + arrow + '</span>';
+    });
+  }
+
+  function renderTableBody(funds) {
+    var tbody = document.getElementById('nantisTableBody');
+    tbody.innerHTML = '';
+
+    funds.forEach(function(fund, index) {
+      var tr = document.createElement('tr');
+
+      COLUMNS.forEach(function(col) {
+        var td = document.createElement('td');
+        var value = fund[col.key] || '';
+        var numVal;
+
+        switch (col.type) {
+          case 'rank':
+            var rank = index + 1;
+            var rankClass = rank <= 3 ? 'rank-' + rank : 'rank-other';
+            td.innerHTML = '<span class="rank-badge ' + rankClass + '">' + rank + '</span>';
+            break;
+
+          case 'nav_percent':
+            numVal = parseNum(value);
+            if (!isNaN(numVal)) {
+              td.className = numVal >= 0 ? 'nav-positive' : 'nav-negative';
+              td.textContent = numVal.toFixed(2) + '%';
+            } else {
+              td.textContent = value;
+            }
+            break;
+
+          case 'percent':
+            numVal = parseNum(value);
+            if (!isNaN(numVal)) {
+              td.className = numVal >= 0 ? 'nav-positive' : 'nav-negative';
+              td.textContent = numVal.toFixed(2) + '%';
+            } else {
+              td.textContent = value || 'N/A';
+            }
+            break;
+
+          case 'currency':
+            numVal = parseNum(value);
+            if (!isNaN(numVal)) {
+              td.textContent = '$' + numVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            } else {
+              td.textContent = value || 'N/A';
+            }
+            break;
+
+          default:
+            td.textContent = value;
+        }
+
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Get funds matching current search + filter
+  function getFilteredFunds() {
+    var searchTerm = document.getElementById('nantisSearch').value.toLowerCase();
+    var categoryFilter = document.getElementById('nantisCategoryFilter').value;
+
+    return allFunds.filter(function(fund) {
+      // Category filter
+      if (categoryFilter !== 'all' && fund['Category'] !== categoryFilter) {
+        return false;
+      }
+      // Search filter
+      if (searchTerm) {
+        var searchable = (
+          (fund['Fund Name'] || '') + ' ' +
+          (fund['Category'] || '') + ' ' +
+          (fund['Fund Manager'] || '') + ' ' +
+          (fund['Risk Level'] || '')
+        ).toLowerCase();
+        return searchable.indexOf(searchTerm) !== -1;
+      }
+      return true;
+    });
+  }
+
+  // Populate category dropdown
+  function populateCategories(funds) {
+    var select = document.getElementById('nantisCategoryFilter');
+    var categories = {};
+    funds.forEach(function(fund) {
+      var cat = fund['Category'];
+      if (cat) categories[cat] = true;
+    });
+    Object.keys(categories).sort().forEach(function(cat) {
+      var option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      select.appendChild(option);
+    });
+  }
+
+  // Apply filters and re-render
+  function applyFilters() {
+    var filtered = getFilteredFunds();
+    var sorted = sortFunds(filtered, currentSort.key, currentSort.direction);
+    renderTable(sorted);
+  }
+
+  // Load data from Google Sheet
+  function loadData() {
+    if (GOOGLE_SHEET_CSV_URL === 'YOUR_GOOGLE_SHEET_CSV_URL_HERE') {
+      // Show demo data if no sheet is configured
+      showDemoData();
+      return;
+    }
+
+    fetch(GOOGLE_SHEET_CSV_URL)
+      .then(function(response) {
+        if (!response.ok) throw new Error('Failed to load data (HTTP ' + response.status + ')');
+        return response.text();
+      })
+      .then(function(csvText) {
+        allFunds = parseCSV(csvText);
+
+        // Sort by NAV % descending (best first)
+        allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
+
+        document.getElementById('nantisLoading').style.display = 'none';
+        populateCategories(allFunds);
+        renderTable(allFunds);
+
+        document.getElementById('nantisLastUpdated').textContent =
+          'Data loaded: ' + new Date().toLocaleString();
+      })
+      .catch(function(err) {
+        document.getElementById('nantisLoading').style.display = 'none';
+        document.getElementById('nantisError').style.display = 'block';
+        document.getElementById('nantisError').innerHTML =
+          '<strong>Unable to load fund data.</strong><br>' +
+          'Please check that the Google Sheet URL is correct and the sheet is published.<br>' +
+          '<small>Error: ' + err.message + '</small>';
+      });
+  }
+
+  // Demo data so you can preview the table before connecting your Google Sheet
+  function showDemoData() {
+    allFunds = [
+      { 'Fund Name': 'Nantis Growth Fund A', 'Category': 'Equity', 'Fund Manager': 'Smith Capital', '% of NAV': '12.45', 'NAV ($)': '25.67', 'YTD Return (%)': '8.30', '1Y Return (%)': '15.20', '3Y Return (%)': '42.10', '5Y Return (%)': '78.50', 'MER (%)': '1.85', 'Risk Level': 'Medium-High', 'Inception Date': '2015-03-15' },
+      { 'Fund Name': 'Nantis Balanced Fund B', 'Category': 'Balanced', 'Fund Manager': 'Maple Investments', '% of NAV': '9.82', 'NAV ($)': '18.33', 'YTD Return (%)': '5.10', '1Y Return (%)': '10.40', '3Y Return (%)': '28.60', '5Y Return (%)': '55.20', 'MER (%)': '1.50', 'Risk Level': 'Medium', 'Inception Date': '2017-06-01' },
+      { 'Fund Name': 'Nantis Fixed Income C', 'Category': 'Fixed Income', 'Fund Manager': 'BondFirst Ltd', '% of NAV': '7.15', 'NAV ($)': '12.88', 'YTD Return (%)': '2.80', '1Y Return (%)': '5.60', '3Y Return (%)': '15.30', '5Y Return (%)': '28.10', 'MER (%)': '0.95', 'Risk Level': 'Low', 'Inception Date': '2016-01-10' },
+      { 'Fund Name': 'Nantis Tech Innovators D', 'Category': 'Equity', 'Fund Manager': 'Future Capital', '% of NAV': '15.70', 'NAV ($)': '42.15', 'YTD Return (%)': '12.60', '1Y Return (%)': '22.80', '3Y Return (%)': '65.40', '5Y Return (%)': '120.30', 'MER (%)': '2.10', 'Risk Level': 'High', 'Inception Date': '2018-09-20' },
+      { 'Fund Name': 'Nantis Dividend Yield E', 'Category': 'Equity', 'Fund Manager': 'Harvest Wealth', '% of NAV': '11.20', 'NAV ($)': '22.45', 'YTD Return (%)': '6.90', '1Y Return (%)': '12.10', '3Y Return (%)': '35.80', '5Y Return (%)': '62.40', 'MER (%)': '1.40', 'Risk Level': 'Medium', 'Inception Date': '2014-11-05' },
+      { 'Fund Name': 'Nantis Global Macro F', 'Category': 'Alternative', 'Fund Manager': 'Atlas Global', '% of NAV': '5.30', 'NAV ($)': '15.22', 'YTD Return (%)': '3.40', '1Y Return (%)': '7.80', '3Y Return (%)': '20.10', '5Y Return (%)': '38.60', 'MER (%)': '2.25', 'Risk Level': 'Medium-High', 'Inception Date': '2019-02-14' },
+      { 'Fund Name': 'Nantis Canadian Index G', 'Category': 'Index', 'Fund Manager': 'Passive Plus', '% of NAV': '8.95', 'NAV ($)': '30.11', 'YTD Return (%)': '4.50', '1Y Return (%)': '9.20', '3Y Return (%)': '25.70', '5Y Return (%)': '48.90', 'MER (%)': '0.35', 'Risk Level': 'Medium', 'Inception Date': '2013-07-22' },
+      { 'Fund Name': 'Nantis Real Estate H', 'Category': 'Real Estate', 'Fund Manager': 'Property Capital', '% of NAV': '-2.10', 'NAV ($)': '8.55', 'YTD Return (%)': '-1.20', '1Y Return (%)': '-3.50', '3Y Return (%)': '5.80', '5Y Return (%)': '15.20', 'MER (%)': '1.75', 'Risk Level': 'Medium-High', 'Inception Date': '2020-01-30' },
+    ];
+
+    allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
+    document.getElementById('nantisLoading').style.display = 'none';
+    populateCategories(allFunds);
+    renderTable(allFunds);
+    document.getElementById('nantisLastUpdated').textContent =
+      'Showing demo data \u2014 connect your Google Sheet to see real data.';
+  }
+
+  // Event listeners
+  document.getElementById('nantisSearch').addEventListener('input', applyFilters);
+  document.getElementById('nantisCategoryFilter').addEventListener('change', applyFilters);
+
+  // Auto-refresh every 5 minutes (300000ms)
+  setInterval(loadData, 300000);
+
+  // Initial load
+  loadData();
+})();
+</script>
