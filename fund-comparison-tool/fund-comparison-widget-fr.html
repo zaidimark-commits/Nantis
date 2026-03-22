@@ -1,24 +1,24 @@
 <!--
-  NANTIS FUND PERFORMANCE COMPARISON TOOL
-  ========================================
-  This code goes into your WordPress Elementor page.
-  See the SETUP-GUIDE.md file for step-by-step instructions.
+  OUTIL DE COMPARAISON DE FONDS NANTIS
+  =====================================
+  Ce code va dans votre page WordPress Elementor.
+  Consultez le fichier SETUP-GUIDE.md pour les instructions étape par étape.
 
-  HOW IT WORKS:
-  1. You put your fund data into Excel Online (OneDrive) or Google Sheets
-  2. This code reads that spreadsheet automatically
-  3. It builds a sortable comparison table on your website
-  4. Whenever you update the spreadsheet, the website updates too
+  FONCTIONNEMENT :
+  1. Vous entrez vos données de fonds dans Excel Online (OneDrive) ou Google Sheets
+  2. Ce code lit automatiquement le fichier
+  3. Il construit un tableau comparatif triable sur votre site web
+  4. Chaque fois que vous mettez à jour le fichier, le site se met à jour aussi
 
-  SUPPORTS:
-  - Microsoft Excel Online (OneDrive) - recommended
+  SUPPORTE :
+  - Microsoft Excel Online (OneDrive) - recommandé
   - Google Sheets
-  - Any direct CSV file URL
+  - Tout lien direct vers un fichier CSV
 -->
 
 <style>
-  /* ===== NANTIS FUND COMPARISON TABLE STYLES ===== */
-  .nantis-fund-tool {
+  /* ===== STYLES DU TABLEAU COMPARATIF NANTIS ===== */
+  .nantis-fund-tool-fr {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     max-width: 1200px;
     margin: 0 auto;
@@ -26,26 +26,26 @@
     color: #333;
   }
 
-  .nantis-fund-tool .tool-header {
+  .nantis-fund-tool-fr .tool-header {
     text-align: center;
     margin-bottom: 30px;
   }
 
-  .nantis-fund-tool .tool-header h2 {
+  .nantis-fund-tool-fr .tool-header h2 {
     font-size: 28px;
     color: #1a1a2e;
     margin-bottom: 8px;
     font-weight: 700;
   }
 
-  .nantis-fund-tool .tool-header p {
+  .nantis-fund-tool-fr .tool-header p {
     font-size: 14px;
     color: #888;
     margin: 0;
   }
 
-  /* Filter / Search Bar */
-  .nantis-fund-tool .controls-bar {
+  /* Barre de recherche */
+  .nantis-fund-tool-fr .controls-bar {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
@@ -53,7 +53,7 @@
     align-items: center;
   }
 
-  .nantis-fund-tool .search-box {
+  .nantis-fund-tool-fr .search-box {
     flex: 1;
     min-width: 200px;
     padding: 10px 14px;
@@ -64,24 +64,24 @@
     transition: border-color 0.2s;
   }
 
-  .nantis-fund-tool .search-box:focus {
+  .nantis-fund-tool-fr .search-box:focus {
     border-color: #2563eb;
   }
 
-  /* Table Container */
-  .nantis-fund-tool .table-container {
+  /* Conteneur du tableau */
+  .nantis-fund-tool-fr .table-container {
     overflow-x: auto;
     border-radius: 10px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
 
-  .nantis-fund-tool table {
+  .nantis-fund-tool-fr table {
     width: 100%;
     border-collapse: collapse;
     font-size: 14px;
   }
 
-  .nantis-fund-tool thead th {
+  .nantis-fund-tool-fr thead th {
     background: #1a1a2e;
     color: #fff;
     padding: 14px 16px;
@@ -93,37 +93,37 @@
     position: relative;
   }
 
-  .nantis-fund-tool thead th:hover {
+  .nantis-fund-tool-fr thead th:hover {
     background: #2a2a4e;
   }
 
-  .nantis-fund-tool thead th .sort-arrow {
+  .nantis-fund-tool-fr thead th .sort-arrow {
     margin-left: 6px;
     font-size: 10px;
     opacity: 0.5;
   }
 
-  .nantis-fund-tool thead th.sorted-asc .sort-arrow,
-  .nantis-fund-tool thead th.sorted-desc .sort-arrow {
+  .nantis-fund-tool-fr thead th.sorted-asc .sort-arrow,
+  .nantis-fund-tool-fr thead th.sorted-desc .sort-arrow {
     opacity: 1;
   }
 
-  .nantis-fund-tool tbody tr {
+  .nantis-fund-tool-fr tbody tr {
     border-bottom: 1px solid #eee;
     transition: background-color 0.15s;
   }
 
-  .nantis-fund-tool tbody tr:hover {
+  .nantis-fund-tool-fr tbody tr:hover {
     background-color: #f0f4ff;
   }
 
-  .nantis-fund-tool tbody td {
+  .nantis-fund-tool-fr tbody td {
     padding: 12px 16px;
     vertical-align: middle;
   }
 
-  /* Rank badge */
-  .nantis-fund-tool .rank-badge {
+  /* Badge de rang */
+  .nantis-fund-tool-fr .rank-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -134,37 +134,37 @@
     font-size: 13px;
   }
 
-  .nantis-fund-tool .rank-1 { background: #ffd700; color: #333; }
-  .nantis-fund-tool .rank-2 { background: #c0c0c0; color: #333; }
-  .nantis-fund-tool .rank-3 { background: #cd7f32; color: #fff; }
-  .nantis-fund-tool .rank-other { background: #e8e8e8; color: #666; }
+  .nantis-fund-tool-fr .rank-1 { background: #ffd700; color: #333; }
+  .nantis-fund-tool-fr .rank-2 { background: #c0c0c0; color: #333; }
+  .nantis-fund-tool-fr .rank-3 { background: #cd7f32; color: #fff; }
+  .nantis-fund-tool-fr .rank-other { background: #e8e8e8; color: #666; }
 
-  /* NAV % cell coloring */
-  .nantis-fund-tool .nav-positive { color: #16a34a; font-weight: 600; }
-  .nantis-fund-tool .nav-negative { color: #dc2626; font-weight: 600; }
+  /* Couleurs des cellules VAN % */
+  .nantis-fund-tool-fr .nav-positive { color: #16a34a; font-weight: 600; }
+  .nantis-fund-tool-fr .nav-negative { color: #dc2626; font-weight: 600; }
 
-  /* Loading / Error states */
-  .nantis-fund-tool .loading-state {
+  /* États de chargement / erreur */
+  .nantis-fund-tool-fr .loading-state {
     text-align: center;
     padding: 60px 20px;
     color: #888;
   }
 
-  .nantis-fund-tool .loading-spinner {
+  .nantis-fund-tool-fr .loading-spinner {
     width: 40px;
     height: 40px;
     border: 4px solid #eee;
     border-top: 4px solid #2563eb;
     border-radius: 50%;
-    animation: nantis-spin 0.8s linear infinite;
+    animation: nantis-spin-fr 0.8s linear infinite;
     margin: 0 auto 16px;
   }
 
-  @keyframes nantis-spin {
+  @keyframes nantis-spin-fr {
     to { transform: rotate(360deg); }
   }
 
-  .nantis-fund-tool .error-state {
+  .nantis-fund-tool-fr .error-state {
     text-align: center;
     padding: 40px 20px;
     color: #dc2626;
@@ -172,13 +172,13 @@
     border-radius: 8px;
   }
 
-  .nantis-fund-tool .no-results {
+  .nantis-fund-tool-fr .no-results {
     text-align: center;
     padding: 40px 20px;
     color: #888;
   }
 
-  .nantis-fund-tool .disclaimer {
+  .nantis-fund-tool-fr .disclaimer {
     margin-top: 16px;
     padding: 14px 18px;
     background: #fff8e1;
@@ -189,7 +189,7 @@
     line-height: 1.5;
   }
 
-  .nantis-fund-tool .last-updated {
+  .nantis-fund-tool-fr .last-updated {
     text-align: right;
     font-size: 12px;
     color: #aaa;
@@ -198,45 +198,45 @@
 
   /* Responsive */
   @media (max-width: 768px) {
-    .nantis-fund-tool table { font-size: 12px; }
-    .nantis-fund-tool thead th { padding: 10px 8px; }
-    .nantis-fund-tool tbody td { padding: 8px; }
-    .nantis-fund-tool .tool-header h2 { font-size: 22px; }
+    .nantis-fund-tool-fr table { font-size: 12px; }
+    .nantis-fund-tool-fr thead th { padding: 10px 8px; }
+    .nantis-fund-tool-fr tbody td { padding: 8px; }
+    .nantis-fund-tool-fr .tool-header h2 { font-size: 22px; }
   }
 </style>
 
-<div class="nantis-fund-tool" id="nantisFundTool">
+<div class="nantis-fund-tool-fr" id="nantisFundToolFr">
   <div class="tool-header">
-    <h2>Flow-Through Fund Comparison</h2>
-    <p>Ranked by % of NAV (highest to lowest)</p>
+    <h2>Comparaison des fonds d'actions accréditives</h2>
+    <p>Classés par % de la VAN (du plus élevé au plus bas)</p>
   </div>
 
   <div class="controls-bar">
-    <input type="text" class="search-box" id="nantisSearch" placeholder="Search by fund name or liquidity type...">
+    <input type="text" class="search-box" id="nantisSearchFr" placeholder="Rechercher par nom de fonds ou type de liquidité...">
   </div>
 
   <div class="table-container">
-    <div class="loading-state" id="nantisLoading">
+    <div class="loading-state" id="nantisLoadingFr">
       <div class="loading-spinner"></div>
-      <p>Loading fund data...</p>
+      <p>Chargement des données...</p>
     </div>
-    <table id="nantisTable" style="display:none;">
+    <table id="nantisTableFr" style="display:none;">
       <thead>
-        <tr id="nantisTableHead"></tr>
+        <tr id="nantisTableHeadFr"></tr>
       </thead>
-      <tbody id="nantisTableBody"></tbody>
+      <tbody id="nantisTableBodyFr"></tbody>
     </table>
-    <div class="no-results" id="nantisNoResults" style="display:none;">
-      No funds match your search.
+    <div class="no-results" id="nantisNoResultsFr" style="display:none;">
+      Aucun fonds ne correspond à votre recherche.
     </div>
-    <div class="error-state" id="nantisError" style="display:none;"></div>
+    <div class="error-state" id="nantisErrorFr" style="display:none;"></div>
   </div>
 
-  <div class="disclaimer" id="nantisDisclaimer">
-    <strong>Disclaimer:</strong> The comparison is made strictly in relation to the NAV (now) to the starting NAV and does not include the tax deductions mix (CMETC, METC) that could have a significant effect on overall investment returns.
+  <div class="disclaimer" id="nantisDisclaimerFr">
+    <strong>Avis important :</strong> La comparaison est effectuée strictement en fonction de la VAN (actuelle) par rapport à la VAN de départ et n'inclut pas la combinaison des déductions fiscales (CMETC, METC) qui pourrait avoir un effet significatif sur le rendement global de l'investissement.
   </div>
 
-  <div class="last-updated" id="nantisLastUpdated"></div>
+  <div class="last-updated" id="nantisLastUpdatedFr"></div>
 </div>
 
 <script>
@@ -244,44 +244,43 @@
   'use strict';
 
   // =====================================================================
-  // CONFIGURATION - YOU ONLY NEED TO CHANGE THIS ONE LINE
+  // CONFIGURATION - VOUS N'AVEZ QU'À MODIFIER CETTE SEULE LIGNE
   // =====================================================================
   //
-  // OPTION A: Excel Online (OneDrive) - paste your OneDrive CSV download link
-  // OPTION B: Google Sheets - paste your published CSV link
-  // OPTION C: Direct CSV file URL (e.g., uploaded to your WordPress media)
+  // OPTION A : Excel Online (OneDrive) - collez votre lien de téléchargement CSV OneDrive
+  // OPTION B : Google Sheets - collez votre lien CSV publié
+  // OPTION C : Lien direct vers un fichier CSV (ex. téléversé dans vos médias WordPress)
   //
-  // (See SETUP-GUIDE.md for step-by-step instructions for each option)
+  // (Consultez le SETUP-GUIDE.md pour les instructions détaillées)
   //
   const DATA_CSV_URL = 'YOUR_SPREADSHEET_CSV_URL_HERE';
   //
   // =====================================================================
-  // DO NOT EDIT BELOW THIS LINE
+  // NE PAS MODIFIER SOUS CETTE LIGNE
   // =====================================================================
 
-  // Column definitions - these match the spreadsheet template columns
-  // The 'key' must match the exact column header in your spreadsheet
+  // Définition des colonnes - doivent correspondre aux en-têtes du fichier
+  // La clé 'key' doit correspondre exactement à l'en-tête de colonne dans votre fichier
   const COLUMNS = [
-    { key: 'Rank',              label: 'Rank',              type: 'rank' },
-    { key: 'Fund Name',         label: 'Fund Name',         type: 'text' },
-    { key: '% of NAV',          label: '% of NAV',          type: 'nav_percent' },
-    { key: 'NAV ($)',           label: 'NAV ($)',           type: 'currency' },
-    { key: 'Inception Date',    label: 'Inception Date',    type: 'text' },
-    { key: 'Redemption Date',   label: 'Redemption Date',   type: 'text' },
-    { key: 'Liquidity Type',    label: 'Liquidity Type',    type: 'text' },
+    { key: 'Rank',              label: 'Rang',                type: 'rank' },
+    { key: 'Fund Name',         label: 'Nom du fonds',        type: 'text' },
+    { key: '% of NAV',          label: '% de la VAN',         type: 'nav_percent' },
+    { key: 'NAV ($)',           label: 'VAN ($)',             type: 'currency' },
+    { key: 'Inception Date',    label: 'Date de création',    type: 'text' },
+    { key: 'Redemption Date',   label: 'Date de rachat',      type: 'text' },
+    { key: 'Liquidity Type',    label: 'Type de liquidité',   type: 'text' },
   ];
 
-  const NAV_COLUMN_KEY = '% of NAV'; // Column used for ranking
+  const NAV_COLUMN_KEY = '% of NAV'; // Colonne utilisée pour le classement
 
   let allFunds = [];
   let currentSort = { key: NAV_COLUMN_KEY, direction: 'desc' };
 
-  // Parse CSV text into array of objects
+  // Convertir le texte CSV en tableau d'objets
   function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     if (lines.length < 2) return [];
 
-    // Parse header row
     const headers = parseCSVLine(lines[0]);
     const data = [];
 
@@ -297,7 +296,7 @@
     return data;
   }
 
-  // Handle CSV fields that may contain commas inside quotes
+  // Gérer les champs CSV contenant des virgules entre guillemets
   function parseCSVLine(line) {
     var result = [];
     var current = '';
@@ -330,14 +329,14 @@
     return result;
   }
 
-  // Parse a numeric value from a string (removes $, %, commas)
+  // Extraire une valeur numérique (supprime $, %, virgules)
   function parseNum(str) {
     if (!str) return NaN;
     var cleaned = str.replace(/[$,%\s]/g, '');
     return parseFloat(cleaned);
   }
 
-  // Sort funds by a given column
+  // Trier les fonds par une colonne donnée
   function sortFunds(funds, key, direction) {
     var col = COLUMNS.find(function(c) { return c.key === key; });
     return funds.slice().sort(function(a, b) {
@@ -357,14 +356,13 @@
     });
   }
 
-  // Render the table
+  // Afficher le tableau
   function renderTable(funds) {
-    var thead = document.getElementById('nantisTableHead');
-    var tbody = document.getElementById('nantisTableBody');
-    var table = document.getElementById('nantisTable');
-    var noResults = document.getElementById('nantisNoResults');
+    var thead = document.getElementById('nantisTableHeadFr');
+    var tbody = document.getElementById('nantisTableBodyFr');
+    var table = document.getElementById('nantisTableFr');
+    var noResults = document.getElementById('nantisNoResultsFr');
 
-    // Build header
     thead.innerHTML = '';
     COLUMNS.forEach(function(col) {
       var th = document.createElement('th');
@@ -390,7 +388,6 @@
       thead.appendChild(th);
     });
 
-    // Build body
     if (funds.length === 0) {
       table.style.display = 'none';
       noResults.style.display = 'block';
@@ -402,7 +399,7 @@
   }
 
   function renderTableHead() {
-    var ths = document.querySelectorAll('#nantisTableHead th');
+    var ths = document.querySelectorAll('#nantisTableHeadFr th');
     ths.forEach(function(th, index) {
       var col = COLUMNS[index];
       var sortClass = '';
@@ -417,7 +414,7 @@
   }
 
   function renderTableBody(funds) {
-    var tbody = document.getElementById('nantisTableBody');
+    var tbody = document.getElementById('nantisTableBodyFr');
     tbody.innerHTML = '';
 
     funds.forEach(function(fund, index) {
@@ -451,7 +448,7 @@
               td.className = numVal >= 0 ? 'nav-positive' : 'nav-negative';
               td.textContent = numVal.toFixed(2) + '%';
             } else {
-              td.textContent = value || 'N/A';
+              td.textContent = value || 'S/O';
             }
             break;
 
@@ -460,7 +457,7 @@
             if (!isNaN(numVal)) {
               td.textContent = '$' + numVal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
             } else {
-              td.textContent = value || 'N/A';
+              td.textContent = value || 'S/O';
             }
             break;
 
@@ -475,9 +472,9 @@
     });
   }
 
-  // Get funds matching current search
+  // Filtrer les fonds selon la recherche
   function getFilteredFunds() {
-    var searchTerm = document.getElementById('nantisSearch').value.toLowerCase();
+    var searchTerm = document.getElementById('nantisSearchFr').value.toLowerCase();
 
     return allFunds.filter(function(fund) {
       if (searchTerm) {
@@ -491,73 +488,72 @@
     });
   }
 
-  // Apply filters and re-render
+  // Appliquer les filtres et réafficher
   function applyFilters() {
     var filtered = getFilteredFunds();
     var sorted = sortFunds(filtered, currentSort.key, currentSort.direction);
     renderTable(sorted);
   }
 
-  // Load data from spreadsheet
+  // Charger les données du fichier
   function loadData() {
     if (DATA_CSV_URL === 'YOUR_SPREADSHEET_CSV_URL_HERE') {
-      // Show demo data if no sheet is configured
       showDemoData();
       return;
     }
 
     fetch(DATA_CSV_URL)
       .then(function(response) {
-        if (!response.ok) throw new Error('Failed to load data (HTTP ' + response.status + ')');
+        if (!response.ok) throw new Error('Échec du chargement (HTTP ' + response.status + ')');
         return response.text();
       })
       .then(function(csvText) {
         allFunds = parseCSV(csvText);
 
-        // Sort by NAV % descending (best first)
+        // Trier par % VAN décroissant (meilleur en premier)
         allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
 
-        document.getElementById('nantisLoading').style.display = 'none';
+        document.getElementById('nantisLoadingFr').style.display = 'none';
         renderTable(allFunds);
 
-        document.getElementById('nantisLastUpdated').textContent =
-          'Data loaded: ' + new Date().toLocaleString();
+        document.getElementById('nantisLastUpdatedFr').textContent =
+          'Données chargées : ' + new Date().toLocaleString('fr-CA');
       })
       .catch(function(err) {
-        document.getElementById('nantisLoading').style.display = 'none';
-        document.getElementById('nantisError').style.display = 'block';
-        document.getElementById('nantisError').innerHTML =
-          '<strong>Unable to load fund data.</strong><br>' +
-          'Please check that the spreadsheet URL is correct and the file is shared/published.<br>' +
-          '<small>Error: ' + err.message + '</small>';
+        document.getElementById('nantisLoadingFr').style.display = 'none';
+        document.getElementById('nantisErrorFr').style.display = 'block';
+        document.getElementById('nantisErrorFr').innerHTML =
+          '<strong>Impossible de charger les données.</strong><br>' +
+          'Veuillez vérifier que le lien du fichier est correct et que le fichier est partagé/publié.<br>' +
+          '<small>Erreur : ' + err.message + '</small>';
       });
   }
 
-  // Demo data so you can preview the table before connecting your spreadsheet
+  // Données de démonstration
   function showDemoData() {
     allFunds = [
-      { 'Fund Name': 'ABC Flow-Through 2024 LP', '% of NAV': '112.45', 'NAV ($)': '11245.00', 'Inception Date': '2024-02-15', 'Redemption Date': '2026-02-15', 'Liquidity Type': 'Cash' },
-      { 'Fund Name': 'XYZ Resource Flow-Through Fund', '% of NAV': '105.30', 'NAV ($)': '10530.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Mutual Fund Shares' },
-      { 'Fund Name': 'Maple Mining Flow-Through LP', '% of NAV': '98.20', 'NAV ($)': '9820.00', 'Inception Date': '2024-01-10', 'Redemption Date': '2026-01-10', 'Liquidity Type': 'Cash' },
-      { 'Fund Name': 'Northern Exploration FT Fund', '% of NAV': '95.80', 'NAV ($)': '9580.00', 'Inception Date': '2024-04-01', 'Redemption Date': '2026-04-01', 'Liquidity Type': 'Mutual Fund Shares' },
-      { 'Fund Name': 'Green Energy Flow-Through LP', '% of NAV': '91.50', 'NAV ($)': '9150.00', 'Inception Date': '2024-06-15', 'Redemption Date': '2026-06-15', 'Liquidity Type': 'Cash' },
-      { 'Fund Name': 'Pacific Resources FT Fund', '% of NAV': '88.10', 'NAV ($)': '8810.00', 'Inception Date': '2024-05-20', 'Redemption Date': '2026-05-20', 'Liquidity Type': 'Mutual Fund Shares' },
+      { 'Fund Name': 'ABC Actions accréditives 2024 LP', '% of NAV': '112.45', 'NAV ($)': '11245.00', 'Inception Date': '2024-02-15', 'Redemption Date': '2026-02-15', 'Liquidity Type': 'Comptant' },
+      { 'Fund Name': 'XYZ Fonds accréditive ressources', '% of NAV': '105.30', 'NAV ($)': '10530.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Parts de fonds communs' },
+      { 'Fund Name': 'Érable Exploration accréditives LP', '% of NAV': '98.20', 'NAV ($)': '9820.00', 'Inception Date': '2024-01-10', 'Redemption Date': '2026-01-10', 'Liquidity Type': 'Comptant' },
+      { 'Fund Name': 'Nord Exploration Fonds accréditive', '% of NAV': '95.80', 'NAV ($)': '9580.00', 'Inception Date': '2024-04-01', 'Redemption Date': '2026-04-01', 'Liquidity Type': 'Parts de fonds communs' },
+      { 'Fund Name': 'Énergie Verte accréditives LP', '% of NAV': '91.50', 'NAV ($)': '9150.00', 'Inception Date': '2024-06-15', 'Redemption Date': '2026-06-15', 'Liquidity Type': 'Comptant' },
+      { 'Fund Name': 'Pacifique Ressources Fonds accréditive', '% of NAV': '88.10', 'NAV ($)': '8810.00', 'Inception Date': '2024-05-20', 'Redemption Date': '2026-05-20', 'Liquidity Type': 'Parts de fonds communs' },
     ];
 
     allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
-    document.getElementById('nantisLoading').style.display = 'none';
+    document.getElementById('nantisLoadingFr').style.display = 'none';
     renderTable(allFunds);
-    document.getElementById('nantisLastUpdated').textContent =
-      'Showing demo data \u2014 connect your Excel or Google Sheet to see real data.';
+    document.getElementById('nantisLastUpdatedFr').textContent =
+      'Données de démonstration \u2014 connectez votre fichier Excel ou Google Sheet pour voir les vraies données.';
   }
 
-  // Event listeners
-  document.getElementById('nantisSearch').addEventListener('input', applyFilters);
+  // Écouteurs d'événements
+  document.getElementById('nantisSearchFr').addEventListener('input', applyFilters);
 
-  // Auto-refresh every 5 minutes (300000ms)
+  // Rafraîchissement automatique toutes les 5 minutes (300000ms)
   setInterval(loadData, 300000);
 
-  // Initial load
+  // Chargement initial
   loadData();
 })();
 </script>
