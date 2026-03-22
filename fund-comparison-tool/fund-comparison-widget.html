@@ -5,10 +5,15 @@
   See the SETUP-GUIDE.md file for step-by-step instructions.
 
   HOW IT WORKS:
-  1. You put your fund data into a Google Sheet
-  2. This code reads that Google Sheet automatically
+  1. You put your fund data into Excel Online (OneDrive) or Google Sheets
+  2. This code reads that spreadsheet automatically
   3. It builds a sortable comparison table on your website
-  4. Whenever you update the Google Sheet, the website updates too
+  4. Whenever you update the spreadsheet, the website updates too
+
+  SUPPORTS:
+  - Microsoft Excel Online (OneDrive) - recommended
+  - Google Sheets
+  - Any direct CSV file URL
 -->
 
 <style>
@@ -240,17 +245,21 @@
   // =====================================================================
   // CONFIGURATION - YOU ONLY NEED TO CHANGE THIS ONE LINE
   // =====================================================================
-  // Replace the URL below with YOUR Google Sheet's published CSV link.
-  // (See SETUP-GUIDE.md for how to get this link)
   //
-  const GOOGLE_SHEET_CSV_URL = 'YOUR_GOOGLE_SHEET_CSV_URL_HERE';
+  // OPTION A: Excel Online (OneDrive) - paste your OneDrive CSV download link
+  // OPTION B: Google Sheets - paste your published CSV link
+  // OPTION C: Direct CSV file URL (e.g., uploaded to your WordPress media)
+  //
+  // (See SETUP-GUIDE.md for step-by-step instructions for each option)
+  //
+  const DATA_CSV_URL = 'YOUR_SPREADSHEET_CSV_URL_HERE';
   //
   // =====================================================================
   // DO NOT EDIT BELOW THIS LINE
   // =====================================================================
 
-  // Column definitions - these match the Google Sheet template columns
-  // The 'key' must match the exact column header in your Google Sheet
+  // Column definitions - these match the spreadsheet template columns
+  // The 'key' must match the exact column header in your spreadsheet
   const COLUMNS = [
     { key: 'Rank',              label: 'Rank',              type: 'rank' },
     { key: 'Fund Name',         label: 'Fund Name',         type: 'text' },
@@ -520,13 +529,13 @@
 
   // Load data from Google Sheet
   function loadData() {
-    if (GOOGLE_SHEET_CSV_URL === 'YOUR_GOOGLE_SHEET_CSV_URL_HERE') {
+    if (DATA_CSV_URL === 'YOUR_DATA_CSV_URL_HERE') {
       // Show demo data if no sheet is configured
       showDemoData();
       return;
     }
 
-    fetch(GOOGLE_SHEET_CSV_URL)
+    fetch(DATA_CSV_URL)
       .then(function(response) {
         if (!response.ok) throw new Error('Failed to load data (HTTP ' + response.status + ')');
         return response.text();
@@ -549,7 +558,7 @@
         document.getElementById('nantisError').style.display = 'block';
         document.getElementById('nantisError').innerHTML =
           '<strong>Unable to load fund data.</strong><br>' +
-          'Please check that the Google Sheet URL is correct and the sheet is published.<br>' +
+          'Please check that the spreadsheet URL is correct and the file is shared/published.<br>' +
           '<small>Error: ' + err.message + '</small>';
       });
   }
@@ -572,7 +581,7 @@
     populateCategories(allFunds);
     renderTable(allFunds);
     document.getElementById('nantisLastUpdated').textContent =
-      'Showing demo data \u2014 connect your Google Sheet to see real data.';
+      'Showing demo data \u2014 connect your Excel or Google Sheet to see real data.';
   }
 
   // Event listeners
