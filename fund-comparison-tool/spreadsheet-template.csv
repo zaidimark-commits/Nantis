@@ -1,4 +1,4 @@
-Fund Name,% of NAV,NAV ($),Inception Date,Redemption Date,Liquidity Type
-ABC Flow-Through 2024 LP,112.45,11245.00,2024-02-15,2026-02-15,Cash
-XYZ Resource Flow-Through Fund,105.30,10530.00,2024-03-01,2026-03-01,Mutual Fund Shares
-Maple Mining Flow-Through LP,98.20,9820.00,2024-01-10,2026-01-10,Cash
+Fund Name,Category,% of NAV (A),NAV $ (A),% of NAV (F),NAV $ (F),Inception Date,Redemption Date,Liquidity Type,Is Nantis
+Nantis Flow-Through 2024 LP,Both,112.45,11245.00,112.45,11245.00,2024-02-15,2026-02-15,Cash,Yes
+ABC Flow-Through 2024 LP,National,108.30,10830.00,109.50,10950.00,2024-03-01,2026-03-01,Mutual Fund Shares,No
+Maple Mining Flow-Through LP,Quebec,98.20,9820.00,99.40,9940.00,2024-01-10,2026-01-10,Cash,No

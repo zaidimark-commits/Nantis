@@ -14,6 +14,11 @@
   - Microsoft Excel Online (OneDrive) - recommandé
   - Google Sheets
   - Tout lien direct vers un fichier CSV
+
+  FILTRES À BASCULE :
+  - Catégorie A / Catégorie F : change les valeurs VAN affichées
+  - National / Québec : filtre les fonds par catégorie
+  - Nantis apparaît toujours dans les deux catégories (catégorie unique)
 -->
 
 <style>
@@ -45,6 +50,62 @@
     font-size: 14px;
     color: #8aaccb;
     margin: 0;
+  }
+
+  /* Contrôles à bascule */
+  .nantis-fund-tool-fr .toggle-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .nantis-fund-tool-fr .toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .nantis-fund-tool-fr .toggle-group-label {
+    font-size: 13px;
+    color: #8aaccb;
+    margin-right: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .nantis-fund-tool-fr .toggle-pills {
+    display: flex;
+    background: #0f1e32;
+    border: 1px solid #1e3050;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .nantis-fund-tool-fr .toggle-pill {
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4d6e8a;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .nantis-fund-tool-fr .toggle-pill:hover {
+    color: #e8f2fc;
+    background: rgba(0, 201, 212, 0.1);
+  }
+
+  .nantis-fund-tool-fr .toggle-pill.active {
+    color: #08111e;
+    background: #00c9d4;
+    font-weight: 700;
   }
 
   /* Barre de recherche */
@@ -134,6 +195,16 @@
 
   .nantis-fund-tool-fr tbody tr:hover {
     background: #162640;
+  }
+
+  /* Mise en évidence de la ligne Nantis */
+  .nantis-fund-tool-fr tbody tr.nantis-highlight {
+    background: rgba(0, 201, 212, 0.08);
+    border-left: 3px solid #00c9d4;
+  }
+
+  .nantis-fund-tool-fr tbody tr.nantis-highlight:hover {
+    background: rgba(0, 201, 212, 0.14);
   }
 
   .nantis-fund-tool-fr tbody td {
@@ -227,6 +298,9 @@
     .nantis-fund-tool-fr thead th { padding: 10px 8px; }
     .nantis-fund-tool-fr tbody td { padding: 8px; }
     .nantis-fund-tool-fr .tool-header h2 { font-size: 22px; }
+    .nantis-fund-tool-fr .toggle-row { gap: 12px; }
+    .nantis-fund-tool-fr .toggle-pill { padding: 6px 14px; font-size: 12px; }
+    .nantis-fund-tool-fr .toggle-group-label { font-size: 11px; }
   }
 </style>
 
@@ -234,6 +308,24 @@
   <div class="tool-header">
     <h2>Comparaison des fonds d'actions accréditives</h2>
     <p>Classés par % de la VAN (du plus élevé au plus bas)</p>
+  </div>
+
+  <!-- Filtres à bascule -->
+  <div class="toggle-row">
+    <div class="toggle-group">
+      <span class="toggle-group-label">Catégorie :</span>
+      <div class="toggle-pills" id="nantisClassToggleFr">
+        <button class="toggle-pill active" data-value="A">Catégorie A</button>
+        <button class="toggle-pill" data-value="F">Catégorie F</button>
+      </div>
+    </div>
+    <div class="toggle-group">
+      <span class="toggle-group-label">Région :</span>
+      <div class="toggle-pills" id="nantisCategoryToggleFr">
+        <button class="toggle-pill active" data-value="National">National</button>
+        <button class="toggle-pill" data-value="Quebec">Québec</button>
+      </div>
+    </div>
   </div>
 
   <div class="controls-bar">
@@ -284,22 +376,32 @@
   // NE PAS MODIFIER SOUS CETTE LIGNE
   // =====================================================================
 
-  // Définition des colonnes - doivent correspondre aux en-têtes du fichier
-  // La clé 'key' doit correspondre exactement à l'en-tête de colonne dans votre fichier
-  const COLUMNS = [
-    { key: 'Rank',              label: 'Rang',                type: 'rank' },
-    { key: 'Fund Name',         label: 'Nom du fonds',        type: 'text' },
-    { key: '% of NAV',          label: '% de la VAN',         type: 'nav_percent' },
-    { key: 'NAV ($)',           label: 'VAN ($)',             type: 'currency' },
-    { key: 'Inception Date',    label: 'Date de création',    type: 'text' },
-    { key: 'Redemption Date',   label: 'Date de rachat',      type: 'text' },
-    { key: 'Liquidity Type',    label: 'Type de liquidité',   type: 'text' },
-  ];
+  // Définition des colonnes - construites dynamiquement selon la bascule de catégorie
+  // Le fichier doit contenir ces colonnes :
+  //   Fund Name, Category, % of NAV (A), NAV $ (A), % of NAV (F), NAV $ (F),
+  //   Inception Date, Redemption Date, Liquidity Type, Is Nantis
+  function getColumns(classType) {
+    return [
+      { key: 'Rank',              label: 'Rang',                type: 'rank' },
+      { key: 'Fund Name',         label: 'Nom du fonds',        type: 'text' },
+      { key: '% of NAV (' + classType + ')', label: '% de la VAN',  type: 'nav_percent' },
+      { key: 'NAV $ (' + classType + ')',    label: 'VAN ($)',       type: 'currency' },
+      { key: 'Inception Date',    label: 'Date de création',    type: 'text' },
+      { key: 'Redemption Date',   label: 'Date de rachat',      type: 'text' },
+      { key: 'Liquidity Type',    label: 'Type de liquidité',   type: 'text' },
+    ];
+  }
 
-  const NAV_COLUMN_KEY = '% of NAV'; // Colonne utilisée pour le classement
+  // États actifs des bascules
+  var activeClass = 'A';
+  var activeCategory = 'National';
+
+  function getNavKey() {
+    return '% of NAV (' + activeClass + ')';
+  }
 
   let allFunds = [];
-  let currentSort = { key: NAV_COLUMN_KEY, direction: 'desc' };
+  let currentSort = { key: '% of NAV (A)', direction: 'desc' };
 
   // Convertir le texte CSV en tableau d'objets
   function parseCSV(csvText) {
@@ -363,6 +465,7 @@
 
   // Trier les fonds par une colonne donnée
   function sortFunds(funds, key, direction) {
+    var COLUMNS = getColumns(activeClass);
     var col = COLUMNS.find(function(c) { return c.key === key; });
     return funds.slice().sort(function(a, b) {
       var aVal, bVal;
@@ -381,8 +484,15 @@
     });
   }
 
+  // Vérifier si un fonds est Nantis
+  function isNantis(fund) {
+    var val = (fund['Is Nantis'] || '').trim().toLowerCase();
+    return val === 'yes' || val === 'y' || val === 'true' || val === '1';
+  }
+
   // Afficher le tableau
   function renderTable(funds) {
+    var COLUMNS = getColumns(activeClass);
     var thead = document.getElementById('nantisTableHeadFr');
     var tbody = document.getElementById('nantisTableBodyFr');
     var table = document.getElementById('nantisTableFr');
@@ -424,6 +534,7 @@
   }
 
   function renderTableHead() {
+    var COLUMNS = getColumns(activeClass);
     var ths = document.querySelectorAll('#nantisTableHeadFr th');
     ths.forEach(function(th, index) {
       var col = COLUMNS[index];
@@ -439,11 +550,17 @@
   }
 
   function renderTableBody(funds) {
+    var COLUMNS = getColumns(activeClass);
     var tbody = document.getElementById('nantisTableBodyFr');
     tbody.innerHTML = '';
 
     funds.forEach(function(fund, index) {
       var tr = document.createElement('tr');
+
+      // Mise en évidence de la ligne Nantis
+      if (isNantis(fund)) {
+        tr.className = 'nantis-highlight';
+      }
 
       COLUMNS.forEach(function(col) {
         var td = document.createElement('td');
@@ -497,11 +614,19 @@
     });
   }
 
-  // Filtrer les fonds selon la recherche
+  // Filtrer les fonds selon la recherche + filtre de catégorie
   function getFilteredFunds() {
     var searchTerm = document.getElementById('nantisSearchFr').value.toLowerCase();
 
     return allFunds.filter(function(fund) {
+      // Filtre de catégorie : Nantis passe toujours, les autres doivent correspondre
+      var category = (fund['Category'] || '').trim().toLowerCase();
+      var targetCategory = activeCategory.toLowerCase();
+      var passesCategory = isNantis(fund) || category === targetCategory || category === 'both';
+
+      if (!passesCategory) return false;
+
+      // Filtre de recherche
       if (searchTerm) {
         var searchable = (
           (fund['Fund Name'] || '') + ' ' +
@@ -515,9 +640,43 @@
 
   // Appliquer les filtres et réafficher
   function applyFilters() {
+    // Mettre à jour la clé de tri pour correspondre à la catégorie active
+    var navKey = getNavKey();
+    if (currentSort.key.indexOf('% of NAV') === 0) {
+      currentSort.key = navKey;
+    }
+    if (currentSort.key.indexOf('NAV $') === 0) {
+      currentSort.key = 'NAV $ (' + activeClass + ')';
+    }
+
     var filtered = getFilteredFunds();
     var sorted = sortFunds(filtered, currentSort.key, currentSort.direction);
     renderTable(sorted);
+  }
+
+  // Configuration des bascules
+  function setupToggles() {
+    // Bascule de catégorie (A / F)
+    var classToggle = document.getElementById('nantisClassToggleFr');
+    classToggle.querySelectorAll('.toggle-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        classToggle.querySelectorAll('.toggle-pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeClass = btn.getAttribute('data-value');
+        applyFilters();
+      });
+    });
+
+    // Bascule de région (National / Québec)
+    var categoryToggle = document.getElementById('nantisCategoryToggleFr');
+    categoryToggle.querySelectorAll('.toggle-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        categoryToggle.querySelectorAll('.toggle-pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeCategory = btn.getAttribute('data-value');
+        applyFilters();
+      });
+    });
   }
 
   // Charger les données du fichier
@@ -534,12 +693,8 @@
       })
       .then(function(csvText) {
         allFunds = parseCSV(csvText);
-
-        // Trier par % VAN décroissant (meilleur en premier)
-        allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
-
         document.getElementById('nantisLoadingFr').style.display = 'none';
-        renderTable(allFunds);
+        applyFilters();
 
         document.getElementById('nantisLastUpdatedFr').textContent =
           'Données chargées : ' + new Date().toLocaleString('fr-CA');
@@ -557,23 +712,24 @@
   // Données de démonstration
   function showDemoData() {
     allFunds = [
-      { 'Fund Name': 'ABC Actions accréditives 2024 LP', '% of NAV': '112.45', 'NAV ($)': '11245.00', 'Inception Date': '2024-02-15', 'Redemption Date': '2026-02-15', 'Liquidity Type': 'Comptant' },
-      { 'Fund Name': 'XYZ Fonds accréditive ressources', '% of NAV': '105.30', 'NAV ($)': '10530.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Parts de fonds communs' },
-      { 'Fund Name': 'Érable Exploration accréditives LP', '% of NAV': '98.20', 'NAV ($)': '9820.00', 'Inception Date': '2024-01-10', 'Redemption Date': '2026-01-10', 'Liquidity Type': 'Comptant' },
-      { 'Fund Name': 'Nord Exploration Fonds accréditive', '% of NAV': '95.80', 'NAV ($)': '9580.00', 'Inception Date': '2024-04-01', 'Redemption Date': '2026-04-01', 'Liquidity Type': 'Parts de fonds communs' },
-      { 'Fund Name': 'Énergie Verte accréditives LP', '% of NAV': '91.50', 'NAV ($)': '9150.00', 'Inception Date': '2024-06-15', 'Redemption Date': '2026-06-15', 'Liquidity Type': 'Comptant' },
-      { 'Fund Name': 'Pacifique Ressources Fonds accréditive', '% of NAV': '88.10', 'NAV ($)': '8810.00', 'Inception Date': '2024-05-20', 'Redemption Date': '2026-05-20', 'Liquidity Type': 'Parts de fonds communs' },
+      { 'Fund Name': 'Nantis Actions accréditives 2024 LP', 'Category': 'Both', '% of NAV (A)': '112.45', 'NAV $ (A)': '11245.00', '% of NAV (F)': '112.45', 'NAV $ (F)': '11245.00', 'Inception Date': '2024-02-15', 'Redemption Date': '2026-02-15', 'Liquidity Type': 'Comptant', 'Is Nantis': 'Yes' },
+      { 'Fund Name': 'ABC Actions accréditives 2024 LP', 'Category': 'National', '% of NAV (A)': '108.30', 'NAV $ (A)': '10830.00', '% of NAV (F)': '109.50', 'NAV $ (F)': '10950.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Parts de fonds communs', 'Is Nantis': 'No' },
+      { 'Fund Name': 'XYZ Fonds accréditive ressources', 'Category': 'National', '% of NAV (A)': '105.30', 'NAV $ (A)': '10530.00', '% of NAV (F)': '106.80', 'NAV $ (F)': '10680.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Parts de fonds communs', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Érable Exploration accréditives LP', 'Category': 'Quebec', '% of NAV (A)': '98.20', 'NAV $ (A)': '9820.00', '% of NAV (F)': '99.40', 'NAV $ (F)': '9940.00', 'Inception Date': '2024-01-10', 'Redemption Date': '2026-01-10', 'Liquidity Type': 'Comptant', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Nord Exploration Fonds accréditive', 'Category': 'National', '% of NAV (A)': '95.80', 'NAV $ (A)': '9580.00', '% of NAV (F)': '96.90', 'NAV $ (F)': '9690.00', 'Inception Date': '2024-04-01', 'Redemption Date': '2026-04-01', 'Liquidity Type': 'Parts de fonds communs', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Énergie Verte accréditives LP', 'Category': 'Quebec', '% of NAV (A)': '91.50', 'NAV $ (A)': '9150.00', '% of NAV (F)': '92.70', 'NAV $ (F)': '9270.00', 'Inception Date': '2024-06-15', 'Redemption Date': '2026-06-15', 'Liquidity Type': 'Comptant', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Pacifique Ressources Fonds accréditive', 'Category': 'Both', '% of NAV (A)': '88.10', 'NAV $ (A)': '8810.00', '% of NAV (F)': '89.30', 'NAV $ (F)': '8930.00', 'Inception Date': '2024-05-20', 'Redemption Date': '2026-05-20', 'Liquidity Type': 'Parts de fonds communs', 'Is Nantis': 'No' },
     ];
 
-    allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
     document.getElementById('nantisLoadingFr').style.display = 'none';
-    renderTable(allFunds);
+    applyFilters();
     document.getElementById('nantisLastUpdatedFr').textContent =
       'Données de démonstration \u2014 connectez votre fichier Excel ou Google Sheet pour voir les vraies données.';
   }
 
   // Écouteurs d'événements
   document.getElementById('nantisSearchFr').addEventListener('input', applyFilters);
+  setupToggles();
 
   // Rafraîchissement automatique toutes les 5 minutes (300000ms)
   setInterval(loadData, 300000);

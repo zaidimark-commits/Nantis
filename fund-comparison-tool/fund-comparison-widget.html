@@ -14,6 +14,11 @@
   - Microsoft Excel Online (OneDrive) - recommended
   - Google Sheets
   - Any direct CSV file URL
+
+  TOGGLE FILTERS:
+  - Class A / Class F: switches which NAV values are displayed
+  - National / Quebec: filters funds by category
+  - Nantis always appears in both categories (single class)
 -->
 
 <style>
@@ -45,6 +50,62 @@
     font-size: 14px;
     color: #8aaccb;
     margin: 0;
+  }
+
+  /* Toggle Controls */
+  .nantis-fund-tool .toggle-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .nantis-fund-tool .toggle-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .nantis-fund-tool .toggle-group-label {
+    font-size: 13px;
+    color: #8aaccb;
+    margin-right: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .nantis-fund-tool .toggle-pills {
+    display: flex;
+    background: #0f1e32;
+    border: 1px solid #1e3050;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .nantis-fund-tool .toggle-pill {
+    padding: 8px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #4d6e8a;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+
+  .nantis-fund-tool .toggle-pill:hover {
+    color: #e8f2fc;
+    background: rgba(0, 201, 212, 0.1);
+  }
+
+  .nantis-fund-tool .toggle-pill.active {
+    color: #08111e;
+    background: #00c9d4;
+    font-weight: 700;
   }
 
   /* Search Bar */
@@ -134,6 +195,16 @@
 
   .nantis-fund-tool tbody tr:hover {
     background: #162640;
+  }
+
+  /* Highlight Nantis row */
+  .nantis-fund-tool tbody tr.nantis-highlight {
+    background: rgba(0, 201, 212, 0.08);
+    border-left: 3px solid #00c9d4;
+  }
+
+  .nantis-fund-tool tbody tr.nantis-highlight:hover {
+    background: rgba(0, 201, 212, 0.14);
   }
 
   .nantis-fund-tool tbody td {
@@ -227,6 +298,9 @@
     .nantis-fund-tool thead th { padding: 10px 8px; }
     .nantis-fund-tool tbody td { padding: 8px; }
     .nantis-fund-tool .tool-header h2 { font-size: 22px; }
+    .nantis-fund-tool .toggle-row { gap: 12px; }
+    .nantis-fund-tool .toggle-pill { padding: 6px 14px; font-size: 12px; }
+    .nantis-fund-tool .toggle-group-label { font-size: 11px; }
   }
 </style>
 
@@ -234,6 +308,24 @@
   <div class="tool-header">
     <h2>Flow-Through Fund Comparison</h2>
     <p>Ranked by % of NAV (highest to lowest)</p>
+  </div>
+
+  <!-- Toggle Filters -->
+  <div class="toggle-row">
+    <div class="toggle-group">
+      <span class="toggle-group-label">Class:</span>
+      <div class="toggle-pills" id="nantisClassToggle">
+        <button class="toggle-pill active" data-value="A">Class A</button>
+        <button class="toggle-pill" data-value="F">Class F</button>
+      </div>
+    </div>
+    <div class="toggle-group">
+      <span class="toggle-group-label">Category:</span>
+      <div class="toggle-pills" id="nantisCategoryToggle">
+        <button class="toggle-pill active" data-value="National">National</button>
+        <button class="toggle-pill" data-value="Quebec">Quebec</button>
+      </div>
+    </div>
   </div>
 
   <div class="controls-bar">
@@ -284,29 +376,38 @@
   // DO NOT EDIT BELOW THIS LINE
   // =====================================================================
 
-  // Column definitions - these match the spreadsheet template columns
-  // The 'key' must match the exact column header in your spreadsheet
-  const COLUMNS = [
-    { key: 'Rank',              label: 'Rank',              type: 'rank' },
-    { key: 'Fund Name',         label: 'Fund Name',         type: 'text' },
-    { key: '% of NAV',          label: '% of NAV',          type: 'nav_percent' },
-    { key: 'NAV ($)',           label: 'NAV ($)',           type: 'currency' },
-    { key: 'Inception Date',    label: 'Inception Date',    type: 'text' },
-    { key: 'Redemption Date',   label: 'Redemption Date',   type: 'text' },
-    { key: 'Liquidity Type',    label: 'Liquidity Type',    type: 'text' },
-  ];
+  // Column definitions - dynamically built based on active class toggle
+  // Spreadsheet must have these columns:
+  //   Fund Name, Category, % of NAV (A), NAV $ (A), % of NAV (F), NAV $ (F),
+  //   Inception Date, Redemption Date, Liquidity Type, Is Nantis
+  function getColumns(classType) {
+    return [
+      { key: 'Rank',              label: 'Rank',              type: 'rank' },
+      { key: 'Fund Name',         label: 'Fund Name',         type: 'text' },
+      { key: '% of NAV (' + classType + ')', label: '% of NAV',  type: 'nav_percent' },
+      { key: 'NAV $ (' + classType + ')',    label: 'NAV ($)',    type: 'currency' },
+      { key: 'Inception Date',    label: 'Inception Date',    type: 'text' },
+      { key: 'Redemption Date',   label: 'Redemption Date',   type: 'text' },
+      { key: 'Liquidity Type',    label: 'Liquidity Type',    type: 'text' },
+    ];
+  }
 
-  const NAV_COLUMN_KEY = '% of NAV'; // Column used for ranking
+  // Active toggle states
+  var activeClass = 'A';
+  var activeCategory = 'National';
+
+  function getNavKey() {
+    return '% of NAV (' + activeClass + ')';
+  }
 
   let allFunds = [];
-  let currentSort = { key: NAV_COLUMN_KEY, direction: 'desc' };
+  let currentSort = { key: '% of NAV (A)', direction: 'desc' };
 
   // Parse CSV text into array of objects
   function parseCSV(csvText) {
     const lines = csvText.trim().split('\n');
     if (lines.length < 2) return [];
 
-    // Parse header row
     const headers = parseCSVLine(lines[0]);
     const data = [];
 
@@ -364,6 +465,7 @@
 
   // Sort funds by a given column
   function sortFunds(funds, key, direction) {
+    var COLUMNS = getColumns(activeClass);
     var col = COLUMNS.find(function(c) { return c.key === key; });
     return funds.slice().sort(function(a, b) {
       var aVal, bVal;
@@ -382,8 +484,15 @@
     });
   }
 
+  // Check if a fund is Nantis
+  function isNantis(fund) {
+    var val = (fund['Is Nantis'] || '').trim().toLowerCase();
+    return val === 'yes' || val === 'y' || val === 'true' || val === '1';
+  }
+
   // Render the table
   function renderTable(funds) {
+    var COLUMNS = getColumns(activeClass);
     var thead = document.getElementById('nantisTableHead');
     var tbody = document.getElementById('nantisTableBody');
     var table = document.getElementById('nantisTable');
@@ -427,6 +536,7 @@
   }
 
   function renderTableHead() {
+    var COLUMNS = getColumns(activeClass);
     var ths = document.querySelectorAll('#nantisTableHead th');
     ths.forEach(function(th, index) {
       var col = COLUMNS[index];
@@ -442,11 +552,17 @@
   }
 
   function renderTableBody(funds) {
+    var COLUMNS = getColumns(activeClass);
     var tbody = document.getElementById('nantisTableBody');
     tbody.innerHTML = '';
 
     funds.forEach(function(fund, index) {
       var tr = document.createElement('tr');
+
+      // Highlight Nantis row
+      if (isNantis(fund)) {
+        tr.className = 'nantis-highlight';
+      }
 
       COLUMNS.forEach(function(col) {
         var td = document.createElement('td');
@@ -500,11 +616,19 @@
     });
   }
 
-  // Get funds matching current search
+  // Get funds matching current search + category filter
   function getFilteredFunds() {
     var searchTerm = document.getElementById('nantisSearch').value.toLowerCase();
 
     return allFunds.filter(function(fund) {
+      // Category filter: Nantis always passes, others must match
+      var category = (fund['Category'] || '').trim().toLowerCase();
+      var targetCategory = activeCategory.toLowerCase();
+      var passesCategory = isNantis(fund) || category === targetCategory || category === 'both';
+
+      if (!passesCategory) return false;
+
+      // Search filter
       if (searchTerm) {
         var searchable = (
           (fund['Fund Name'] || '') + ' ' +
@@ -518,15 +642,48 @@
 
   // Apply filters and re-render
   function applyFilters() {
+    // Update sort key to match active class
+    var navKey = getNavKey();
+    if (currentSort.key.indexOf('% of NAV') === 0) {
+      currentSort.key = navKey;
+    }
+    if (currentSort.key.indexOf('NAV $') === 0) {
+      currentSort.key = 'NAV $ (' + activeClass + ')';
+    }
+
     var filtered = getFilteredFunds();
     var sorted = sortFunds(filtered, currentSort.key, currentSort.direction);
     renderTable(sorted);
   }
 
+  // Toggle setup
+  function setupToggles() {
+    // Class toggle (A / F)
+    var classToggle = document.getElementById('nantisClassToggle');
+    classToggle.querySelectorAll('.toggle-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        classToggle.querySelectorAll('.toggle-pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeClass = btn.getAttribute('data-value');
+        applyFilters();
+      });
+    });
+
+    // Category toggle (National / Quebec)
+    var categoryToggle = document.getElementById('nantisCategoryToggle');
+    categoryToggle.querySelectorAll('.toggle-pill').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        categoryToggle.querySelectorAll('.toggle-pill').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        activeCategory = btn.getAttribute('data-value');
+        applyFilters();
+      });
+    });
+  }
+
   // Load data from spreadsheet
   function loadData() {
     if (DATA_CSV_URL === 'YOUR_SPREADSHEET_CSV_URL_HERE') {
-      // Show demo data if no sheet is configured
       showDemoData();
       return;
     }
@@ -538,12 +695,8 @@
       })
       .then(function(csvText) {
         allFunds = parseCSV(csvText);
-
-        // Sort by NAV % descending (best first)
-        allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
-
         document.getElementById('nantisLoading').style.display = 'none';
-        renderTable(allFunds);
+        applyFilters();
 
         document.getElementById('nantisLastUpdated').textContent =
           'Data loaded: ' + new Date().toLocaleString();
@@ -561,23 +714,24 @@
   // Demo data so you can preview the table before connecting your spreadsheet
   function showDemoData() {
     allFunds = [
-      { 'Fund Name': 'ABC Flow-Through 2024 LP', '% of NAV': '112.45', 'NAV ($)': '11245.00', 'Inception Date': '2024-02-15', 'Redemption Date': '2026-02-15', 'Liquidity Type': 'Cash' },
-      { 'Fund Name': 'XYZ Resource Flow-Through Fund', '% of NAV': '105.30', 'NAV ($)': '10530.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Mutual Fund Shares' },
-      { 'Fund Name': 'Maple Mining Flow-Through LP', '% of NAV': '98.20', 'NAV ($)': '9820.00', 'Inception Date': '2024-01-10', 'Redemption Date': '2026-01-10', 'Liquidity Type': 'Cash' },
-      { 'Fund Name': 'Northern Exploration FT Fund', '% of NAV': '95.80', 'NAV ($)': '9580.00', 'Inception Date': '2024-04-01', 'Redemption Date': '2026-04-01', 'Liquidity Type': 'Mutual Fund Shares' },
-      { 'Fund Name': 'Green Energy Flow-Through LP', '% of NAV': '91.50', 'NAV ($)': '9150.00', 'Inception Date': '2024-06-15', 'Redemption Date': '2026-06-15', 'Liquidity Type': 'Cash' },
-      { 'Fund Name': 'Pacific Resources FT Fund', '% of NAV': '88.10', 'NAV ($)': '8810.00', 'Inception Date': '2024-05-20', 'Redemption Date': '2026-05-20', 'Liquidity Type': 'Mutual Fund Shares' },
+      { 'Fund Name': 'Nantis Flow-Through 2024 LP', 'Category': 'Both', '% of NAV (A)': '112.45', 'NAV $ (A)': '11245.00', '% of NAV (F)': '112.45', 'NAV $ (F)': '11245.00', 'Inception Date': '2024-02-15', 'Redemption Date': '2026-02-15', 'Liquidity Type': 'Cash', 'Is Nantis': 'Yes' },
+      { 'Fund Name': 'ABC Flow-Through 2024 LP', 'Category': 'National', '% of NAV (A)': '108.30', 'NAV $ (A)': '10830.00', '% of NAV (F)': '109.50', 'NAV $ (F)': '10950.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Mutual Fund Shares', 'Is Nantis': 'No' },
+      { 'Fund Name': 'XYZ Resource Flow-Through Fund', 'Category': 'National', '% of NAV (A)': '105.30', 'NAV $ (A)': '10530.00', '% of NAV (F)': '106.80', 'NAV $ (F)': '10680.00', 'Inception Date': '2024-03-01', 'Redemption Date': '2026-03-01', 'Liquidity Type': 'Mutual Fund Shares', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Maple Mining Flow-Through LP', 'Category': 'Quebec', '% of NAV (A)': '98.20', 'NAV $ (A)': '9820.00', '% of NAV (F)': '99.40', 'NAV $ (F)': '9940.00', 'Inception Date': '2024-01-10', 'Redemption Date': '2026-01-10', 'Liquidity Type': 'Cash', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Northern Exploration FT Fund', 'Category': 'National', '% of NAV (A)': '95.80', 'NAV $ (A)': '9580.00', '% of NAV (F)': '96.90', 'NAV $ (F)': '9690.00', 'Inception Date': '2024-04-01', 'Redemption Date': '2026-04-01', 'Liquidity Type': 'Mutual Fund Shares', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Green Energy Flow-Through LP', 'Category': 'Quebec', '% of NAV (A)': '91.50', 'NAV $ (A)': '9150.00', '% of NAV (F)': '92.70', 'NAV $ (F)': '9270.00', 'Inception Date': '2024-06-15', 'Redemption Date': '2026-06-15', 'Liquidity Type': 'Cash', 'Is Nantis': 'No' },
+      { 'Fund Name': 'Pacific Resources FT Fund', 'Category': 'Both', '% of NAV (A)': '88.10', 'NAV $ (A)': '8810.00', '% of NAV (F)': '89.30', 'NAV $ (F)': '8930.00', 'Inception Date': '2024-05-20', 'Redemption Date': '2026-05-20', 'Liquidity Type': 'Mutual Fund Shares', 'Is Nantis': 'No' },
     ];
 
-    allFunds = sortFunds(allFunds, NAV_COLUMN_KEY, 'desc');
     document.getElementById('nantisLoading').style.display = 'none';
-    renderTable(allFunds);
+    applyFilters();
     document.getElementById('nantisLastUpdated').textContent =
       'Showing demo data \u2014 connect your Excel or Google Sheet to see real data.';
   }
 
   // Event listeners
   document.getElementById('nantisSearch').addEventListener('input', applyFilters);
+  setupToggles();
 
   // Auto-refresh every 5 minutes (300000ms)
   setInterval(loadData, 300000);
