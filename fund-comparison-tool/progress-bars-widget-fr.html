@@ -1,0 +1,435 @@
+<!--
+  BARRES DE PROGRESSION NANTIS - CATÉGORIE A / CATÉGORIE F
+  =========================================================
+  Collez ce code dans un widget « Custom HTML » d'Elementor sur WordPress.
+
+  FONCTIONNEMENT :
+  1. Vous entrez 2 valeurs dans votre fichier Google Sheets / CSV :
+     - Montant levé ($)
+     - Valeur nette actuelle du portefeuille ($)
+  2. Le widget calcule automatiquement :
+     - Catégorie A % = Montant levé / Valeur nette × 100
+     - Catégorie F % = Catégorie A × 0,9475
+  3. Les barres se remplissent jusqu'à 100 %. Toute surperformance
+     au-delà de 100 % s'affiche en badge lumineux à côté de la barre.
+-->
+
+<style>
+  .nantis-progress-widget-fr {
+    font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #08111e;
+    border-radius: 12px;
+    color: #e8f2fc;
+  }
+
+  .nantis-progress-widget-fr .pw-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .nantis-progress-widget-fr .pw-header h2 {
+    font-size: 24px;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+  }
+
+  .nantis-progress-widget-fr .pw-header p {
+    font-size: 13px;
+    color: #8aaccb;
+    margin: 0;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-section {
+    margin-bottom: 28px;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00c9d4;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-track {
+    flex: 1;
+    height: 44px;
+    background: #0f1e32;
+    border-radius: 8px;
+    border: 1px solid #1e3050;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-fill {
+    height: 100%;
+    border-radius: 7px;
+    position: relative;
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 0;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-fill.class-a {
+    background: linear-gradient(90deg, #006d75 0%, #00c9d4 100%);
+  }
+
+  .nantis-progress-widget-fr .pw-bar-fill.class-f {
+    background: linear-gradient(90deg, #0a4a7a 0%, #00AEEF 100%);
+  }
+
+  .nantis-progress-widget-fr .pw-bar-fill.full-bar {
+    box-shadow: 0 0 12px rgba(0, 201, 212, 0.3);
+  }
+
+  .nantis-progress-widget-fr .pw-bar-values {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .nantis-progress-widget-fr .pw-val-dollar {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+  }
+
+  .nantis-progress-widget-fr .pw-val-percent {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+  }
+
+  .nantis-progress-widget-fr .pw-bar-values-outside .pw-val-dollar,
+  .nantis-progress-widget-fr .pw-bar-values-outside .pw-val-percent {
+    color: #8aaccb;
+    text-shadow: none;
+  }
+
+  .nantis-progress-widget-fr .pw-over-badge {
+    display: none;
+    align-items: center;
+    padding: 6px 14px;
+    background: rgba(34, 201, 122, 0.15);
+    border: 1px solid rgba(34, 201, 122, 0.4);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #22c97a;
+    white-space: nowrap;
+    animation: nantis-pulse-fr 2s ease-in-out infinite;
+  }
+
+  .nantis-progress-widget-fr .pw-over-badge.visible {
+    display: flex;
+  }
+
+  @keyframes nantis-pulse-fr {
+    0%, 100% { box-shadow: 0 0 6px rgba(34, 201, 122, 0.2); }
+    50% { box-shadow: 0 0 14px rgba(34, 201, 122, 0.4); }
+  }
+
+  .nantis-progress-widget-fr .pw-scale {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0 0 0;
+  }
+
+  .nantis-progress-widget-fr .pw-scale-mark {
+    font-size: 10px;
+    color: #4d6e8a;
+    position: relative;
+  }
+
+  .nantis-progress-widget-fr .pw-scale-mark::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 4px;
+    background: #1e3050;
+  }
+
+  .nantis-progress-widget-fr .pw-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8aaccb;
+  }
+
+  .nantis-progress-widget-fr .pw-loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #1e3050;
+    border-top: 3px solid #00c9d4;
+    border-radius: 50%;
+    animation: nantis-spin-pw-fr 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  @keyframes nantis-spin-pw-fr {
+    to { transform: rotate(360deg); }
+  }
+
+  .nantis-progress-widget-fr .pw-error {
+    text-align: center;
+    padding: 20px;
+    color: #e84040;
+    background: rgba(232, 64, 64, 0.1);
+    border: 1px solid rgba(232, 64, 64, 0.3);
+    border-radius: 8px;
+    font-size: 13px;
+    display: none;
+  }
+
+  .nantis-progress-widget-fr .pw-disclaimer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #4d6e8a;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .nantis-progress-widget-fr .pw-last-updated {
+    text-align: right;
+    font-size: 11px;
+    color: #4d6e8a;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 600px) {
+    .nantis-progress-widget-fr { padding: 20px 16px; }
+    .nantis-progress-widget-fr .pw-bar-track { height: 38px; }
+    .nantis-progress-widget-fr .pw-val-dollar,
+    .nantis-progress-widget-fr .pw-val-percent { font-size: 13px; }
+    .nantis-progress-widget-fr .pw-over-badge { font-size: 12px; padding: 4px 10px; }
+  }
+</style>
+
+<div class="nantis-progress-widget-fr" id="nantisProgressWidgetFr">
+  <div class="pw-header">
+    <h2>Performance du fonds 2025</h2>
+    <p>Catégorie A &amp; Catégorie F — VAN par 100 $ investis</p>
+  </div>
+
+  <div class="pw-loading" id="nantisPwLoadingFr">
+    <div class="pw-loading-spinner"></div>
+    <p>Chargement des données...</p>
+  </div>
+
+  <div id="nantisPwContentFr" style="display:none;">
+    <!-- Barre Catégorie A -->
+    <div class="pw-bar-section">
+      <div class="pw-bar-label">Catégorie A</div>
+      <div class="pw-bar-wrapper">
+        <div class="pw-bar-track">
+          <div class="pw-bar-fill class-a" id="nantisPwFillAFr" style="width:0%"></div>
+          <div class="pw-bar-values" id="nantisPwValsAFr">
+            <span class="pw-val-dollar" id="nantisPwDollarAFr"></span>
+            <span class="pw-val-percent" id="nantisPwPercentAFr"></span>
+          </div>
+        </div>
+        <div class="pw-over-badge" id="nantisPwOverAFr"></div>
+      </div>
+      <div class="pw-scale">
+        <span class="pw-scale-mark">0 %</span>
+        <span class="pw-scale-mark">25 %</span>
+        <span class="pw-scale-mark">50 %</span>
+        <span class="pw-scale-mark">75 %</span>
+        <span class="pw-scale-mark">100 %</span>
+      </div>
+    </div>
+
+    <!-- Barre Catégorie F -->
+    <div class="pw-bar-section">
+      <div class="pw-bar-label">Catégorie F</div>
+      <div class="pw-bar-wrapper">
+        <div class="pw-bar-track">
+          <div class="pw-bar-fill class-f" id="nantisPwFillFFr" style="width:0%"></div>
+          <div class="pw-bar-values" id="nantisPwValsFFr">
+            <span class="pw-val-dollar" id="nantisPwDollarFFr"></span>
+            <span class="pw-val-percent" id="nantisPwPercentFFr"></span>
+          </div>
+        </div>
+        <div class="pw-over-badge" id="nantisPwOverFFr"></div>
+      </div>
+      <div class="pw-scale">
+        <span class="pw-scale-mark">0 %</span>
+        <span class="pw-scale-mark">25 %</span>
+        <span class="pw-scale-mark">50 %</span>
+        <span class="pw-scale-mark">75 %</span>
+        <span class="pw-scale-mark">100 %</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pw-error" id="nantisPwErrorFr"></div>
+
+  <div class="pw-disclaimer">
+    Cat. A = Montant levé &divide; Valeur nette actuelle &times; 100 &nbsp;|&nbsp; Cat. F = Cat. A &times; 0,9475
+  </div>
+
+  <div class="pw-last-updated" id="nantisPwUpdatedFr"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // =====================================================================
+  // CONFIGURATION - MODIFIEZ CE LIEN VERS VOTRE FICHIER GOOGLE SHEETS / CSV
+  // =====================================================================
+  //
+  // Votre fichier doit contenir 2 colonnes :
+  //   Money Raised, Current Net Value
+  //
+  // Exemple :  10000000, 9520000
+  //
+  const PW_DATA_URL = 'YOUR_SPREADSHEET_CSV_URL_HERE';
+  //
+  // =====================================================================
+
+  function parseCSVLine(line) {
+    var result = [];
+    var current = '';
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var c = line[i];
+      if (inQuotes) {
+        if (c === '"') { if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; } else { inQuotes = false; } }
+        else { current += c; }
+      } else {
+        if (c === '"') { inQuotes = true; }
+        else if (c === ',') { result.push(current); current = ''; }
+        else { current += c; }
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  function parseNum(s) {
+    if (!s) return NaN;
+    return parseFloat(s.replace(/[$,%\s]/g, ''));
+  }
+
+  function formatDollar(n) {
+    return '$' + n.toLocaleString('fr-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function updateBar(fillId, dollarId, percentId, overId, valsId, dollarVal, pctVal) {
+    var fill = document.getElementById(fillId);
+    var dollarEl = document.getElementById(dollarId);
+    var percentEl = document.getElementById(percentId);
+    var overBadge = document.getElementById(overId);
+    var valsContainer = document.getElementById(valsId);
+
+    var barWidth = Math.min(pctVal, 100);
+    if (barWidth < 0) barWidth = 0;
+
+    dollarEl.textContent = formatDollar(dollarVal);
+    percentEl.textContent = pctVal.toFixed(2) + ' %';
+
+    setTimeout(function() {
+      fill.style.width = barWidth + '%';
+    }, 100);
+
+    if (barWidth < 30) {
+      valsContainer.classList.add('pw-bar-values-outside');
+    } else {
+      valsContainer.classList.remove('pw-bar-values-outside');
+    }
+
+    if (pctVal >= 100) {
+      fill.classList.add('full-bar');
+    } else {
+      fill.classList.remove('full-bar');
+    }
+
+    if (pctVal > 100) {
+      var over = pctVal - 100;
+      overBadge.textContent = '+' + over.toFixed(2) + ' %';
+      overBadge.classList.add('visible');
+    } else {
+      overBadge.classList.remove('visible');
+    }
+  }
+
+  function processData(moneyRaised, netValue) {
+    var classA_pct = (moneyRaised / netValue) * 100;
+    var classA_dollar = classA_pct;
+    var classF_pct = classA_pct * 0.9475;
+    var classF_dollar = classF_pct;
+
+    document.getElementById('nantisPwLoadingFr').style.display = 'none';
+    document.getElementById('nantisPwContentFr').style.display = 'block';
+
+    updateBar('nantisPwFillAFr', 'nantisPwDollarAFr', 'nantisPwPercentAFr', 'nantisPwOverAFr', 'nantisPwValsAFr', classA_dollar, classA_pct);
+    updateBar('nantisPwFillFFr', 'nantisPwDollarFFr', 'nantisPwPercentFFr', 'nantisPwOverFFr', 'nantisPwValsFFr', classF_dollar, classF_pct);
+  }
+
+  function loadData() {
+    if (PW_DATA_URL === 'YOUR_SPREADSHEET_CSV_URL_HERE') {
+      showDemo();
+      return;
+    }
+
+    fetch(PW_DATA_URL)
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(csv) {
+        var lines = csv.trim().split('\n');
+        if (lines.length < 2) throw new Error('Aucune donnée trouvée');
+        var values = parseCSVLine(lines[1]);
+        var moneyRaised = parseNum(values[0]);
+        var netValue = parseNum(values[1]);
+        if (isNaN(moneyRaised) || isNaN(netValue) || netValue === 0) {
+          throw new Error('Valeurs invalides');
+        }
+        processData(moneyRaised, netValue);
+        document.getElementById('nantisPwUpdatedFr').textContent =
+          'Données chargées : ' + new Date().toLocaleString('fr-CA');
+      })
+      .catch(function(err) {
+        document.getElementById('nantisPwLoadingFr').style.display = 'none';
+        var errEl = document.getElementById('nantisPwErrorFr');
+        errEl.style.display = 'block';
+        errEl.innerHTML = '<strong>Impossible de charger les données.</strong><br>Vérifiez le lien du fichier.<br><small>' + err.message + '</small>';
+      });
+  }
+
+  function showDemo() {
+    processData(10500000, 9800000);
+    document.getElementById('nantisPwUpdatedFr').textContent =
+      'Données de démonstration \u2014 connectez votre fichier pour voir les vraies valeurs.';
+  }
+
+  setInterval(loadData, 300000);
+  loadData();
+})();
+</script>

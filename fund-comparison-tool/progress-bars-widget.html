@@ -1,0 +1,477 @@
+<!--
+  NANTIS CLASS A / CLASS F PROGRESS BARS
+  =======================================
+  Paste this into a WordPress Elementor "Custom HTML" widget.
+
+  HOW IT WORKS:
+  1. You enter 2 values in your Google Sheet / CSV:
+     - Money Raised ($)
+     - Current Net Value of Portfolio ($)
+  2. The widget auto-calculates:
+     - Class A % = Money Raised / Current Net Value × 100
+     - Class F % = Class A × 0.9475
+  3. Progress bars fill to 100% (full bar). Any overperformance
+     beyond 100% shows as a glowing badge next to the bar.
+-->
+
+<style>
+  .nantis-progress-widget {
+    font-family: 'DM Sans', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #08111e;
+    border-radius: 12px;
+    color: #e8f2fc;
+  }
+
+  .nantis-progress-widget .pw-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .nantis-progress-widget .pw-header h2 {
+    font-size: 24px;
+    color: #ffffff;
+    margin: 0 0 6px 0;
+    font-weight: 700;
+  }
+
+  .nantis-progress-widget .pw-header p {
+    font-size: 13px;
+    color: #8aaccb;
+    margin: 0;
+  }
+
+  /* Each progress bar section */
+  .nantis-progress-widget .pw-bar-section {
+    margin-bottom: 28px;
+  }
+
+  .nantis-progress-widget .pw-bar-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #00c9d4;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  /* Progress bar container */
+  .nantis-progress-widget .pw-bar-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .nantis-progress-widget .pw-bar-track {
+    flex: 1;
+    height: 44px;
+    background: #0f1e32;
+    border-radius: 8px;
+    border: 1px solid #1e3050;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nantis-progress-widget .pw-bar-fill {
+    height: 100%;
+    border-radius: 7px;
+    position: relative;
+    transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    min-width: 0;
+  }
+
+  /* Class A = teal gradient */
+  .nantis-progress-widget .pw-bar-fill.class-a {
+    background: linear-gradient(90deg, #006d75 0%, #00c9d4 100%);
+  }
+
+  /* Class F = blue gradient */
+  .nantis-progress-widget .pw-bar-fill.class-f {
+    background: linear-gradient(90deg, #0a4a7a 0%, #00AEEF 100%);
+  }
+
+  /* Full bar glow when >= 100% */
+  .nantis-progress-widget .pw-bar-fill.full-bar {
+    box-shadow: 0 0 12px rgba(0, 201, 212, 0.3);
+  }
+
+  /* Values inside the bar */
+  .nantis-progress-widget .pw-bar-values {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .nantis-progress-widget .pw-val-dollar {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+  }
+
+  .nantis-progress-widget .pw-val-percent {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    white-space: nowrap;
+  }
+
+  /* When bar is too narrow, show values outside */
+  .nantis-progress-widget .pw-bar-values-outside {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .nantis-progress-widget .pw-bar-values-outside .pw-val-dollar,
+  .nantis-progress-widget .pw-bar-values-outside .pw-val-percent {
+    color: #8aaccb;
+    text-shadow: none;
+  }
+
+  /* Overperformance badge */
+  .nantis-progress-widget .pw-over-badge {
+    display: none;
+    align-items: center;
+    padding: 6px 14px;
+    background: rgba(34, 201, 122, 0.15);
+    border: 1px solid rgba(34, 201, 122, 0.4);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #22c97a;
+    white-space: nowrap;
+    animation: nantis-pulse 2s ease-in-out infinite;
+  }
+
+  .nantis-progress-widget .pw-over-badge.visible {
+    display: flex;
+  }
+
+  @keyframes nantis-pulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(34, 201, 122, 0.2); }
+    50% { box-shadow: 0 0 14px rgba(34, 201, 122, 0.4); }
+  }
+
+  /* Scale markers */
+  .nantis-progress-widget .pw-scale {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0 0 0;
+    position: relative;
+  }
+
+  .nantis-progress-widget .pw-scale-mark {
+    font-size: 10px;
+    color: #4d6e8a;
+    position: relative;
+  }
+
+  .nantis-progress-widget .pw-scale-mark::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 4px;
+    background: #1e3050;
+  }
+
+  /* Loading / Error */
+  .nantis-progress-widget .pw-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #8aaccb;
+  }
+
+  .nantis-progress-widget .pw-loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #1e3050;
+    border-top: 3px solid #00c9d4;
+    border-radius: 50%;
+    animation: nantis-spin-pw 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  @keyframes nantis-spin-pw {
+    to { transform: rotate(360deg); }
+  }
+
+  .nantis-progress-widget .pw-error {
+    text-align: center;
+    padding: 20px;
+    color: #e84040;
+    background: rgba(232, 64, 64, 0.1);
+    border: 1px solid rgba(232, 64, 64, 0.3);
+    border-radius: 8px;
+    font-size: 13px;
+    display: none;
+  }
+
+  .nantis-progress-widget .pw-disclaimer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: #4d6e8a;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .nantis-progress-widget .pw-last-updated {
+    text-align: right;
+    font-size: 11px;
+    color: #4d6e8a;
+    margin-top: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .nantis-progress-widget { padding: 20px 16px; }
+    .nantis-progress-widget .pw-bar-track { height: 38px; }
+    .nantis-progress-widget .pw-val-dollar,
+    .nantis-progress-widget .pw-val-percent { font-size: 13px; }
+    .nantis-progress-widget .pw-over-badge { font-size: 12px; padding: 4px 10px; }
+  }
+</style>
+
+<div class="nantis-progress-widget" id="nantisProgressWidget">
+  <div class="pw-header">
+    <h2>2025 Fund Performance</h2>
+    <p>Class A &amp; Class F — NAV per $100 invested</p>
+  </div>
+
+  <div class="pw-loading" id="nantisPwLoading">
+    <div class="pw-loading-spinner"></div>
+    <p>Loading performance data...</p>
+  </div>
+
+  <div id="nantisPwContent" style="display:none;">
+    <!-- Class A Progress Bar -->
+    <div class="pw-bar-section">
+      <div class="pw-bar-label">Class A</div>
+      <div class="pw-bar-wrapper">
+        <div class="pw-bar-track">
+          <div class="pw-bar-fill class-a" id="nantisPwFillA" style="width:0%"></div>
+          <div class="pw-bar-values" id="nantisPwValsA">
+            <span class="pw-val-dollar" id="nantisPwDollarA"></span>
+            <span class="pw-val-percent" id="nantisPwPercentA"></span>
+          </div>
+        </div>
+        <div class="pw-over-badge" id="nantisPwOverA"></div>
+      </div>
+      <div class="pw-scale">
+        <span class="pw-scale-mark">0%</span>
+        <span class="pw-scale-mark">25%</span>
+        <span class="pw-scale-mark">50%</span>
+        <span class="pw-scale-mark">75%</span>
+        <span class="pw-scale-mark">100%</span>
+      </div>
+    </div>
+
+    <!-- Class F Progress Bar -->
+    <div class="pw-bar-section">
+      <div class="pw-bar-label">Class F</div>
+      <div class="pw-bar-wrapper">
+        <div class="pw-bar-track">
+          <div class="pw-bar-fill class-f" id="nantisPwFillF" style="width:0%"></div>
+          <div class="pw-bar-values" id="nantisPwValsF">
+            <span class="pw-val-dollar" id="nantisPwDollarF"></span>
+            <span class="pw-val-percent" id="nantisPwPercentF"></span>
+          </div>
+        </div>
+        <div class="pw-over-badge" id="nantisPwOverF"></div>
+      </div>
+      <div class="pw-scale">
+        <span class="pw-scale-mark">0%</span>
+        <span class="pw-scale-mark">25%</span>
+        <span class="pw-scale-mark">50%</span>
+        <span class="pw-scale-mark">75%</span>
+        <span class="pw-scale-mark">100%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pw-error" id="nantisPwError"></div>
+
+  <div class="pw-disclaimer">
+    Class A = Money Raised &divide; Current Net Value &times; 100 &nbsp;|&nbsp; Class F = Class A &times; 0.9475
+  </div>
+
+  <div class="pw-last-updated" id="nantisPwUpdated"></div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // =====================================================================
+  // CONFIGURATION - CHANGE THIS URL TO YOUR GOOGLE SHEET / CSV
+  // =====================================================================
+  //
+  // Your spreadsheet needs just 2 columns:
+  //   Money Raised, Current Net Value
+  //
+  // Example row:  10000000, 9520000
+  //
+  const PW_DATA_URL = 'YOUR_SPREADSHEET_CSV_URL_HERE';
+  //
+  // =====================================================================
+
+  function parseCSVLine(line) {
+    var result = [];
+    var current = '';
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var c = line[i];
+      if (inQuotes) {
+        if (c === '"') { if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; } else { inQuotes = false; } }
+        else { current += c; }
+      } else {
+        if (c === '"') { inQuotes = true; }
+        else if (c === ',') { result.push(current); current = ''; }
+        else { current += c; }
+      }
+    }
+    result.push(current);
+    return result;
+  }
+
+  function parseNum(s) {
+    if (!s) return NaN;
+    return parseFloat(s.replace(/[$,%\s]/g, ''));
+  }
+
+  function formatDollar(n) {
+    return '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function updateBar(fillId, dollarId, percentId, overId, valsId, dollarVal, pctVal, cssClass) {
+    var fill = document.getElementById(fillId);
+    var dollarEl = document.getElementById(dollarId);
+    var percentEl = document.getElementById(percentId);
+    var overBadge = document.getElementById(overId);
+    var valsContainer = document.getElementById(valsId);
+
+    // Cap bar width at 100%
+    var barWidth = Math.min(pctVal, 100);
+    if (barWidth < 0) barWidth = 0;
+
+    // Set values
+    dollarEl.textContent = formatDollar(dollarVal);
+    percentEl.textContent = pctVal.toFixed(2) + '%';
+
+    // Animate bar
+    setTimeout(function() {
+      fill.style.width = barWidth + '%';
+    }, 100);
+
+    // If bar is narrow (< 30%), show values outside the fill (on the track)
+    if (barWidth < 30) {
+      valsContainer.classList.add('pw-bar-values-outside');
+    } else {
+      valsContainer.classList.remove('pw-bar-values-outside');
+    }
+
+    // Full bar glow
+    if (pctVal >= 100) {
+      fill.classList.add('full-bar');
+    } else {
+      fill.classList.remove('full-bar');
+    }
+
+    // Overperformance badge
+    if (pctVal > 100) {
+      var over = pctVal - 100;
+      overBadge.textContent = '+' + over.toFixed(2) + '%';
+      overBadge.classList.add('visible');
+    } else {
+      overBadge.classList.remove('visible');
+    }
+  }
+
+  function processData(moneyRaised, netValue) {
+    // Class A % = Money Raised / Current Net Value × 100
+    var classA_pct = (moneyRaised / netValue) * 100;
+    // Class A $ = dollar value per $100 invested
+    var classA_dollar = classA_pct;
+
+    // Class F % = Class A × 0.9475
+    var classF_pct = classA_pct * 0.9475;
+    var classF_dollar = classF_pct;
+
+    document.getElementById('nantisPwLoading').style.display = 'none';
+    document.getElementById('nantisPwContent').style.display = 'block';
+
+    updateBar('nantisPwFillA', 'nantisPwDollarA', 'nantisPwPercentA', 'nantisPwOverA', 'nantisPwValsA', classA_dollar, classA_pct, 'class-a');
+    updateBar('nantisPwFillF', 'nantisPwDollarF', 'nantisPwPercentF', 'nantisPwOverF', 'nantisPwValsF', classF_dollar, classF_pct, 'class-f');
+  }
+
+  function loadData() {
+    if (PW_DATA_URL === 'YOUR_SPREADSHEET_CSV_URL_HERE') {
+      showDemo();
+      return;
+    }
+
+    fetch(PW_DATA_URL)
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(csv) {
+        var lines = csv.trim().split('\n');
+        if (lines.length < 2) throw new Error('No data rows found');
+        var values = parseCSVLine(lines[1]);
+        var moneyRaised = parseNum(values[0]);
+        var netValue = parseNum(values[1]);
+        if (isNaN(moneyRaised) || isNaN(netValue) || netValue === 0) {
+          throw new Error('Invalid data values');
+        }
+        processData(moneyRaised, netValue);
+        document.getElementById('nantisPwUpdated').textContent =
+          'Data loaded: ' + new Date().toLocaleString();
+      })
+      .catch(function(err) {
+        document.getElementById('nantisPwLoading').style.display = 'none';
+        var errEl = document.getElementById('nantisPwError');
+        errEl.style.display = 'block';
+        errEl.innerHTML = '<strong>Unable to load data.</strong><br>Check the spreadsheet URL.<br><small>' + err.message + '</small>';
+      });
+  }
+
+  function showDemo() {
+    // Demo: Money Raised = $10,500,000, Net Value = $9,800,000
+    // Class A = 10500000 / 9800000 * 100 = 107.14%
+    // Class F = 107.14 * 0.9475 = 101.52%
+    processData(10500000, 9800000);
+    document.getElementById('nantisPwUpdated').textContent =
+      'Showing demo data \u2014 connect your spreadsheet to see real values.';
+  }
+
+  // Auto-refresh every 5 minutes
+  setInterval(loadData, 300000);
+
+  // Initial load
+  loadData();
+})();
+</script>
