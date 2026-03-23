@@ -207,6 +207,23 @@
     background: rgba(0, 201, 212, 0.14);
   }
 
+  /* Logo Nantis à côté du nom du fonds */
+  .nantis-fund-tool-fr .nantis-logo-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nantis-fund-tool-fr .nantis-logo-name svg {
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 4px rgba(0, 174, 239, 0.4));
+  }
+
+  .nantis-fund-tool-fr .nantis-logo-name span {
+    font-weight: 700;
+    color: #00c9d4;
+  }
+
   .nantis-fund-tool-fr tbody td {
     padding: 12px 16px;
     vertical-align: middle;
@@ -604,7 +621,17 @@
             break;
 
           default:
-            td.textContent = value;
+            // Afficher le logo à côté du nom du fonds Nantis
+            if (col.key === 'Fund Name' && isNantis(fund)) {
+              td.innerHTML = '<span class="nantis-logo-name">' +
+                '<svg width="22" height="28" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">' +
+                '<path d="M50 0 C50 0 50 25 50 40 C50 55 65 60 75 50 C85 40 95 45 95 55 C95 65 85 75 70 70 C60 67 55 72 50 80 C45 72 40 67 30 70 C15 75 5 65 5 55 C5 45 15 40 25 50 C35 60 50 55 50 40 C50 25 50 0 50 0 Z" fill="#00AEEF"/>' +
+                '<ellipse cx="50" cy="118" rx="10" ry="12" fill="#00AEEF"/>' +
+                '</svg>' +
+                '<span>' + value + '</span></span>';
+            } else {
+              td.textContent = value;
+            }
         }
 
         tr.appendChild(td);
