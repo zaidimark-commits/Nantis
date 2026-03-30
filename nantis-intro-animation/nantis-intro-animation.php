@@ -46,7 +46,7 @@ function nantis_intro_render() {
 
     <!-- Logo -->
     <img id="nxi-logo" src="<?php echo esc_url( plugins_url( 'logo.png', __FILE__ ) ); ?>" alt="NANTIS"
-         style="width:120px;height:auto;filter:drop-shadow(0 0 20px rgba(0,168,232,.5))">
+         style="width:120px;height:auto;background:#000;filter:drop-shadow(0 0 20px rgba(0,168,232,.5))">
 
     <!-- Accent line -->
     <div id="nxi-line" style="height:2px;background:#00a8e8;border-radius:2px"></div>
