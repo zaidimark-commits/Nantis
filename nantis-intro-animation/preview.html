@@ -3,112 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NANTIS Intro Preview</title>
+<title>NANTIS Intro v8.0 Preview</title>
 <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #111; font-family: sans-serif; }
-  @keyframes nxiGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
-  @keyframes nxiPulse{0%,100%{opacity:.35}50%{opacity:.7}}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#111; font-family:sans-serif; }
+
+/* Logo pop-in */
+#nxi-logo { animation: nxPopIn .7s cubic-bezier(.34,1.56,.64,1) .2s both; }
+@keyframes nxPopIn {
+  from { opacity:0; transform:scale(.4) translateY(20px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+
+/* Accent line grow */
+#nxi-line { animation: nxLineGrow .7s ease .7s both; }
+@keyframes nxLineGrow { from{width:0} to{width:200px} }
+
+/* Name & subtitle fade-up */
+#nxi-name { animation: nxFadeUp .6s ease 1s both; }
+#nxi-sub  { animation: nxFadeUp .6s ease 1.3s both; }
+@keyframes nxFadeUp {
+  from { opacity:0; transform:translateY(14px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* Progress bar fill */
+#nxi-bar { animation: nxBarFill 3s linear 1.5s both; }
+@keyframes nxBarFill { from{width:0%} to{width:100%} }
+
+/* Percentage fade-out */
+#nxi-pct { animation: nxPctFade .4s ease 4.5s both; }
+@keyframes nxPctFade { from{opacity:1} to{opacity:0} }
+
+/* Loading text pulse */
+#nxi-load { animation: nxLoadAppear .3s ease 4.5s both, nxPulse 1.5s ease-in-out 4.8s infinite; }
+@keyframes nxLoadAppear { from{opacity:0} to{opacity:.5} }
+@keyframes nxPulse { 0%,100%{opacity:.35} 50%{opacity:.7} }
+
+/* Motto glow */
+#nxi-motto { animation: nxGlow 2.5s ease-in-out 2s infinite; }
+@keyframes nxGlow {
+  0%,100% { color:#00a8e8; text-shadow:0 0 10px rgba(0,168,232,.3); }
+  50%     { color:#33bcf5; text-shadow:0 0 30px rgba(0,168,232,.8); }
+}
+
+/* EXIT: main content fades out at 8.5s */
+#nxi-main { animation: nxMainOut .6s ease 8.5s both; }
+@keyframes nxMainOut { from{opacity:1} to{opacity:0;visibility:hidden} }
+
+/* EXIT: footer border gone at 8.5s */
+#nxi-footer { animation: nxBorderOut .3s ease 8.5s both; }
+@keyframes nxBorderOut { from{border-top-color:rgba(0,168,232,.15)} to{border-top-color:transparent} }
+
+/* Motto enlarge */
+@keyframes nxMottoGrow {
+  0%  {font-size:1.5rem;letter-spacing:.12em}
+  100%{font-size:2.8rem;letter-spacing:.25em}
+}
+
+/* EXIT: overlay fades out at 11.7s */
+#nxi { animation: nxOverlayOut 1s ease 11.7s both; }
+@keyframes nxOverlayOut { from{opacity:1} to{opacity:0} }
 </style>
 </head>
 <body>
 
-<!-- Simulated page behind the overlay -->
-<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;font-size:2rem;font-family:sans-serif;text-align:center;padding:20px">
-  www.nantis.ca homepage content appears here after intro
+<!-- Simulated page behind overlay -->
+<div style="display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;font-size:1.5rem;text-align:center;padding:20px">
+  www.nantis.ca homepage appears here after intro fades out
 </div>
 
-<!-- NANTIS Intro v7.0 Preview -->
-<div id="nxi" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:1;box-sizing:border-box;overflow:hidden">
+<!-- NANTIS Intro v8.0 -->
+<div id="nxi" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden">
 
-  <!-- Main content -->
-  <div id="nxi-main" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:14px;padding:30px 20px 16px;opacity:1">
+  <div id="nxi-main" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:14px;padding:30px 20px 16px">
 
-    <!-- Logo: using inline SVG placeholder since logo.png isn't available in preview -->
-    <div id="nxi-logo" style="width:120px;height:120px;opacity:0;transform:scale(.4) translateY(20px);filter:drop-shadow(0 0 20px rgba(0,168,232,.5))">
+    <!-- Placeholder logo (replace with your logo.png in production) -->
+    <div id="nxi-logo" style="width:120px;height:120px;filter:drop-shadow(0 0 20px rgba(0,168,232,.5))">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="120" height="120">
-        <defs>
-          <linearGradient id="fg" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#33bcf5"/>
-            <stop offset="100%" stop-color="#0099dd"/>
-          </linearGradient>
-        </defs>
-        <!-- Fleur-de-lis approximation -->
-        <path fill="url(#fg)" d="
-          M256,40 C256,40 272,100 272,150 C272,185 264,210 256,230
-          C248,210 240,185 240,150 C240,100 256,40 256,40 Z
-
-          M256,230 C275,245 305,255 340,248 C370,240 392,218 400,195
-          C400,195 382,220 350,228 C322,234 298,225 275,210 Z
-
-          M256,230 C237,245 207,255 172,248 C142,240 120,218 112,195
-          C112,195 130,220 162,228 C190,234 214,225 237,210 Z
-
-          M400,195 C415,165 410,130 390,110 C370,90 342,88 325,100
-          C325,100 352,90 372,108 C392,126 398,158 390,182 Z
-
-          M112,195 C97,165 102,130 122,110 C142,90 170,88 187,100
-          C187,100 160,90 140,108 C120,126 114,158 122,182 Z
-
-          M256,380 C256,380 270,420 270,440 C270,458 264,468 256,468
-          C248,468 242,458 242,440 C242,420 256,380 256,380 Z
-
-          M248,230 L248,380 L264,380 L264,230 Z
-        "/>
+        <defs><linearGradient id="fg" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#33bcf5"/><stop offset="100%" stop-color="#0099dd"/></linearGradient></defs>
+        <path fill="url(#fg)" d="M256,40 C256,40 272,100 272,150 C272,185 264,210 256,230 C248,210 240,185 240,150 C240,100 256,40 256,40Z M256,230 C275,245 305,255 340,248 C370,240 392,218 400,195 C400,195 382,220 350,228 C322,234 298,225 275,210Z M256,230 C237,245 207,255 172,248 C142,240 120,218 112,195 C112,195 130,220 162,228 C190,234 214,225 237,210Z M400,195 C415,165 410,130 390,110 C370,90 342,88 325,100 C325,100 352,90 372,108 C392,126 398,158 390,182Z M112,195 C97,165 102,130 122,110 C142,90 170,88 187,100 C187,100 160,90 140,108 C120,126 114,158 122,182Z M256,380 C256,380 270,420 270,440 C270,458 264,468 256,468 C248,468 242,458 242,440 C242,420 256,380 256,380Z M248,230L248,380L264,380L264,230Z"/>
       </svg>
     </div>
 
-    <!-- Accent line -->
-    <div id="nxi-line" style="width:0;height:2px;background:#00a8e8;border-radius:2px"></div>
+    <div id="nxi-line" style="height:2px;background:#00a8e8;border-radius:2px"></div>
+    <span id="nxi-name" style="color:#f0f2f5;font-size:2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif">NANTIS</span>
+    <span id="nxi-sub" style="color:rgba(240,242,245,.6);font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif">Asset Management Inc.</span>
 
-    <!-- Company name -->
-    <span id="nxi-name" style="color:#f0f2f5;font-size:2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;opacity:0;transform:translateY(14px)">NANTIS</span>
-
-    <!-- Subtitle -->
-    <span id="nxi-sub" style="color:rgba(240,242,245,.6);font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;opacity:0;transform:translateY(14px)">Asset Management Inc.</span>
-
-    <!-- Progress bar -->
     <div style="width:200px;margin-top:6px">
       <div style="width:100%;height:2px;background:rgba(0,168,232,.15);border-radius:2px">
-        <div id="nxi-bar" style="width:0%;height:2px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8)"></div>
+        <div id="nxi-bar" style="height:2px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8)"></div>
       </div>
     </div>
     <span id="nxi-pct" style="color:#00a8e8;font-size:.6rem;letter-spacing:.15em;font-family:sans-serif">0%</span>
-
-    <!-- Loading text -->
-    <span id="nxi-load" style="color:rgba(240,242,245,.35);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;opacity:0">Loading data...</span>
-
-    <!-- Location -->
+    <span id="nxi-load" style="color:rgba(240,242,245,.35);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif">Loading data...</span>
     <span style="color:rgba(240,242,245,.2);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:2px">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
-
-    <!-- Weather -->
-    <span id="nxi-weather" style="color:rgba(240,242,245,.6);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;opacity:0"></span>
+    <span id="nxi-weather" style="color:rgba(240,242,245,.6);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;opacity:0;transition:opacity .5s"></span>
   </div>
 
-  <!-- Footer: NAV bars + motto -->
   <div id="nxi-footer" style="width:100%;padding:20px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:10px;border-top:1px solid rgba(0,168,232,.15)">
-
     <div style="width:100%;max-width:320px;margin-bottom:10px">
       <div style="color:rgba(240,242,245,.5);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-bottom:10px">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
-
-      <!-- Class A bar -->
       <div style="margin-bottom:8px">
         <div style="color:#00c9d4;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:4px">Class A</div>
         <div style="width:100%;height:18px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden">
-          <div id="nxi-fill-a" style="height:100%;width:0%;background:linear-gradient(90deg,#006d75,#00c9d4);border-radius:4px"></div>
+          <div id="nxi-fill-a" style="height:100%;width:0%;background:linear-gradient(90deg,#006d75,#00c9d4);border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)"></div>
           <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px">
             <span id="nxi-val-a" style="font-size:.6rem;color:#fff;font-family:sans-serif;font-weight:700"></span>
             <span id="nxi-pval-a" style="font-size:.6rem;color:#fff;font-family:sans-serif;font-weight:700"></span>
           </div>
         </div>
       </div>
-
-      <!-- Class F bar -->
       <div>
         <div style="color:#00AEEF;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:4px">Class F</div>
         <div style="width:100%;height:18px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden">
-          <div id="nxi-fill-f" style="height:100%;width:0%;background:linear-gradient(90deg,#0a4a7a,#00AEEF);border-radius:4px"></div>
+          <div id="nxi-fill-f" style="height:100%;width:0%;background:linear-gradient(90deg,#0a4a7a,#00AEEF);border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)"></div>
           <div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px">
             <span id="nxi-val-f" style="font-size:.6rem;color:#fff;font-family:sans-serif;font-weight:700"></span>
             <span id="nxi-pval-f" style="font-size:.6rem;color:#fff;font-family:sans-serif;font-weight:700"></span>
@@ -116,8 +126,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Motto -->
     <span id="nxi-motto" style="color:#00a8e8;font-size:1.5rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif">THINK OUTSIDE THE BOX<sup style="font-size:.4em;vertical-align:super;letter-spacing:0">&trade;</sup></span>
   </div>
 </div>
@@ -127,132 +135,67 @@
   var O=document.getElementById('nxi');
   if(!O)return;
 
-  var M=document.getElementById('nxi-main'),
-      F=document.getElementById('nxi-footer'),
-      logo=document.getElementById('nxi-logo'),
-      line=document.getElementById('nxi-line'),
-      nm=document.getElementById('nxi-name'),
-      sub=document.getElementById('nxi-sub'),
-      bar=document.getElementById('nxi-bar'),
-      pct=document.getElementById('nxi-pct'),
-      ld=document.getElementById('nxi-load'),
-      motto=document.getElementById('nxi-motto');
-
-  function anim(el,tr,props,ms){
-    setTimeout(function(){
-      el.style.transition=tr;
-      for(var k in props)el.style[k]=props[k];
-    },ms);
+  /* Percentage counter text (cosmetic — bar fills via CSS regardless) */
+  var pctEl=document.getElementById('nxi-pct');
+  var barStart=null,barDelay=1500,barDur=3000;
+  function updatePct(ts){
+    if(!barStart)barStart=ts;
+    var elapsed=ts-barStart-barDelay;
+    if(elapsed<0){requestAnimationFrame(updatePct);return;}
+    var p=Math.min(elapsed/barDur*100,100);
+    if(pctEl)pctEl.textContent=Math.round(p)+'%';
+    if(p<100)requestAnimationFrame(updatePct);
   }
+  requestAnimationFrame(updatePct);
 
-  /* Entrance sequence */
-  anim(logo,'.7s cubic-bezier(.34,1.56,.64,1)',{opacity:'1',transform:'scale(1) translateY(0)'},200);
-  anim(line,'.7s ease',{width:'200px'},700);
-  anim(nm,'.6s ease',{opacity:'1',transform:'translateY(0)'},1000);
-  anim(sub,'.6s ease',{opacity:'1',transform:'translateY(0)'},1300);
+  /* Motto enlarge at 9.2s */
+  var motto=document.getElementById('nxi-motto');
+  setTimeout(function(){
+    if(motto)motto.style.animation='nxMottoGrow .8s ease forwards, nxGlow 2.5s ease-in-out infinite';
+  },9200);
 
-  /* Progress bar */
-  var prog=0,barDur=3000,tick=50;
-  var bTimer=setInterval(function(){
-    prog+=tick/barDur*100;
-    if(prog>=100){
-      prog=100;
-      clearInterval(bTimer);
-      pct.style.transition='opacity .4s';
-      pct.style.opacity='0';
-      ld.style.transition='opacity .5s';
-      ld.style.opacity='1';
-      ld.style.animation='nxiPulse 1.5s ease-in-out infinite';
+  /* Remove overlay from DOM when CSS fade-out animation ends */
+  O.addEventListener('animationend',function(e){
+    if(e.animationName==='nxOverlayOut'){
+      if(O.parentNode)O.parentNode.removeChild(O);
     }
-    bar.style.width=Math.round(prog)+'%';
-    pct.textContent=Math.round(prog)+'%';
-  },tick);
-
-  /* Motto glow */
-  setTimeout(function(){motto.style.animation='nxiGlow 2.5s ease-in-out infinite';},2000);
-
-  /* Exit logic */
-  var done=false;
-  function exit(){
-    if(done)return;
-    done=true;
-    clearInterval(bTimer);
-
-    M.style.transition='opacity .6s ease';
-    M.style.opacity='0';
-    F.style.borderTop='none';
-
-    setTimeout(function(){
-      M.style.display='none';
-      motto.style.transition='font-size .8s ease,letter-spacing .8s ease';
-      motto.style.fontSize='2.8rem';
-      motto.style.letterSpacing='.25em';
-
-      setTimeout(function(){
-        O.style.transition='opacity 1s ease';
-        O.style.opacity='0';
-        setTimeout(function(){
-          if(O.parentNode)O.parentNode.removeChild(O);
-        },1100);
-      },2500);
-    },650);
-  }
-
-  /* Hard timeout */
-  var deadline=Date.now()+12000;
-  setTimeout(exit,12000);
-  var guardian=setInterval(function(){
-    if(Date.now()>=deadline){clearInterval(guardian);exit();}
-  },500);
+  });
 
   /* Tap/click to skip */
-  O.addEventListener('click',function(){exit();});
-  O.addEventListener('touchend',function(){exit();});
+  function skip(){
+    O.style.animation='none';
+    O.style.transition='opacity .8s ease';
+    O.style.opacity='0';
+    setTimeout(function(){if(O.parentNode)O.parentNode.removeChild(O);},900);
+  }
+  O.addEventListener('click',skip);
+  O.addEventListener('touchend',skip);
 
   /* NAV data fetch */
   var CSV='https://docs.google.com/spreadsheets/d/e/2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms/pub?output=csv';
-
   function pn(s){return s?parseFloat(s.replace(/[$,%\s]/g,'')):NaN;}
   function fm(n){return '$'+n.toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});}
-
-  function navBar(fId,dId,pId,dv,pv,delay){
-    setTimeout(function(){
-      var fl=document.getElementById(fId),
-          de=document.getElementById(dId),
-          pe=document.getElementById(pId);
-      if(!fl||!de||!pe)return;
-      fl.style.transition='width 1.8s cubic-bezier(.22,1,.36,1)';
-      fl.style.width=Math.min(pv,100)+'%';
-      var el=0,dur=1800,t=30;
-      var c=setInterval(function(){
-        el+=t;
-        var p=Math.min(el/dur,1),v=1-Math.pow(1-p,3);
-        de.textContent=fm(dv*v);
-        pe.textContent=(pv*v).toFixed(2)+'%';
-        if(p>=1)clearInterval(c);
-      },t);
-    },delay);
+  function navBar(fId,dId,pId,dv,pv){
+    var fl=document.getElementById(fId),de=document.getElementById(dId),pe=document.getElementById(pId);
+    if(!fl||!de||!pe)return;
+    fl.style.width=Math.min(pv,100)+'%';
+    de.textContent=fm(dv);
+    pe.textContent=pv.toFixed(2)+'%';
   }
-
   var ctrl=typeof AbortController!=='undefined'?new AbortController():null;
-  var fetchOpts=ctrl?{signal:ctrl.signal}:{};
-  var fetchTimeout=setTimeout(function(){if(ctrl)ctrl.abort();},6000);
-
-  fetch('https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(CSV),fetchOpts)
+  var fo=ctrl?{signal:ctrl.signal}:{};
+  var at=setTimeout(function(){if(ctrl)ctrl.abort();},5000);
+  fetch('https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(CSV),fo)
     .then(function(r){return r.text();})
     .then(function(t){
-      clearTimeout(fetchTimeout);
-      var lines=t.trim().split('\n');
-      if(lines.length<2)return;
-      var v=lines[1].split(',');
-      var raised=pn(v[0]),net=pn(v[1]);
+      clearTimeout(at);
+      var lines=t.trim().split('\n');if(lines.length<2)return;
+      var v=lines[1].split(',');var raised=pn(v[0]),net=pn(v[1]);
       if(isNaN(raised)||isNaN(net)||net===0)return;
       var cF=(net/raised)*100,cA=cF*0.9475;
-      navBar('nxi-fill-a','nxi-val-a','nxi-pval-a',cA,cA,300);
-      navBar('nxi-fill-f','nxi-val-f','nxi-pval-f',cF,cF,600);
-      setTimeout(exit,5300);
-    })
-    .catch(function(){clearTimeout(fetchTimeout);});
+      navBar('nxi-fill-a','nxi-val-a','nxi-pval-a',cA,cA);
+      navBar('nxi-fill-f','nxi-val-f','nxi-pval-f',cF,cF);
+    }).catch(function(){clearTimeout(at);});
 
   /* Weather */
   fetch('https://ipapi.co/json/')
@@ -263,15 +206,9 @@
         .then(function(r){return r.json();})
         .then(function(w){
           var el=document.getElementById('nxi-weather');
-          if(el){
-            el.textContent=d.city+'  |  '+Math.round(w.current_weather.temperature)+'\u00B0C';
-            el.style.transition='opacity .5s';
-            el.style.opacity='1';
-          }
+          if(el){el.textContent=d.city+'  |  '+Math.round(w.current_weather.temperature)+'\u00B0C';el.style.opacity='1';}
         });
-    })
-    .catch(function(){});
-
+    }).catch(function(){});
 })();
 </script>
 </body>
