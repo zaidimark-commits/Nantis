@@ -84,8 +84,8 @@ function nantis_intro_html() {
     if ( ! is_front_page() ) return;
     if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
 ?>
-<div id="nxi">
-  <div id="nxi-s1">
+<div id="nxi" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center">
+  <div id="nxi-s1" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0">
     <img id="nxi-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="NANTIS">
     <div id="nxi-line"></div>
     <span class="nxi-title">NANTIS</span>
