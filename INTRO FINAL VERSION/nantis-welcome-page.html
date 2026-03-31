@@ -1,82 +1,46 @@
-<?php
-/**
- * Plugin Name: Nantis Intro Animation
- * Description: Welcome page intro for nantis.ca — intercepts ALL first-time visitors, bypasses LiteSpeed Cache
- * Version: 3.0
- * Author: Nantis Capital
- *
- * INSTALLATION:
- *   1. Upload this file to: wp-content/mu-plugins/nantis-intro-animation.php
- *      (Create the mu-plugins folder if it doesn't exist)
- *   2. That's it — mu-plugins auto-load, no activation needed.
- *
- * HOW IT WORKS:
- *   - ANY first-time visitor to ANY page sees the Welcome intro
- *   - Sets 'nx_intro' cookie (30 min expiry) so they only see it once
- *   - ENGLISH button → redirects to /home/ (your real homepage)
- *   - FRANÇAIS button → redirects to /fr/
- *   - Returning visitors (cookie set) → go straight to their requested page
- *   - Uses template_redirect so LiteSpeed Cache never touches the intro
- *   - Skips: logged-in admins, bots, AJAX, REST, cron, wp-admin, wp-login
- *
- * WORDPRESS SETUP (do this ONCE in wp-admin):
- *   1. Pages → Add New → Create a blank page called "Home"
- *   2. Settings → Reading → "A static page" → Homepage = "Home"
- *   3. Your current homepage content should be on the "Home" page (slug: /home/)
- *   4. If you use WPML/Polylang, your French homepage stays at /fr/
- */
+<!--
+  ═══════════════════════════════════════════════════════════
+  NANTIS WELCOME PAGE — Paste into Elementor Custom HTML
+  ═══════════════════════════════════════════════════════════
 
-if ( ! defined( 'ABSPATH' ) ) exit;
+  SETUP INSTRUCTIONS:
+  ───────────────────
+  1. In WordPress → Pages → Add New → Title: "Welcome"
+  2. Open with Elementor → drag an "HTML" widget onto the page
+  3. Paste ALL of this code into the HTML widget
+  4. Publish the page
+  5. Go to Settings → Reading → set "Welcome" as your Static Front Page
+  6. Make sure your English homepage lives at /home/
+  7. Make sure your French homepage lives at /fr/
 
-add_action( 'template_redirect', 'nxi_intro_page', 1 );
+  HOW IT WORKS:
+  ─────────────
+  - First-time visitors to nantis.ca → see this intro
+  - They pick ENGLISH or FRANÇAIS
+  - Cookie is set (30 min) so they don't see it again
+  - ENGLISH → redirects to /home/
+  - FRANÇAIS → redirects to /fr/
+  - If they come back within 30 min → auto-redirected to /home/
 
-function nxi_intro_page() {
-    // Skip if cookie already set (returning visitor — let them through)
-    if ( isset( $_COOKIE['nx_intro'] ) ) return;
+  NOTE: Update the logo URL below to match your actual upload path!
+  ═══════════════════════════════════════════════════════════
+-->
 
-    // Skip admin pages, login, AJAX, REST, cron
-    if ( is_admin() ) return;
-    if ( defined('DOING_AJAX') && DOING_AJAX ) return;
-    if ( defined('REST_REQUEST') && REST_REQUEST ) return;
-    if ( defined('DOING_CRON') && DOING_CRON ) return;
-
-    // Skip wp-login, wp-admin, wp-json, xmlrpc
-    $uri = $_SERVER['REQUEST_URI'];
-    if ( preg_match('#^/(wp-admin|wp-login|wp-json|xmlrpc)#', $uri) ) return;
-
-    // Skip logged-in users (admins/editors)
-    if ( is_user_logged_in() ) return;
-
-    // Skip bots and crawlers
-    if ( isset( $_SERVER['HTTP_USER_AGENT'] ) && preg_match('/bot|crawl|spider|slurp|facebookexternalhit|Mediapartners|Googlebot|Bingbot/i', $_SERVER['HTTP_USER_AGENT'] ) ) return;
-
-    // Skip static assets (CSS, JS, images, fonts)
-    if ( preg_match('/\.(css|js|jpg|jpeg|png|gif|svg|ico|woff|woff2|ttf|eot|map)(\?.*)?$/i', $uri) ) return;
-
-    // Set cookie — 30 minute expiry
-    setcookie( 'nx_intro', '1', time() + 1800, '/', '', is_ssl(), false );
-
-    // Send standalone HTML — exits WordPress completely
-    header( 'Content-Type: text/html; charset=UTF-8' );
-    header( 'Cache-Control: no-store, no-cache, must-revalidate, max-age=0' );
-    header( 'Pragma: no-cache' );
-    header( 'X-Robots-Tag: noindex, nofollow' );
-
-    $logo_url = esc_url( home_url('/wp-content/uploads/2026/03/logo.png') );
-    $home_en  = esc_url( home_url('/home/') );
-    $home_fr  = esc_url( home_url('/fr/') );
-
-    echo '<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NANTIS</title>
-<link rel="prefetch" href="' . $home_en . '">
-<link rel="prefetch" href="' . $home_fr . '">
 <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+
 <style>
-body{margin:0;font-family:sans-serif;background:#000}
+/* ── Hide Elementor header/footer/wrapper when intro is active ── */
+html.nxi-active,
+html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!important;background:#000!important}
+html.nxi-active header,
+html.nxi-active footer,
+html.nxi-active .elementor-location-header,
+html.nxi-active .elementor-location-footer,
+html.nxi-active .site-header,
+html.nxi-active .site-footer,
+html.nxi-active nav,
+html.nxi-active .elementor-section-wrap > *:not(#nxi-wrapper),
+html.nxi-active .e-con:not(#nxi-wrapper){display:none!important}
 
 /* ── Intro page styles ─────────────────────────────── */
 #nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
@@ -84,18 +48,18 @@ body{margin:0;font-family:sans-serif;background:#000}
 #nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
 #nxi-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
 #nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
-.nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:\'Architects Daughter\',sans-serif;animation:nxUp .7s ease 1s both}
+.nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
 .nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
 .nxi-loc{color:rgba(240,242,245,.2);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px;animation:nxUp .7s ease 1.5s both}
 .nxi-btns{display:flex;gap:20px;margin-top:20px;animation:nxUp .7s ease 1.9s both}
-.nxi-btn{padding:14px 64px;background:transparent;border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.35em;text-transform:uppercase;text-decoration:none;font-family:\'Architects Daughter\',sans-serif;cursor:pointer;border-radius:2px;box-shadow:none;transition:background .3s,box-shadow .3s;-webkit-appearance:none}
+.nxi-btn{padding:14px 64px;background:transparent;border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.35em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:2px;box-shadow:none;transition:background .3s,box-shadow .3s;-webkit-appearance:none}
 .nxi-btn:hover{background:rgba(0,168,232,.1);box-shadow:0 0 20px rgba(0,168,232,.6)}
 .nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:12px;display:none;animation:nxUp .5s ease both}
 .nxi-contact{display:flex;align-items:center;justify-content:center;gap:60px;color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:8px;animation:nxUp .7s ease 1.6s both,nxContactGlow 3s ease-in-out 2.5s infinite}
 .nxi-contact-item{display:flex;align-items:center;gap:6px}
 .nxi-contact-icon{width:14px;height:14px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(0,168,232,.6));animation:nxIconGlow 3s ease-in-out 2.5s infinite}
 #nxi-motto-s1{width:100%;padding:18px 24px 26px;text-align:center;flex-shrink:0;border-top:1px solid rgba(0,168,232,.15)}
-#nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:\'Architects Daughter\',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
+#nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
 .nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
 
 /* ── Screen 2 ──────────────────────────────────────── */
@@ -114,7 +78,7 @@ body{margin:0;font-family:sans-serif;background:#000}
 .nxi-nbf{height:100%;width:0%;border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
 .nxi-nbo{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
 .nxi-nbo span{font-size:.75rem;color:#fff;font-family:sans-serif;font-weight:700}
-#nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:\'Architects Daughter\',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
+#nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
 #nxi.nxi-fadeout{opacity:0;transition:opacity 1.2s ease}
 
 /* ── Animations ────────────────────────────────────── */
@@ -143,12 +107,16 @@ body{margin:0;font-family:sans-serif;background:#000}
   .nxi-nbw{height:18px}
 }
 </style>
-</head>
-<body>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- INTRO PAGE                                         -->
+<!-- ═══════════════════════════════════════════════════ -->
 
 <div id="nxi">
+  <!-- Screen 1: Branding + Language Selection -->
   <div id="nxi-s1">
-    <img id="nxi-logo" src="' . $logo_url . '" alt="NANTIS">
+    <!-- ⚠️ UPDATE THIS LOGO URL TO YOUR ACTUAL UPLOAD PATH -->
+    <img id="nxi-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="NANTIS">
     <div id="nxi-line"></div>
     <span class="nxi-title">NANTIS</span>
     <span class="nxi-sub">Asset Management Inc.</span>
@@ -170,8 +138,10 @@ body{margin:0;font-family:sans-serif;background:#000}
     <span>THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
   </div>
 
+  <!-- Screen 2: Progress + NAV Data -->
   <div id="nxi-s2">
-    <img class="nxi-s2-logo" src="' . $logo_url . '"
+    <!-- ⚠️ UPDATE THIS LOGO URL TO YOUR ACTUAL UPLOAD PATH -->
+    <img class="nxi-s2-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
          style="width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 20px rgba(0,168,232,.45));margin-bottom:4px" alt="">
     <div class="nxi-bar-wrap">
       <div class="nxi-bar-track"><div id="nxi-bar"></div></div>
@@ -204,86 +174,118 @@ body{margin:0;font-family:sans-serif;background:#000}
 (function(){
   "use strict";
 
+  /* ── Cookie helper ──────────────────────────────────── */
+  function getCookie(name){
+    var v = document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');
+    return v ? v.pop() : '';
+  }
+  function setCookie(name, val, minutes){
+    var d = new Date();
+    d.setTime(d.getTime() + minutes*60*1000);
+    document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;SameSite=Lax';
+  }
+
+  /* ── If returning visitor (cookie set), skip intro → go to /home/ ── */
+  if(getCookie('nx_intro')==='1'){
+    document.getElementById('nxi').style.display='none';
+    window.location.replace('/home/');
+    return;
+  }
+
+  /* ── Activate full-screen mode (hide Elementor chrome) ── */
+  document.documentElement.classList.add('nxi-active');
+
   var g = document.getElementById.bind(document);
-  var ov = g("nxi"), s1 = g("nxi-s1"), s2 = g("nxi-s2");
-  var motto1 = g("nxi-motto-s1");
-  var bar = g("nxi-bar"), pctEl = g("nxi-pct"), statusEl = g("nxi-status");
+  var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2');
+  var motto1 = g('nxi-motto-s1');
+  var bar = g('nxi-bar'), pctEl = g('nxi-pct'), statusEl = g('nxi-status');
 
   if (!ov) return;
 
-  document.body.style.overflow = "hidden";
-  document.documentElement.style.overflow = "hidden";
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
 
-  var targetLang = "";
-  var homeEN = "' . $home_en . '";
-  var homeFR = "' . $home_fr . '";
+  /* ── Language buttons ──────────────────────────────── */
 
-  var btns = document.querySelectorAll(".nxi-btn");
+  var targetLang = '';
+
+  var btns = document.querySelectorAll('.nxi-btn');
   for (var i = 0; i < btns.length; i++) {
-    btns[i].addEventListener("click", function(e){
+    btns[i].addEventListener('click', function(e){
       e.preventDefault();
-      targetLang = this.getAttribute("data-lang");
+      targetLang = this.getAttribute('data-lang');
 
-      var logo = g("nxi-logo");
+      /* Set cookie — 30 minute expiry */
+      setCookie('nx_intro','1',30);
+
+      /* ── Black hole effect: everything gets sucked into the logo ── */
+      var logo = g('nxi-logo');
       var logoRect = logo.getBoundingClientRect();
       var cx = logoRect.left + logoRect.width/2;
       var cy = logoRect.top + logoRect.height/2;
 
-      var targets = s1.querySelectorAll(".nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-btn, .nxi-s1-weather, .nxi-contact, #nxi-line");
-      var mottoSpan = motto1.querySelector("span");
+      /* Elements to swallow — everything on Screen 1 except the logo */
+      var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-btn, .nxi-s1-weather, .nxi-contact, #nxi-line');
+      var mottoSpan = motto1.querySelector('span');
 
+      /* Animate each element toward the logo center */
       targets.forEach(function(el){
         var cs = window.getComputedStyle(el);
-        if(cs.display === "inline") el.style.display = "inline-block";
+        if(cs.display === 'inline') el.style.display = 'inline-block';
         var r = el.getBoundingClientRect();
         var ex = r.left + r.width/2;
         var ey = r.top + r.height/2;
         var dx = cx - ex;
         var dy = cy - ey;
-        el.style.transition = "transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease";
-        el.style.transformOrigin = "center center";
-        el.style.transform = "translate("+dx+"px,"+dy+"px) scale(0)";
-        el.style.opacity = "0";
+        el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+        el.style.transformOrigin = 'center center';
+        el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
+        el.style.opacity = '0';
       });
 
+      /* Swallow the motto too */
       if(mottoSpan){
-        mottoSpan.style.display = "inline-block";
+        mottoSpan.style.display = 'inline-block';
         var mr = mottoSpan.getBoundingClientRect();
         var mdx = cx - (mr.left + mr.width/2);
         var mdy = cy - (mr.top + mr.height/2);
-        mottoSpan.style.transition = "transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease";
-        mottoSpan.style.transform = "translate("+mdx+"px,"+mdy+"px) scale(0)";
-        mottoSpan.style.opacity = "0";
+        mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+        mottoSpan.style.transform = 'translate('+mdx+'px,'+mdy+'px) scale(0)';
+        mottoSpan.style.opacity = '0';
       }
 
-      logo.style.transition = "transform .6s ease .2s, filter .6s ease .2s";
-      logo.style.transform = "scale(1.15)";
-      logo.style.filter = "drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)";
+      /* Logo pulses as it absorbs everything */
+      logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
+      logo.style.transform = 'scale(1.15)';
+      logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
 
+      /* After absorption, logo shrinks away and we transition */
       setTimeout(function(){
-        logo.style.transition = "transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s";
-        logo.style.transform = "scale(0)";
-        logo.style.opacity = "0";
+        logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
+        logo.style.transform = 'scale(0)';
+        logo.style.opacity = '0';
       }, 900);
 
       setTimeout(function(){
-        s1.style.display = "none";
-        motto1.style.display = "none";
-        s2.style.display = "flex";
-        s2.style.opacity = "0";
-        s2.style.transition = "opacity .5s ease";
-        requestAnimationFrame(function(){ s2.style.opacity = "1"; });
+        s1.style.display = 'none';
+        motto1.style.display = 'none';
+        s2.style.display = 'flex';
+        s2.style.opacity = '0';
+        s2.style.transition = 'opacity .5s ease';
+        requestAnimationFrame(function(){ s2.style.opacity = '1'; });
         startLoading();
       }, 1400);
     });
   }
 
+  /* ── Progress ──────────────────────────────────────── */
+
   var progress = 0, barTimer = null;
 
   function setProgress(v){
     progress = Math.min(v,100);
-    bar.style.width = Math.round(progress)+"%";
-    pctEl.textContent = Math.round(progress)+"%";
+    bar.style.width = Math.round(progress)+'%';
+    pctEl.textContent = Math.round(progress)+'%';
   }
 
   function animProgress(target, ms){
@@ -309,54 +311,58 @@ body{margin:0;font-family:sans-serif;background:#000}
     setTimeout(doExit,15000);
   }
 
+  /* ── NAV ───────────────────────────────────────────── */
+
   function loadNAV(){
-    var url = "https://docs.google.com/spreadsheets/d/e/" +
-      "2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms" +
-      "/pub?output=csv";
+    var url = 'https://docs.google.com/spreadsheets/d/e/' +
+      '2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms' +
+      '/pub?output=csv';
     var x = new XMLHttpRequest();
-    x.open("GET","https://api.codetabs.com/v1/proxy?quest="+encodeURIComponent(url));
+    x.open('GET','https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url));
     x.timeout = 8000;
     x.onload = function(){
       navDone = true;
       if (x.status<200||x.status>=300){setProgress(60);checkDone();return;}
-      var lines = x.responseText.trim().split("\\n");
+      var lines = x.responseText.trim().split('\n');
       if (lines.length<2){setProgress(60);checkDone();return;}
-      var vals = lines[1].split(",");
-      var raised = parseFloat((vals[0]||"").replace(/[$,%\\s]/g,""));
-      var net = parseFloat((vals[1]||"").replace(/[$,%\\s]/g,""));
+      var vals = lines[1].split(',');
+      var raised = parseFloat((vals[0]||'').replace(/[$,%\s]/g,''));
+      var net = parseFloat((vals[1]||'').replace(/[$,%\s]/g,''));
       if (isNaN(raised)||isNaN(net)||net===0){setProgress(60);checkDone();return;}
       var cF=(net/raised)*100, cA=cF*0.9475;
       animProgress(60,500);
-      animNAV("nxi-ba","nxi-ad","nxi-ap",cA,200);
-      animNAV("nxi-bf","nxi-fd","nxi-fp",cF,500);
+      animNAV('nxi-ba','nxi-ad','nxi-ap',cA,200);
+      animNAV('nxi-bf','nxi-fd','nxi-fp',cF,500);
       checkDone();
     };
     x.onerror = x.ontimeout = function(){navDone=true;setProgress(60);checkDone();};
     x.send();
   }
 
-  function fmt(n){return "$"+n.toLocaleString("en-CA",{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function fmt(n){return '$'+n.toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});}
 
   function animNAV(fillId,dId,pId,val,delay){
     setTimeout(function(){
       var fill=g(fillId),dEl=g(dId),pEl=g(pId);
       if(!fill||!dEl||!pEl)return;
-      fill.style.width=Math.min(val,100)+"%";
+      fill.style.width=Math.min(val,100)+'%';
       var t0=performance.now();
       (function step(ts){
         var p=Math.min((ts-t0)/1800,1), v=1-Math.pow(1-p,3);
         dEl.textContent=fmt(val*v);
-        pEl.textContent=(val*v).toFixed(2)+"%";
+        pEl.textContent=(val*v).toFixed(2)+'%';
         if(p<1)requestAnimationFrame(step);
       })(t0);
     },delay);
   }
 
-  var weatherText = "";
+  /* ── Weather ───────────────────────────────────────── */
+
+  var weatherText = '';
 
   function fetchWeatherNow(){
     var x = new XMLHttpRequest();
-    x.open("GET","https://ipapi.co/json/");
+    x.open('GET','https://ipapi.co/json/');
     x.timeout = 5000;
     x.onload = function(){
       if(x.status<200||x.status>=300)return;
@@ -364,15 +370,15 @@ body{margin:0;font-family:sans-serif;background:#000}
         var d=JSON.parse(x.responseText);
         if(!d.city||d.latitude==null)return;
         var x2=new XMLHttpRequest();
-        x2.open("GET","https://api.open-meteo.com/v1/forecast?latitude="+d.latitude+"&longitude="+d.longitude+"&current_weather=true");
+        x2.open('GET','https://api.open-meteo.com/v1/forecast?latitude='+d.latitude+'&longitude='+d.longitude+'&current_weather=true');
         x2.timeout=5000;
         x2.onload=function(){
           try{
             var wd=JSON.parse(x2.responseText);
             if(wd.current_weather){
-              weatherText=d.city+"  |  "+Math.round(wd.current_weather.temperature)+"\\u00B0C";
-              var s1w=g("nxi-s1-weather");
-              if(s1w){s1w.textContent=weatherText;s1w.style.display="block";}
+              weatherText=d.city+'  |  '+Math.round(wd.current_weather.temperature)+'\u00B0C';
+              var s1w=g('nxi-s1-weather');
+              if(s1w){s1w.textContent=weatherText;s1w.style.display='block';}
             }
           }catch(e){}
         };
@@ -388,8 +394,8 @@ body{margin:0;font-family:sans-serif;background:#000}
 
   function loadWeatherForS2(){
     if(weatherText){
-      var el=g("nxi-weather");
-      if(el){el.textContent=weatherText;el.style.display="block";}
+      var el=g('nxi-weather');
+      if(el){el.textContent=weatherText;el.style.display='block';}
       weatherDone=true; setProgress(Math.max(progress,85)); checkDone(); return;
     }
     var waited=0;
@@ -397,14 +403,16 @@ body{margin:0;font-family:sans-serif;background:#000}
       waited+=300;
       if(weatherText){
         clearInterval(poll);
-        var el=g("nxi-weather");
-        if(el){el.textContent=weatherText;el.style.display="block";}
+        var el=g('nxi-weather');
+        if(el){el.textContent=weatherText;el.style.display='block';}
         weatherDone=true;setProgress(Math.max(progress,85));checkDone();
       }else if(waited>=4000){
         clearInterval(poll);weatherDone=true;setProgress(Math.max(progress,80));checkDone();
       }
     },300);
   }
+
+  /* ── Exit ──────────────────────────────────────────── */
 
   var exited = false;
 
@@ -414,31 +422,32 @@ body{margin:0;font-family:sans-serif;background:#000}
     setProgress(100);
 
     setTimeout(function(){
-      var fadeEls=[pctEl,statusEl,g("nxi-weather"),document.querySelector(".nxi-nav-box"),
-                   document.querySelector(".nxi-bar-wrap"),document.querySelector(".nxi-s2-logo")];
+      /* Fade out all screen 2 elements EXCEPT the motto */
+      var fadeEls=[pctEl,statusEl,g('nxi-weather'),document.querySelector('.nxi-nav-box'),
+                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo')];
       fadeEls.forEach(function(el){
-        if(el){el.style.transition="opacity .5s ease";el.style.opacity="0";}
+        if(el){el.style.transition='opacity .5s ease';el.style.opacity='0';}
       });
 
       setTimeout(function(){
-        fadeEls.forEach(function(el){ if(el)el.style.display="none"; });
+        fadeEls.forEach(function(el){ if(el)el.style.display='none'; });
 
-        var mottoS2=g("nxi-motto-s2");
+        var mottoS2=g('nxi-motto-s2');
         if(mottoS2){
-          mottoS2.style.transition="font-size .8s ease, text-shadow .8s ease";
-          mottoS2.style.fontSize="2rem";
-          mottoS2.style.textShadow="0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)";
+          mottoS2.style.transition='font-size .8s ease, text-shadow .8s ease';
+          mottoS2.style.fontSize='2rem';
+          mottoS2.style.textShadow='0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)';
         }
 
         setTimeout(function(){
-          if(mottoS2)mottoS2.style.animation="nxMottoGlowFinal 2.5s ease-in-out infinite";
+          if(mottoS2)mottoS2.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
 
           setTimeout(function(){
-            /* Redirect to chosen language */
-            if (targetLang === "fr") {
-              window.location.href = homeFR;
+            /* Redirect to chosen language homepage */
+            if (targetLang === 'fr') {
+              window.location.href = '/fr/';
             } else {
-              window.location.href = homeEN;
+              window.location.href = '/home/';
             }
           },2500);
         },1200);
@@ -448,8 +457,3 @@ body{margin:0;font-family:sans-serif;background:#000}
 
 })();
 </script>
-</body>
-</html>';
-
-    exit; // Stop WordPress from loading anything else
-}
