@@ -233,10 +233,50 @@ body{margin:0;font-family:sans-serif;background:#111}
       e.preventDefault();
       targetLang = this.getAttribute('data-lang');
 
-      s1.style.transition = 'opacity .5s ease';
-      s1.style.opacity = '0';
-      motto1.style.transition = 'opacity .5s ease';
-      motto1.style.opacity = '0';
+      /* ── Black hole effect: everything gets sucked into the logo ── */
+      var logo = g('nxi-logo');
+      var logoRect = logo.getBoundingClientRect();
+      var cx = logoRect.left + logoRect.width/2;
+      var cy = logoRect.top + logoRect.height/2;
+
+      /* Elements to swallow */
+      var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-s1-weather, .nxi-contact, #nxi-line');
+      var mottoSpan = motto1.querySelector('span');
+
+      /* Animate each element toward the logo center */
+      targets.forEach(function(el){
+        var r = el.getBoundingClientRect();
+        var ex = r.left + r.width/2;
+        var ey = r.top + r.height/2;
+        var dx = cx - ex;
+        var dy = cy - ey;
+        el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+        el.style.transformOrigin = 'center center';
+        el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
+        el.style.opacity = '0';
+      });
+
+      /* Swallow the motto too */
+      if(mottoSpan){
+        var mr = mottoSpan.getBoundingClientRect();
+        var mdx = cx - (mr.left + mr.width/2);
+        var mdy = cy - (mr.top + mr.height/2);
+        mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+        mottoSpan.style.transform = 'translate('+mdx+'px,'+mdy+'px) scale(0)';
+        mottoSpan.style.opacity = '0';
+      }
+
+      /* Logo pulses as it absorbs everything */
+      logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
+      logo.style.transform = 'scale(1.15)';
+      logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
+
+      /* After absorption, logo shrinks away and we transition */
+      setTimeout(function(){
+        logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
+        logo.style.transform = 'scale(0)';
+        logo.style.opacity = '0';
+      }, 900);
 
       setTimeout(function(){
         s1.style.display = 'none';
@@ -246,7 +286,7 @@ body{margin:0;font-family:sans-serif;background:#111}
         s2.style.transition = 'opacity .5s ease';
         requestAnimationFrame(function(){ s2.style.opacity = '1'; });
         startLoading();
-      }, 500);
+      }, 1400);
     });
   }
 
@@ -402,51 +442,55 @@ body{margin:0;font-family:sans-serif;background:#111}
       });
 
       setTimeout(function(){
-        /* Hide screen 2 entirely */
+        /* Hide screen 2 and overlay */
         s2.style.display='none';
         ov.style.display='none';
 
-        /* Show thinker animation */
-        var thinker=g('nxi-thinker');
-        if(thinker){thinker.style.display='flex';}
+        /* Fade out stars to pure black before showing thinker */
+        ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
+          var el=document.getElementById(id);
+          if(el){el.style.transition='opacity .6s ease';el.style.opacity='0';}
+        });
 
-        /* After motto fully appears, add continuous glow then fade everything out */
         setTimeout(function(){
-          var mottoThink=g('nxi-motto-think');
-          if(mottoThink)mottoThink.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
+          /* Remove stars completely — clean black background */
+          ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
+            var el=document.getElementById(id); if(el)el.remove();
+          });
 
-          /* Hold the scene for a moment, then fade out */
+          /* Show thinker on pure black */
+          var thinker=g('nxi-thinker');
+          if(thinker){thinker.style.display='flex';}
+
+          /* After motto fully appears, add continuous glow then fade out */
           setTimeout(function(){
-            if(thinker){thinker.style.transition='opacity 1.2s ease';thinker.style.opacity='0';}
+            var mottoThink=g('nxi-motto-think');
+            if(mottoThink)mottoThink.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
 
-            /* Also fade stars */
-            ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
-              var el=document.getElementById(id);
-              if(el){el.style.transition='opacity 1.2s ease';el.style.opacity='0';}
-            });
-
+            /* Hold the scene, then fade out */
             setTimeout(function(){
-              if(thinker)thinker.remove();
-              ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
-                var el=document.getElementById(id); if(el)el.remove();
-              });
-              document.body.style.overflow='';
-              document.documentElement.style.overflow='';
-              document.body.style.background='#111';
+              if(thinker){thinker.style.transition='opacity 1.2s ease';thinker.style.opacity='0';}
 
-              /* ── PREVIEW: show fake page behind ── */
-              document.getElementById('page-behind').style.display = 'block';
+              setTimeout(function(){
+                if(thinker)thinker.remove();
+                document.body.style.overflow='';
+                document.documentElement.style.overflow='';
+                document.body.style.background='#111';
 
-              /* ── LIVE: redirect to chosen language ── */
-              // if (targetLang === 'fr') {
-              //   window.location.href = 'https://nantis.ca/fr/';
-              // } else {
-              //   window.location.href = 'https://nantis.ca/home/';
-              // }
+                /* ── PREVIEW: show fake page behind ── */
+                document.getElementById('page-behind').style.display = 'block';
 
-            },1300);
-          },1800);
-        },3200);
+                /* ── LIVE: redirect to chosen language ── */
+                // if (targetLang === 'fr') {
+                //   window.location.href = 'https://nantis.ca/fr/';
+                // } else {
+                //   window.location.href = 'https://nantis.ca/home/';
+                // }
+
+              },1300);
+            },1800);
+          },3200);
+        },700);
       },600);
     },500);
   }
