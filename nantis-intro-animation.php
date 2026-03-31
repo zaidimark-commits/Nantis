@@ -46,10 +46,6 @@ function nantis_intro_cb() {
 
     <span id="nxi-weather" style="color:rgba(240,242,245,.6)!important;font-size:.6rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important"></span>
 
-    <!-- GO button (mobile only, hidden on desktop via JS) -->
-    <div style="width:100%!important;display:flex!important;justify-content:center!important;margin-top:4px!important">
-      <button id="nxi-btn" style="padding:6px 28px!important;background:rgba(0,0,0,.85)!important;border:1px solid #00a8e8!important;color:#00a8e8!important;font-size:.65rem!important;letter-spacing:.3em!important;text-transform:uppercase!important;font-family:'Architects Daughter',sans-serif!important;cursor:pointer!important;border-radius:3px!important;box-shadow:0 0 12px rgba(0,168,232,.7)!important;-webkit-appearance:none!important;display:none!important">GO</button>
-    </div>
   </div>
 
   <!-- Footer: NAV bars + motto -->
@@ -91,7 +87,6 @@ function nantis_intro_cb() {
 @keyframes nxUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes nxGrow{0%{width:0}100%{width:200px}}
 @keyframes nxGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
-#nxi-btn:hover{background:rgba(0,168,232,.15)!important;box-shadow:0 0 20px rgba(0,168,232,.9)!important}
 </style>
 
 <script>
@@ -129,12 +124,6 @@ function nantis_intro_cb() {
     ]);
   }
 
-  function isMobile(){
-    // Use CSS media + touch heuristic; avoids false positives on laptops with touch
-    var mq = window.matchMedia('(max-width: 1024px)');
-    return mq.matches || ('ontouchstart' in window && window.innerWidth <= 1024);
-  }
-
   /* ── Early bail-out ──────────────────────────────── */
 
   var overlay = $('nxi');
@@ -154,7 +143,6 @@ function nantis_intro_cb() {
 
   /* ── DOM refs ────────────────────────────────────── */
 
-  var btn       = $('nxi-btn');
   var inner     = $('nxi-inner');
   var footer    = $('nxi-footer');
   var bar       = $('nxi-bar');
@@ -214,7 +202,6 @@ function nantis_intro_cb() {
     if (barInterval) clearInterval(barInterval);
     setProgress(100);
 
-    if (btn) btn.style.display = 'none';
     inner.style.transition = 'opacity .6s ease';
     inner.style.opacity    = '0';
     footer.style.borderTop = 'none';
@@ -354,7 +341,6 @@ function nantis_intro_cb() {
     if (started) return;
     started = true;
 
-    if (btn) btn.style.display = 'none';
     if (statusTxt) statusTxt.style.display = 'block';
 
     // Animate bar to 30% over 1.5s (visual feedback while fetching)
@@ -369,21 +355,9 @@ function nantis_intro_cb() {
     }, 15000);
   }
 
-  /* ── Mobile vs Desktop ───────────────────────────── */
+  /* ── Auto-start on all devices after intro animations settle ── */
 
-  if (isMobile()) {
-    // Show the GO button, wait for tap
-    if (btn) {
-      btn.style.display = 'inline-block';
-      btn.addEventListener('click', function(e){
-        e.preventDefault();
-        startEverything();
-      });
-    }
-  } else {
-    // Desktop: auto-start after intro animations settle
-    setTimeout(startEverything, 1800);
-  }
+  setTimeout(startEverything, 1800);
 
   /* ── BFCache: clean up on back-navigation ────────── */
 
