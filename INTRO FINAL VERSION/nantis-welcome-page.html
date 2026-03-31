@@ -29,18 +29,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
 
 <style>
-/* ── Hide Elementor header/footer/wrapper when intro is active ── */
+/* ── Override page styles when intro is active ── */
 html.nxi-active,
 html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!important;background:#000!important}
-html.nxi-active header,
-html.nxi-active footer,
-html.nxi-active .elementor-location-header,
-html.nxi-active .elementor-location-footer,
-html.nxi-active .site-header,
-html.nxi-active .site-footer,
-html.nxi-active nav,
-html.nxi-active .elementor-section-wrap > *:not(#nxi-wrapper),
-html.nxi-active .e-con:not(#nxi-wrapper){display:none!important}
 
 /* ── Intro page styles ─────────────────────────────── */
 #nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
