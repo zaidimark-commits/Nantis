@@ -60,16 +60,7 @@ body{margin:0;font-family:sans-serif;background:#111}
 @keyframes nxIconGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(0,168,232,.4));opacity:.5}50%{filter:drop-shadow(0 0 10px rgba(0,168,232,.9));opacity:.85}}
 @keyframes nxLogoGlow{0%,100%{filter:drop-shadow(0 0 24px rgba(0,168,232,.45))}50%{filter:drop-shadow(0 0 40px rgba(0,168,232,.85))}}
 
-/* ── Thinker exit animation ────────────────────────── */
-#nxi-thinker{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000000;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.nxi-thinker-wrap{opacity:0;animation:nxThinkerIn .8s ease .2s forwards}
-.nxi-thinker-svg{width:220px;height:245px;filter:drop-shadow(0 0 15px rgba(0,168,232,.3))}
-
-/* The motto emerging above the figure */
-#nxi-motto-think{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;padding:0 20px;margin-bottom:16px;animation:nxMottoEmerge 1.2s ease 1.4s forwards;text-shadow:0 0 20px rgba(0,168,232,.5),0 0 60px rgba(0,168,232,.2)}
-
-@keyframes nxThinkerIn{0%{opacity:0;transform:scale(.85) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes nxMottoEmerge{0%{opacity:0;transform:translateY(20px) scale(.8)}60%{opacity:1;transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1);text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)}}
+/* ── Motto glow animation ─────────────────────────── */
 @keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
 
 /* ── Mobile ────────────────────────────────────────── */
@@ -86,8 +77,6 @@ body{margin:0;font-family:sans-serif;background:#111}
   #nxi-s2{gap:10px;padding:20px 16px}
   #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
   .nxi-nbw{height:18px}
-  .nxi-thinker-svg{width:165px;height:185px}
-  #nxi-motto-think{font-size:1.3rem;letter-spacing:.12em;margin-bottom:10px}
 }
 </style>
 </head>
@@ -159,31 +148,6 @@ body{margin:0;font-family:sans-serif;background:#111}
   </div>
 </div>
 
-<!-- Thinker exit animation overlay -->
-<div id="nxi-thinker">
-  <span id="nxi-motto-think">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
-  <div class="nxi-thinker-wrap">
-    <svg class="nxi-thinker-svg" viewBox="905 285 235 250" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="nxThinkerGrad" gradientUnits="userSpaceOnUse" x1="1056.42" y1="512.799" x2="1035.97" y2="355.354">
-          <stop offset="0" stop-color="rgb(46,133,188)"/>
-          <stop offset="1" stop-color="rgb(91,192,239)"/>
-        </linearGradient>
-      </defs>
-      <!-- Head figure extracted from think outside the box.svg -->
-      <!-- Main head outline -->
-      <path fill="rgb(88,178,228)" d="M 928.202 423.26 C 921.822 407.081 917.261 393.479 917.842 376.063 C 919.635 322.421 970.18 295.507 1019.09 297.764 C 1048.82 299.136 1068.56 312.822 1080.75 340.146 C 1084.91 349.463 1081.28 353.612 1088.78 361.846 L 1085.29 360.877 C 1072.96 365.987 1055.6 357.15 1042.73 358.297 C 1041.58 358.399 1039.29 360.365 1038.3 360.236 C 1036.39 359.986 1032.49 356.427 1029.74 355.684 L 1029.01 355.495 L 1054.71 345.467 C 1045.87 347.306 1018.93 355.651 1013.22 353.625 C 1007.82 346.997 1018.52 327.518 1021.71 320.084 C 1016.85 326.774 1006.94 345.432 1000.85 346.777 C 993.587 345.648 988.535 331.219 985.808 325.211 C 987.573 332.648 991.336 344.431 988.827 351.26 C 982.805 356.684 965.764 347.373 958.495 344.416 C 965.484 348.811 976.524 354.676 980.148 361.762 C 980.245 363.871 980.63 365.681 978.564 367.266 C 973.571 371.096 954.808 377.328 948.83 378.812 L 951.698 380.464 C 957.369 378.172 964.24 376.634 970.247 375.272 C 976.598 373.833 982.588 370.935 987.109 376.731 C 988.538 384.285 979.155 402.325 975.595 410.499 C 957.047 414.363 946.081 416.851 928.202 423.26 z"/>
-      <!-- Inner gradient fill -->
-      <path fill="url(#nxThinkerGrad)" d="M 1022.98 358.059 L 1029.01 355.495 L 1029.74 355.684 C 1032.49 356.427 1036.39 359.986 1038.3 360.236 C 1039.29 360.365 1041.58 358.399 1042.73 358.297 C 1055.6 357.15 1072.96 365.987 1085.29 360.877 L 1088.78 361.846 C 1110.18 374.106 1128.28 373.108 1112.6 398.968 C 1123.67 410.719 1117.3 412.633 1124.97 422.709 L 1120.93 432.199 C 1122.51 435.737 1124.5 440.009 1126.51 443.378 C 1132.83 453.943 1129 462.97 1117.58 467.21 C 1104.35 472.123 1088.79 468.042 1075.99 474.857 C 1058.42 483.096 1049.65 497.846 1034.79 508.599 C 1025.59 515.25 1009.33 519.309 998.449 523.719 C 996.624 512.917 994.785 499.987 991.98 489.559 C 985.154 482.643 975.904 476.785 970.167 470.299 C 969.748 458.673 969.484 442.886 978.016 433.659 C 993.924 416.456 1022.61 417.862 1039.33 402.025 C 1053.31 388.79 1033.02 379.467 1023.8 373.79 C 1018.96 371.115 1016.2 369.466 1016.33 363.771 C 1017.68 360.748 1020.1 359.753 1022.98 358.059 z"/>
-      <!-- Small accent -->
-      <path fill="rgb(88,178,228)" d="M 1023.8 373.79 C 1018.96 371.115 1016.2 369.466 1016.33 363.771 C 1017.68 360.748 1020.1 359.753 1022.98 358.059 C 1020.33 362.94 1020.47 369.086 1023.8 373.79 z"/>
-      <!-- Dark accent -->
-      <path fill="rgb(47,109,144)" d="M 951.698 380.464 C 946.826 381.886 940.967 383.918 935.998 384.025 C 938.685 382.112 945.429 380.019 948.83 378.812 L 951.698 380.464 z"/>
-      <!-- Gear detail -->
-      <path fill="rgb(88,178,228)" d="M 1007.43 375.412 C 1009.19 375.414 1012.47 375.755 1013.97 376.632 C 1048.55 396.912 998.604 405.581 986.768 408.431 L 976.272 410.551 C 980.606 402.659 990.643 378.104 1000.95 381.557 C 1003.41 384.019 1003.82 384.566 1005.28 387.766 L 1005.62 388.533 C 1005.88 383.918 1005.94 379.85 1007.43 375.412 z"/>
-    </svg>
-  </div>
-</div>
 
 <script>
 (function(){
@@ -410,33 +374,36 @@ body{margin:0;font-family:sans-serif;background:#111}
     setProgress(100);
 
     setTimeout(function(){
-      /* Fade out all screen 2 elements */
+      /* Fade out all screen 2 elements EXCEPT the motto */
       var fadeEls=[pctEl,statusEl,g('nxi-weather'),document.querySelector('.nxi-nav-box'),
-                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo'),g('nxi-motto-s2')];
+                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo')];
       fadeEls.forEach(function(el){
         if(el){el.style.transition='opacity .5s ease';el.style.opacity='0';}
       });
 
       setTimeout(function(){
-        /* Hide screen 2 and overlay */
-        s2.style.display='none';
-        ov.style.display='none';
+        /* Remove faded elements so motto can center */
+        fadeEls.forEach(function(el){ if(el)el.style.display='none'; });
 
-        /* Show thinker on pure black */
-        var thinker=g('nxi-thinker');
-        if(thinker){thinker.style.display='flex';}
+        /* Motto emerges with glow animation */
+        var mottoS2=g('nxi-motto-s2');
+        if(mottoS2){
+          mottoS2.style.transition='font-size .8s ease, text-shadow .8s ease';
+          mottoS2.style.fontSize='2rem';
+          mottoS2.style.textShadow='0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)';
+        }
 
-        /* After motto fully appears, add continuous glow then fade out */
+        /* Add continuous glow after initial pop */
         setTimeout(function(){
-          var mottoThink=g('nxi-motto-think');
-          if(mottoThink)mottoThink.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
+          if(mottoS2)mottoS2.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
 
-          /* Hold the scene, then fade out */
+          /* Hold, then fade out everything */
           setTimeout(function(){
-            if(thinker){thinker.style.transition='opacity 1.2s ease';thinker.style.opacity='0';}
+            ov.style.transition='opacity 1.2s ease';
+            ov.style.opacity='0';
 
             setTimeout(function(){
-              if(thinker)thinker.remove();
+              ov.remove();
               document.body.style.overflow='';
               document.documentElement.style.overflow='';
               document.body.style.background='#111';
@@ -452,8 +419,8 @@ body{margin:0;font-family:sans-serif;background:#111}
               // }
 
             },1300);
-          },1800);
-        },3200);
+          },2500);
+        },1200);
       },600);
     },500);
   }
