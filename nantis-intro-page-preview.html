@@ -25,9 +25,10 @@ body{margin:0;font-family:sans-serif;background:#111}
 .nxi-btn{padding:14px 64px;background:transparent;border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.35em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:2px;box-shadow:none;transition:background .3s,box-shadow .3s;-webkit-appearance:none}
 .nxi-btn:hover{background:rgba(0,168,232,.1);box-shadow:0 0 20px rgba(0,168,232,.6)}
 .nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:12px;display:none;animation:nxUp .5s ease both}
-.nxi-contact{color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:6px;padding-bottom:0;animation:nxUp .7s ease 2s both,nxContactGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact{display:flex;align-items:center;justify-content:center;gap:0;color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:6px;padding-bottom:0;animation:nxUp .7s ease 2s both,nxContactGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact-item{display:flex;align-items:center}
 .nxi-contact-icon{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:4px;filter:drop-shadow(0 0 4px rgba(0,168,232,.6));animation:nxIconGlow 3s ease-in-out 2.5s infinite}
-.nxi-contact-sep{display:inline-block;margin:0 24px;color:rgba(240,242,245,.12)}
+.nxi-contact-sep{display:flex;align-items:center;width:40px;justify-content:center;color:rgba(240,242,245,.12)}
 #nxi-motto-s1{width:100%;padding:18px 24px 26px;text-align:center;flex-shrink:0;border-top:1px solid rgba(0,168,232,.15)}
 #nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
 .nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
@@ -109,7 +110,7 @@ body{margin:0;font-family:sans-serif;background:#111}
     <span id="nxi-s1-weather" class="nxi-s1-weather"></span>
 
     <div class="nxi-contact">
-      <svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>514.416.3466<span class="nxi-contact-sep">||</span><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>INFO@NANTIS.CA
+      <span class="nxi-contact-item"><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>514.416.3466</span><span class="nxi-contact-sep">||</span><span class="nxi-contact-item"><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>INFO@NANTIS.CA</span>
     </div>
   </div>
 
@@ -179,12 +180,15 @@ body{margin:0;font-family:sans-serif;background:#111}
       var cx = logoRect.left + logoRect.width/2;
       var cy = logoRect.top + logoRect.height/2;
 
-      /* Elements to swallow */
-      var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-s1-weather, .nxi-contact, #nxi-line');
+      /* Elements to swallow — everything on Screen 1 except the logo */
+      var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-btn, .nxi-s1-weather, .nxi-contact, #nxi-line');
       var mottoSpan = motto1.querySelector('span');
 
       /* Animate each element toward the logo center */
       targets.forEach(function(el){
+        /* Must be block/flex for transform to work on spans */
+        var cs = window.getComputedStyle(el);
+        if(cs.display === 'inline') el.style.display = 'inline-block';
         var r = el.getBoundingClientRect();
         var ex = r.left + r.width/2;
         var ey = r.top + r.height/2;
@@ -198,6 +202,7 @@ body{margin:0;font-family:sans-serif;background:#111}
 
       /* Swallow the motto too */
       if(mottoSpan){
+        mottoSpan.style.display = 'inline-block';
         var mr = mottoSpan.getBoundingClientRect();
         var mdx = cx - (mr.left + mr.width/2);
         var mdy = cy - (mr.top + mr.height/2);
