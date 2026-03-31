@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="currentColor">
+  <!--
+    "Head with Clock and Gear" icon
+    Side-profile head facing left, clock inside brain area,
+    gear/cog overlapping upper-right of clock, partially outside head.
+    Hand-crafted SVG - free to use.
+  -->
+
+  <!-- Side-profile head facing left -->
+  <path d="M300 44c-80 0-140 50-156 120-8 35-4 65-4 65l-40 55c-6 8-6 18 0 24l28 20v36c0 12 10 22 22 22h16l14 50c4 12 14 20 26 20h36c12 0 22-8 26-20l16-50h14c12 0 22-10 22-22V256c36-28 60-72 60-124C380 76 346 44 300 44z"
+        fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Clock circle inside the brain area -->
+  <circle cx="280" cy="185" r="72" fill="none" stroke="currentColor" stroke-width="14"/>
+
+  <!-- Clock hands: minute hand to 12, hour hand to 3 (L-shape) -->
+  <line x1="280" y1="185" x2="280" y2="125" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+  <line x1="280" y1="185" x2="330" y2="185" stroke="currentColor" stroke-width="14" stroke-linecap="round"/>
+
+  <!-- Small center dot on clock -->
+  <circle cx="280" cy="185" r="8" fill="currentColor"/>
+
+  <!-- Gear/cog overlapping upper-right of clock, partially outside head outline -->
+  <g transform="translate(350, 115)">
+    <!-- 8-tooth gear -->
+    <path d="M-10,-56 L10,-56 L13,-42 L24,-36 L38,-42 L48,-32 L42,-18 L48,-8 L62,-4 L62,12 L48,16 L42,26 L48,40 L38,50 L24,44 L13,50 L10,64 L-10,64 L-13,50 L-24,44 L-38,50 L-48,40 L-42,26 L-48,16 L-62,12 L-62,-4 L-48,-8 L-42,-18 L-48,-32 L-38,-42 L-24,-36 L-13,-42Z"
+          fill="none" stroke="currentColor" stroke-width="12" stroke-linejoin="round"/>
+    <!-- Gear center hole -->
+    <circle cx="0" cy="4" r="20" fill="none" stroke="currentColor" stroke-width="12"/>
+  </g>
+</svg>
