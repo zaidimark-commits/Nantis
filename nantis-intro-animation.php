@@ -356,24 +356,19 @@ function nantis_intro_cb() {
   }
 
   /* ── Auto-start on all devices ─────────────────────
-   * Mobile browsers (especially iOS Safari) can throttle
+   * Some browsers (Edge, Firefox, iOS Safari) throttle
    * setTimeout and defer fetch() until user interaction.
-   * We use multiple triggers to guarantee startup:
-   *   1. setTimeout (works on desktop, most Android)
-   *   2. requestAnimationFrame chain (more reliable on mobile)
-   *   3. Touch/click on overlay as fallback
-   *   4. visibilitychange as final safety net
+   * We use every possible trigger to guarantee startup.
    * startEverything() is idempotent — only runs once.
    * ─────────────────────────────────────────────────── */
 
-  // Primary: timer after intro animations
+  // 1. Primary: timer after intro animations
   setTimeout(startEverything, 1800);
 
-  // Secondary: rAF chain — fires even when setTimeout is throttled
+  // 2. rAF chain — fires even when setTimeout is throttled
   var rafCount = 0;
   function rafStart(){
     rafCount++;
-    // ~1.8s worth of frames (roughly 108 frames at 60fps)
     if (rafCount >= 108) {
       startEverything();
     } else if (!started) {
@@ -382,11 +377,30 @@ function nantis_intro_cb() {
   }
   requestAnimationFrame(rafStart);
 
-  // Tertiary: any touch/click on the overlay kicks it off immediately
-  overlay.addEventListener('touchstart', function(){ startEverything(); }, { passive: true });
-  overlay.addEventListener('click', function(){ startEverything(); });
+  // 3. window.onload — very reliable across all browsers
+  window.addEventListener('load', function(){
+    setTimeout(startEverything, 1200);
+  });
 
-  // Safety net: if page becomes visible and we still haven't started
+  // 4. Any user interaction on the overlay or page
+  function onInteract(){
+    startEverything();
+    // Clean up all listeners once started
+    overlay.removeEventListener('touchstart', onInteract);
+    overlay.removeEventListener('click', onInteract);
+    overlay.removeEventListener('mousemove', onInteract);
+    document.removeEventListener('mousemove', onInteract);
+    document.removeEventListener('keydown', onInteract);
+    document.removeEventListener('scroll', onInteract);
+  }
+  overlay.addEventListener('touchstart', onInteract, { passive: true });
+  overlay.addEventListener('click', onInteract);
+  overlay.addEventListener('mousemove', onInteract);
+  document.addEventListener('mousemove', onInteract);
+  document.addEventListener('keydown', onInteract);
+  document.addEventListener('scroll', onInteract, { passive: true });
+
+  // 5. Visibility change (tab switching)
   document.addEventListener('visibilitychange', function(){
     if (document.visibilityState === 'visible' && !started) {
       startEverything();
