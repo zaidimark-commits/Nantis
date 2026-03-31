@@ -79,6 +79,15 @@
     box-shadow:0 0 24px rgba(0,168,232,.9);
   }
 
+  /* ── Weather on screen 1 ─────────────────────────── */
+  .nxi-s1-weather {
+    color:rgba(240,242,245,.5); font-size:.7rem;
+    letter-spacing:.2em; text-transform:uppercase;
+    font-family:sans-serif; text-align:center;
+    margin-top:6px; display:none;
+    animation: nxUp .5s ease both;
+  }
+
   /* ── Contact info (above divider line) ──────────── */
   .nxi-contact {
     color:rgba(240,242,245,.25); font-size:.7rem;
@@ -238,6 +247,7 @@
     .nxi-sub { font-size:.7rem; }
     .nxi-btns { gap:14px; margin-top:10px; }
     .nxi-btn { padding:8px 28px; font-size:.65rem; }
+    .nxi-s1-weather { font-size:.6rem; }
     .nxi-contact { font-size:.6rem; padding-bottom:10px; }
     #nxi-motto-s1 { padding:14px 20px 18px; }
     #nxi-motto-s1 span { font-size:1.1rem; }
@@ -263,6 +273,9 @@
       <button class="nxi-btn" data-lang="en">ENGLISH</button>
       <button class="nxi-btn" data-lang="fr">FRAN&Ccedil;AIS</button>
     </div>
+
+    <!-- Weather: loads immediately, appears between buttons and contact -->
+    <span id="nxi-s1-weather" class="nxi-s1-weather"></span>
 
     <!-- Contact info — sits above the divider line -->
     <div class="nxi-contact">
@@ -397,7 +410,7 @@
   function startLoading() {
     animProgress(25, 1200);
     loadNAV();
-    loadWeather();
+    loadWeatherForS2();
     setTimeout(doExit, 15000);
   }
 
@@ -452,46 +465,78 @@
     }, delay);
   }
 
-  /* ── Weather ──────────────────────────────────────── */
+  /* ── Weather (loads immediately for Screen 1) ─────── */
 
-  function loadWeather() {
+  var weatherText = ''; // cached result for Screen 2 reuse
+
+  function fetchWeatherNow() {
     var x = new XMLHttpRequest();
     x.open('GET', 'https://ipapi.co/json/');
     x.timeout = 5000;
     x.onload = function() {
-      if (x.status < 200 || x.status >= 300) { weatherDone = true; setProgress(Math.max(progress,80)); checkDone(); return; }
+      if (x.status < 200 || x.status >= 300) return;
       try {
         var d = JSON.parse(x.responseText);
-        if (!d.city || d.latitude == null) { weatherDone = true; setProgress(Math.max(progress,80)); checkDone(); return; }
+        if (!d.city || d.latitude == null) return;
 
         var x2 = new XMLHttpRequest();
         x2.open('GET', 'https://api.open-meteo.com/v1/forecast?latitude='+d.latitude+'&longitude='+d.longitude+'&current_weather=true');
         x2.timeout = 5000;
         x2.onload = function() {
-          weatherDone = true;
           try {
             var wd = JSON.parse(x2.responseText);
-            var el = g('nxi-weather');
-            if (el && wd.current_weather) {
-              el.textContent = d.city + '  |  ' + Math.round(wd.current_weather.temperature) + '\u00B0C';
-              el.style.display = 'block';
+            if (wd.current_weather) {
+              weatherText = d.city + '  |  ' + Math.round(wd.current_weather.temperature) + '\u00B0C';
+
+              // Show on Screen 1
+              var s1w = g('nxi-s1-weather');
+              if (s1w) {
+                s1w.textContent = weatherText;
+                s1w.style.display = 'block';
+              }
             }
           } catch(e){}
-          setProgress(Math.max(progress, 85));
-          checkDone();
         };
-        x2.onerror = x2.ontimeout = function() {
-          weatherDone = true; setProgress(Math.max(progress,80)); checkDone();
-        };
+        x2.onerror = x2.ontimeout = function(){};
         x2.send();
-      } catch(e) {
-        weatherDone = true; setProgress(Math.max(progress,80)); checkDone();
-      }
+      } catch(e){}
     };
-    x.onerror = x.ontimeout = function() {
-      weatherDone = true; setProgress(Math.max(progress,80)); checkDone();
-    };
+    x.onerror = x.ontimeout = function(){};
     x.send();
+  }
+
+  // Fire weather fetch immediately — shows on Screen 1 if it arrives in time
+  fetchWeatherNow();
+
+  // Screen 2 weather: uses cached result or re-fetches
+  function loadWeatherForS2() {
+    if (weatherText) {
+      // Already have it from Screen 1
+      var el = g('nxi-weather');
+      if (el) { el.textContent = weatherText; el.style.display = 'block'; }
+      weatherDone = true;
+      setProgress(Math.max(progress, 85));
+      checkDone();
+      return;
+    }
+    // Not loaded yet — wait briefly, then mark done
+    var waited = 0;
+    var poll = setInterval(function(){
+      waited += 300;
+      if (weatherText) {
+        clearInterval(poll);
+        var el = g('nxi-weather');
+        if (el) { el.textContent = weatherText; el.style.display = 'block'; }
+        weatherDone = true;
+        setProgress(Math.max(progress, 85));
+        checkDone();
+      } else if (waited >= 4000) {
+        clearInterval(poll);
+        weatherDone = true;
+        setProgress(Math.max(progress, 80));
+        checkDone();
+      }
+    }, 300);
   }
 
   /* ── Exit ─────────────────────────────────────────── */
