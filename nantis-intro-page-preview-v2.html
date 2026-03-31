@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NANTIS Intro Page — Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+/* ── Fake page behind (simulates your real site) ─── */
+body{margin:0;font-family:sans-serif;background:#111}
+#page-behind{display:none;padding:60px 40px;color:#fff;text-align:center}
+#page-behind h1{font-size:2rem;margin-bottom:20px}
+#page-behind p{color:#aaa;font-size:1rem}
+
+/* ── Starry sky background ─────────────────────────── */
+#nxi-stars1,#nxi-stars2,#nxi-stars3{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none;border-radius:50%}
+#nxi-stars1{background:transparent;animation:nxStarDrift 80s linear infinite}
+#nxi-stars2{background:transparent;animation:nxStarDrift 120s linear infinite}
+#nxi-stars3{background:transparent;animation:nxStarDrift 200s linear infinite}
+#nxi-sparkles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none;overflow:hidden}
+#nxi-milky{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999997;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 20%,rgba(60,90,160,.04) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 80%,rgba(70,100,180,.035) 0%,transparent 45%),
+             radial-gradient(ellipse at 50% 50%,rgba(40,60,120,.03) 0%,transparent 60%);
+  opacity:.6}
+@keyframes nxStarDrift{0%{transform:translateY(0)}100%{transform:translateY(-20px)}}
+@keyframes nxTwinkle1{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes nxTwinkle2{0%,100%{opacity:.6}50%{opacity:.1}}
+@keyframes nxTwinkle3{0%,100%{opacity:.15}40%{opacity:1}60%{opacity:.8}100%{opacity:.15}}
+.nxi-sparkle{position:absolute;color:#fff;font-size:10px;animation:nxSparkle 3s ease-in-out infinite;pointer-events:none;text-shadow:0 0 5px rgba(180,210,255,.7),0 0 10px rgba(140,180,255,.35)}
+@keyframes nxSparkle{0%,100%{opacity:.1;transform:scale(.5) rotate(0deg)}25%{opacity:1;transform:scale(1.2) rotate(20deg)}50%{opacity:.3;transform:scale(.7) rotate(0deg)}75%{opacity:.9;transform:scale(1) rotate(-20deg)}}
+
+/* ── Intro page styles ─────────────────────────────── */
+#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#nxi *{box-sizing:border-box;margin:0;padding:0}
+#nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
+#nxi-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
+#nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
+.nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
+.nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
+.nxi-loc{color:rgba(240,242,245,.2);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px;animation:nxUp .7s ease 1.5s both}
+.nxi-btns{display:flex;gap:24px;margin-top:28px;animation:nxUp .7s ease 1.8s both}
+.nxi-btn{padding:16px 56px;background:rgba(0,0,0,.85);border:1px solid #00a8e8;color:#00a8e8;font-size:1.1rem;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:3px;box-shadow:0 0 12px rgba(0,168,232,.5);transition:background .3s,box-shadow .3s;-webkit-appearance:none}
+.nxi-btn:hover{background:rgba(0,168,232,.15);box-shadow:0 0 24px rgba(0,168,232,.9)}
+.nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:12px;display:none;animation:nxUp .5s ease both}
+.nxi-contact{color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:6px;padding-bottom:0;animation:nxUp .7s ease 2s both,nxContactGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact-icon{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:4px;filter:drop-shadow(0 0 4px rgba(0,168,232,.6));animation:nxIconGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact-sep{display:inline-block;margin:0 10px;color:rgba(240,242,245,.12)}
+#nxi-motto-s1{width:100%;padding:18px 24px 26px;text-align:center;flex-shrink:0;border-top:1px solid rgba(0,168,232,.15)}
+#nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
+.nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
+
+/* ── Screen 2 ──────────────────────────────────────── */
+#nxi-s2{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:14px}
+.nxi-bar-wrap{width:260px}
+.nxi-bar-track{width:100%;height:3px;background:rgba(0,168,232,.15);border-radius:2px}
+#nxi-bar{width:0%;height:3px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8);transition:width .15s linear}
+#nxi-pct{color:#00a8e8;font-size:.75rem;letter-spacing:.15em;font-family:sans-serif;text-align:center;transition:opacity .4s ease}
+#nxi-status{color:rgba(240,242,245,.35);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;animation:nxGlow 1.5s ease-in-out infinite}
+#nxi-weather{color:rgba(240,242,245,.6);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;display:none}
+.nxi-nav-box{width:100%;max-width:380px;margin-top:10px}
+.nxi-nav-hdr{color:rgba(240,242,245,.5);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-bottom:10px}
+.nxi-nr{margin-bottom:8px}
+.nxi-nl{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:3px}
+.nxi-nbw{width:100%;height:22px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden}
+.nxi-nbf{height:100%;width:0%;border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
+.nxi-nbo{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+.nxi-nbo span{font-size:.75rem;color:#fff;font-family:sans-serif;font-weight:700}
+#nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
+#nxi.nxi-fadeout{opacity:0;transition:opacity 1.2s ease}
+
+/* ── Animations ────────────────────────────────────── */
+@keyframes nxPop{0%{opacity:0;transform:scale(.3) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes nxUp{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes nxGrow{0%{width:0}100%{width:180px}}
+@keyframes nxGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
+@keyframes nxContactGlow{0%,100%{color:rgba(240,242,245,.25);text-shadow:0 0 6px rgba(0,168,232,.15)}50%{color:rgba(240,242,245,.45);text-shadow:0 0 14px rgba(0,168,232,.4)}}
+@keyframes nxIconGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(0,168,232,.4));opacity:.5}50%{filter:drop-shadow(0 0 10px rgba(0,168,232,.9));opacity:.85}}
+@keyframes nxLogoGlow{0%,100%{filter:drop-shadow(0 0 24px rgba(0,168,232,.45))}50%{filter:drop-shadow(0 0 40px rgba(0,168,232,.85))}}
+
+/* ── Thinker exit animation ────────────────────────── */
+#nxi-thinker{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000000;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.nxi-thinker-wrap{opacity:0;animation:nxThinkerIn .8s ease .2s forwards}
+.nxi-thinker-svg{width:160px;height:240px;filter:drop-shadow(0 0 18px rgba(0,168,232,.35))}
+
+/* The motto emerging above the figure */
+#nxi-motto-think{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;padding:0 20px;margin-bottom:16px;animation:nxMottoEmerge 1.2s ease 1.4s forwards;text-shadow:0 0 20px rgba(0,168,232,.5),0 0 60px rgba(0,168,232,.2)}
+
+@keyframes nxThinkerIn{0%{opacity:0;transform:scale(.85) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes nxMottoEmerge{0%{opacity:0;transform:translateY(20px) scale(.8)}60%{opacity:1;transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1);text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)}}
+@keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
+
+/* ── Mobile ────────────────────────────────────────── */
+@media(max-height:650px){
+  #nxi-logo{width:70px;height:70px}
+  .nxi-title{font-size:1.7rem}
+  .nxi-sub{font-size:.7rem}
+  .nxi-btns{gap:16px;margin-top:18px}
+  .nxi-btn{padding:13px 44px;font-size:.92rem}
+  .nxi-s1-weather{font-size:.6rem;margin-top:8px}
+  .nxi-contact{font-size:.6rem;padding-bottom:10px}
+  #nxi-motto-s1{padding:14px 20px 18px}
+  #nxi-motto-s1 span{font-size:1.1rem}
+  #nxi-s2{gap:10px;padding:20px 16px}
+  #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
+  .nxi-nbw{height:18px}
+  .nxi-thinker-svg{width:120px;height:180px}
+  #nxi-motto-think{font-size:1.3rem;letter-spacing:.12em;margin-bottom:10px}
+}
+</style>
+</head>
+<body>
+
+<!-- Fake page behind (only for preview) -->
+<div id="page-behind">
+  <h1>nantis.ca — Main Website</h1>
+  <p>This simulates what the user sees after the intro finishes (English).<br>For French, they'd be redirected to nantis.ca/fr/</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- INTRO PAGE                                         -->
+<!-- ═══════════════════════════════════════════════════ -->
+
+<div id="nxi-milky"></div>
+<div id="nxi-stars1"></div>
+<div id="nxi-stars2"></div>
+<div id="nxi-stars3"></div>
+<div id="nxi-sparkles"></div>
+
+<div id="nxi">
+  <!-- Screen 1: Branding + Language Selection -->
+  <div id="nxi-s1">
+    <img id="nxi-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="NANTIS">
+    <div id="nxi-line"></div>
+    <span class="nxi-title">NANTIS</span>
+    <span class="nxi-sub">Asset Management Inc.</span>
+    <span class="nxi-loc">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
+
+    <div class="nxi-btns">
+      <button class="nxi-btn" data-lang="en">ENGLISH</button>
+      <button class="nxi-btn" data-lang="fr">FRAN&Ccedil;AIS</button>
+    </div>
+
+    <span id="nxi-s1-weather" class="nxi-s1-weather"></span>
+
+    <div class="nxi-contact">
+      <svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>514.416.3466<span class="nxi-contact-sep">||</span><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>INFO@NANTIS.CA
+    </div>
+  </div>
+
+  <div id="nxi-motto-s1">
+    <span>THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  </div>
+
+  <!-- Screen 2: Progress + NAV Data -->
+  <div id="nxi-s2">
+    <img class="nxi-s2-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
+         style="width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 20px rgba(0,168,232,.45));margin-bottom:4px" alt="">
+    <div class="nxi-bar-wrap">
+      <div class="nxi-bar-track"><div id="nxi-bar"></div></div>
+    </div>
+    <span id="nxi-pct">0%</span>
+    <span id="nxi-status">Loading data...</span>
+    <span id="nxi-weather"></span>
+    <div class="nxi-nav-box">
+      <div class="nxi-nav-hdr">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
+      <div class="nxi-nr">
+        <div class="nxi-nl" style="color:#00c9d4">Class A</div>
+        <div class="nxi-nbw">
+          <div id="nxi-ba" class="nxi-nbf" style="background:linear-gradient(90deg,#006d75,#00c9d4)"></div>
+          <div class="nxi-nbo"><span id="nxi-ad"></span><span id="nxi-ap"></span></div>
+        </div>
+      </div>
+      <div class="nxi-nr">
+        <div class="nxi-nl" style="color:#00AEEF">Class F</div>
+        <div class="nxi-nbw">
+          <div id="nxi-bf" class="nxi-nbf" style="background:linear-gradient(90deg,#0a4a7a,#00AEEF)"></div>
+          <div class="nxi-nbo"><span id="nxi-fd"></span><span id="nxi-fp"></span></div>
+        </div>
+      </div>
+    </div>
+    <span id="nxi-motto-s2">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  </div>
+</div>
+
+<!-- Thinker exit animation overlay -->
+<div id="nxi-thinker">
+  <span id="nxi-motto-think">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  <div class="nxi-thinker-wrap">
+    <svg class="nxi-thinker-svg" viewBox="1230 280 430 790" xmlns="http://www.w3.org/2000/svg">
+      <!-- Lightbulb figure from outside the box 2.svg — recolored in Nantis baby blue -->
+      <!-- Rays around the bulb -->
+      <g opacity="0.5">
+        <!-- Side rays -->
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1111.78125 887.058594 L 1179.988281 844.03125 C 1183.210938 842 1187.371094 843.128906 1189.28125 846.550781 C 1191.191406 849.96875 1190.128906 854.390625 1186.910156 856.421875 L 1118.691406 899.449219 C 1115.480469 901.480469 1111.320312 900.351562 1109.410156 896.929688 C 1107.5 893.511719 1108.558594 889.089844 1111.78125 887.058594 Z"/>
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1778.378906 887.058594 L 1710.171875 844.03125 C 1706.949219 842 1702.789062 843.128906 1700.878906 846.550781 C 1698.96875 849.96875 1700.039062 854.390625 1703.25 856.421875 L 1771.46875 899.449219 C 1774.679688 901.480469 1778.839844 900.351562 1780.75 896.929688 C 1782.660156 893.511719 1781.601562 889.089844 1778.378906 887.058594 Z"/>
+        <!-- Horizontal rays -->
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1835.210938 688.460938 L 1754.28125 686.300781 C 1750.550781 686.199219 1747.429688 689.351562 1747.339844 693.320312 C 1747.25 697.289062 1750.210938 700.601562 1753.941406 700.699219 L 1834.871094 702.859375 C 1838.609375 702.960938 1841.71875 699.820312 1841.808594 695.839844 C 1841.910156 691.871094 1838.949219 688.558594 1835.210938 688.460938 Z"/>
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1054.949219 688.460938 L 1135.878906 686.300781 C 1139.621094 686.199219 1142.730469 689.351562 1142.820312 693.320312 C 1142.921875 697.289062 1139.960938 700.601562 1136.21875 700.699219 L 1055.289062 702.859375 C 1051.550781 702.960938 1048.441406 699.820312 1048.351562 695.839844 C 1048.25 691.871094 1051.210938 688.558594 1054.949219 688.460938 Z"/>
+        <!-- Diagonal rays -->
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1780.199219 489.378906 L 1709.730469 528.710938 C 1706.421875 530.550781 1705.140625 534.910156 1706.878906 538.429688 C 1708.621094 541.949219 1712.710938 543.308594 1716.03125 541.460938 L 1786.5 502.128906 C 1789.808594 500.289062 1791.089844 495.929688 1789.351562 492.410156 C 1787.609375 488.890625 1783.511719 487.53125 1780.199219 489.378906 Z"/>
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1109.960938 489.378906 L 1180.441406 528.710938 C 1183.75 530.550781 1185.019531 534.910156 1183.289062 538.429688 C 1181.550781 541.949219 1177.449219 543.308594 1174.140625 541.460938 L 1103.671875 502.128906 C 1100.351562 500.289062 1099.078125 495.929688 1100.808594 492.410156 C 1102.550781 488.890625 1106.648438 487.53125 1109.960938 489.378906 Z"/>
+        <!-- Upper diagonal rays -->
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1628.859375 347.019531 L 1589.011719 416.578125 C 1587.070312 419.96875 1588.078125 424.410156 1591.28125 426.480469 C 1594.46875 428.539062 1598.640625 427.46875 1600.589844 424.070312 L 1640.429688 354.511719 C 1642.378906 351.121094 1641.359375 346.679688 1638.171875 344.621094 C 1634.96875 342.550781 1630.800781 343.628906 1628.859375 347.019531 Z"/>
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1261.308594 347.019531 L 1301.148438 416.578125 C 1303.089844 419.96875 1302.078125 424.410156 1298.890625 426.480469 C 1295.691406 428.539062 1291.519531 427.46875 1289.578125 424.070312 L 1249.730469 354.511719 C 1247.789062 351.121094 1248.800781 346.679688 1251.988281 344.621094 C 1255.191406 342.550781 1259.359375 343.628906 1261.308594 347.019531 Z"/>
+        <!-- Top vertical ray -->
+        <path fill="rgb(0,168,232)" fill-opacity="0.4" d="M 1438.800781 301.921875 L 1438.070312 381.820312 C 1438.03125 385.789062 1441.039062 389.050781 1444.78125 389.089844 C 1448.519531 389.128906 1451.578125 385.929688 1451.621094 381.960938 L 1452.351562 302.058594 C 1452.390625 298.078125 1449.378906 294.820312 1445.640625 294.78125 C 1441.898438 294.75 1438.828125 297.941406 1438.800781 301.921875"/>
+      </g>
+      <!-- Bulb outline (dark blue border) -->
+      <path fill="rgb(10,60,90)" d="M 1521.921875 925.808594 C 1521.929688 925.691406 1521.929688 925.578125 1521.929688 925.460938 C 1521.929688 899.160156 1535.371094 874.730469 1557.480469 860.839844 C 1615.238281 824.628906 1653.738281 759.96875 1653.738281 686.300781 C 1653.738281 573.019531 1562.699219 481.039062 1450.578125 481.039062 C 1338.449219 481.039062 1247.421875 573.019531 1247.421875 686.300781 C 1247.421875 759.96875 1285.910156 824.628906 1343.679688 860.828125 C 1365.78125 874.71875 1379.21875 899.160156 1379.21875 925.460938 C 1379.21875 940.460938 1391.25 952.609375 1406.089844 952.609375 C 1430.378906 952.609375 1470.769531 952.609375 1495.058594 952.609375 C 1509.78125 952.609375 1521.738281 940.640625 1521.921875 925.808594 Z M 1508.820312 925.039062 C 1508.808594 925.179688 1508.808594 925.320312 1508.808594 925.460938 C 1508.808594 933.140625 1502.648438 939.359375 1495.058594 939.359375 L 1406.089844 939.359375 C 1398.5 939.359375 1392.339844 933.140625 1392.339844 925.460938 C 1392.339844 894.578125 1376.558594 865.890625 1350.601562 849.578125 C 1350.601562 849.578125 1350.601562 849.578125 1350.601562 849.570312 C 1296.550781 815.699219 1260.53125 755.21875 1260.53125 686.300781 C 1260.53125 580.328125 1345.691406 494.300781 1450.578125 494.300781 C 1555.460938 494.300781 1640.621094 580.328125 1640.621094 686.300781 C 1640.621094 755.21875 1604.601562 815.710938 1550.558594 849.578125 C 1550.550781 849.578125 1550.550781 849.578125 1550.550781 849.578125 C 1524.710938 865.820312 1508.960938 894.320312 1508.820312 925.039062 Z M 1519.660156 930.480469 C 1518.558594 931.429688 1517.148438 932.03125 1515.601562 932.078125 C 1519.050781 931.960938 1519.511719 930.640625 1519.660156 930.480469 Z M 1521.910156 925.910156 C 1521.808594 927.589844 1521.070312 929.109375 1519.929688 930.21875 C 1521.46875 928.769531 1521.851562 927.410156 1521.910156 925.910156"/>
+      <!-- Bulb left half (lighter baby blue) -->
+      <path fill="rgb(88,178,228)" d="M 1385.78125 922.359375 C 1385.78125 895.371094 1371.769531 870.328125 1348.78125 856.21875 C 1291.960938 821.378906 1253.96875 758.289062 1253.96875 686.300781 C 1253.96875 576.671875 1342.070312 487.671875 1450.578125 487.671875 C 1559.078125 487.671875 1647.179688 576.671875 1647.179688 686.300781 C 1647.179688 758.289062 1609.191406 821.378906 1552.378906 856.21875 C 1529.390625 870.339844 1515.378906 895.378906 1515.378906 922.359375 C 1515.371094 922.359375 1515.371094 922.359375 1515.371094 922.359375 C 1515.371094 935.410156 1504.789062 945.988281 1491.738281 945.988281 C 1468.359375 945.988281 1432.789062 945.988281 1409.410156 945.988281 C 1396.359375 945.988281 1385.78125 935.410156 1385.78125 922.359375"/>
+      <!-- Bulb right half (darker shade) -->
+      <path fill="rgb(46,133,188)" d="M 1390.070312 910.210938 C 1390.070312 910.210938 1448.898438 914.859375 1475.011719 900.28125 C 1497.691406 887.609375 1488.589844 851.5 1512.050781 840.039062 C 1592.351562 800.78125 1692.210938 623.078125 1509.121094 496.609375 C 1509.121094 496.609375 1640.550781 533.140625 1645.988281 670.738281 C 1651.511719 810.300781 1568.628906 833.199219 1534.960938 873.480469 C 1521.75 889.28125 1515.398438 913.710938 1512.519531 929.488281 C 1510.910156 938.410156 1503.160156 944.910156 1494.089844 944.929688 C 1471.921875 944.988281 1432.269531 945.089844 1408.75 945.160156 C 1403.730469 945.171875 1398.921875 943.171875 1395.378906 939.609375 C 1391.839844 936.050781 1389.878906 931.21875 1389.929688 926.199219 C 1390 917.980469 1390.070312 910.210938 1390.070312 910.210938"/>
+      <!-- White highlight line -->
+      <path fill="rgba(255,255,255,0.85)" d="M 1351.839844 806.011719 C 1351.839844 806.011719 1313 772.558594 1301.738281 718.671875 C 1295.949219 690.929688 1297.730469 657.71875 1316.191406 620.789062 C 1318.628906 615.648438 1316.488281 609.46875 1311.398438 607 C 1306.308594 604.53125 1300.191406 606.699219 1297.738281 611.839844 C 1278.660156 654.128906 1278.191406 691.488281 1285.921875 722.378906 C 1300.511719 780.621094 1344.230469 815.421875 1344.230469 815.421875 C 1346.800781 817.539062 1350.589844 817.148438 1352.691406 814.558594 C 1354.789062 811.960938 1354.410156 808.128906 1351.839844 806.011719"/>
+      <!-- White highlight dot -->
+      <path fill="rgba(255,255,255,0.85)" d="M 1336.28125 585.789062 C 1339.328125 578.570312 1346.210938 567.878906 1355.03125 557.988281 C 1362.789062 549.289062 1371.808594 541.070312 1381.089844 536.421875 C 1384.269531 535.039062 1385.738281 531.308594 1384.371094 528.101562 C 1383.011719 524.878906 1379.308594 523.390625 1376.128906 524.78125 C 1364.871094 528.949219 1353.390625 537.140625 1343.390625 546.171875 C 1331.730469 556.691406 1322.429688 568.539062 1317.921875 576.660156 C 1315.429688 581.769531 1317.511719 587.96875 1322.578125 590.488281 C 1327.640625 593.019531 1333.78125 590.910156 1336.28125 585.789062"/>
+      <!-- Screw base outline (dark) -->
+      <path fill="rgb(10,60,90)" d="M 1378.910156 982.421875 C 1372.179688 986.449219 1367.671875 993.851562 1367.671875 1002.320312 C 1367.671875 1015.089844 1377.910156 1025.429688 1390.539062 1025.429688 L 1393.558594 1025.429688 C 1392.011719 1028.449219 1391.179688 1031.828125 1391.179688 1035.289062 C 1391.179688 1040.960938 1393.410156 1046.398438 1397.378906 1050.410156 C 1401.351562 1054.421875 1406.730469 1056.671875 1412.351562 1056.671875 L 1485.71875 1056.671875 C 1491.339844 1056.671875 1496.71875 1054.421875 1500.691406 1050.410156 C 1504.660156 1046.398438 1506.890625 1040.960938 1506.890625 1035.289062 C 1506.890625 1031.828125 1506.058594 1028.449219 1504.511719 1025.429688 L 1507.53125 1025.429688 C 1520.160156 1025.429688 1530.398438 1015.089844 1530.398438 1002.320312 C 1530.398438 993.851562 1525.890625 986.449219 1519.160156 982.421875 C 1522.730469 977.890625 1524.859375 972.148438 1524.859375 965.910156 C 1524.859375 951.25 1513.089844 939.359375 1498.570312 939.359375 L 1399.5 939.359375 C 1384.980469 939.359375 1373.210938 951.25 1373.210938 965.910156 C 1373.210938 972.148438 1375.339844 977.890625 1378.910156 982.421875 Z M 1493.769531 1035.289062 C 1493.769531 1037.449219 1492.929688 1039.511719 1491.421875 1041.039062 C 1489.910156 1042.570312 1487.859375 1043.421875 1485.71875 1043.421875 C 1466.210938 1043.421875 1431.859375 1043.421875 1412.351562 1043.421875 C 1410.210938 1043.421875 1408.160156 1042.570312 1406.648438 1041.039062 C 1405.140625 1039.511719 1404.300781 1037.449219 1404.300781 1035.289062 C 1404.300781 1033.128906 1405.140625 1031.058594 1406.648438 1029.539062 C 1408.160156 1028.011719 1410.210938 1027.160156 1412.351562 1027.160156 C 1431.859375 1027.160156 1466.210938 1027.160156 1485.71875 1027.160156 C 1487.859375 1027.160156 1489.910156 1028.011719 1491.421875 1029.539062 C 1492.929688 1031.058594 1493.769531 1033.128906 1493.769531 1035.289062 Z M 1517.28125 1002.320312 C 1517.28125 1007.769531 1512.921875 1012.179688 1507.53125 1012.179688 C 1507.53125 1012.179688 1390.558594 1012.179688 1390.539062 1012.179688 C 1385.160156 1012.179688 1380.789062 1007.769531 1380.789062 1002.320312 C 1380.789062 996.878906 1385.160156 992.46875 1390.539062 992.46875 C 1390.539062 992.46875 1507.511719 992.46875 1507.53125 992.46875 C 1512.921875 992.46875 1517.28125 996.878906 1517.28125 1002.320312 Z M 1511.738281 965.910156 C 1511.738281 973.261719 1505.851562 979.21875 1498.570312 979.21875 C 1472.230469 979.21875 1425.839844 979.21875 1399.5 979.21875 C 1392.230469 979.21875 1386.328125 973.261719 1386.328125 965.910156 C 1386.328125 958.570312 1392.230469 952.609375 1399.5 952.609375 C 1425.839844 952.609375 1472.230469 952.609375 1498.570312 952.609375 C 1505.851562 952.609375 1511.738281 958.570312 1511.738281 965.910156"/>
+      <!-- Screw base fill (baby blue) -->
+      <path fill="rgb(91,192,239)" d="M 1399.5 985.839844 L 1390.539062 985.839844 C 1381.53125 985.839844 1374.230469 993.21875 1374.230469 1002.320312 C 1374.230469 1011.429688 1381.53125 1018.808594 1390.539062 1018.808594 L 1409.039062 1018.808594 C 1406.410156 1019.429688 1403.960938 1020.78125 1402.019531 1022.75 C 1399.28125 1025.519531 1397.738281 1029.269531 1397.738281 1033.179688 C 1397.738281 1037.101562 1399.28125 1040.851562 1402.019531 1043.621094 C 1404.761719 1046.390625 1408.46875 1047.941406 1412.351562 1047.941406 C 1431.859375 1047.941406 1466.210938 1047.941406 1485.71875 1047.941406 C 1489.601562 1047.941406 1493.308594 1046.390625 1496.050781 1043.621094 C 1498.789062 1040.851562 1500.328125 1037.101562 1500.328125 1033.179688 C 1500.328125 1029.269531 1498.789062 1025.519531 1496.050781 1022.75 C 1494.109375 1020.78125 1491.671875 1019.429688 1489.03125 1018.808594 L 1507.53125 1018.808594 C 1516.539062 1018.808594 1523.839844 1011.429688 1523.839844 1002.320312 C 1523.839844 993.21875 1516.539062 985.839844 1507.53125 985.839844 L 1498.570312 985.839844 C 1509.46875 985.839844 1518.300781 976.921875 1518.300781 965.910156 C 1518.300781 954.910156 1509.46875 945.988281 1498.570312 945.988281 C 1472.230469 945.988281 1425.839844 945.988281 1399.5 945.988281 C 1388.601562 945.988281 1379.769531 954.910156 1379.769531 965.910156 C 1379.769531 976.921875 1388.601562 985.839844 1399.5 985.839844"/>
+      <!-- Screw detail (mid shade) -->
+      <path fill="rgb(46,133,188)" d="M 1464.988281 948.941406 C 1464.988281 948.941406 1468.46875 961.421875 1459.789062 967.300781 C 1444.820312 977.460938 1386.929688 985.640625 1386.929688 985.640625 L 1461.03125 985.121094 C 1451.238281 1004.449219 1418.738281 1011.71875 1383.839844 1016.621094 L 1461.078125 1017.441406 C 1452.21875 1031.628906 1427.089844 1040.988281 1400.871094 1047.039062 L 1496.828125 1046.210938 L 1497.25 1021.761719 L 1514.390625 1017.949219 C 1524.738281 1006.878906 1524.839844 996.339844 1513.101562 983.949219 C 1519.898438 972.269531 1519.929688 960.769531 1512.320312 949.460938 L 1464.988281 948.941406"/>
+    </svg>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var g = document.getElementById.bind(document);
+  var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2');
+  var motto1 = g('nxi-motto-s1');
+  var bar = g('nxi-bar'), pctEl = g('nxi-pct'), statusEl = g('nxi-status');
+
+  if (!ov) return;
+
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+
+  /* ── Language buttons ──────────────────────────────── */
+
+  var targetLang = '';
+
+  var btns = document.querySelectorAll('.nxi-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function(e){
+      e.preventDefault();
+      targetLang = this.getAttribute('data-lang');
+
+      s1.style.transition = 'opacity .5s ease';
+      s1.style.opacity = '0';
+      motto1.style.transition = 'opacity .5s ease';
+      motto1.style.opacity = '0';
+
+      setTimeout(function(){
+        s1.style.display = 'none';
+        motto1.style.display = 'none';
+        s2.style.display = 'flex';
+        s2.style.opacity = '0';
+        s2.style.transition = 'opacity .5s ease';
+        requestAnimationFrame(function(){ s2.style.opacity = '1'; });
+        startLoading();
+      }, 500);
+    });
+  }
+
+  /* ── Progress ──────────────────────────────────────── */
+
+  var progress = 0, barTimer = null;
+
+  function setProgress(v){
+    progress = Math.min(v,100);
+    bar.style.width = Math.round(progress)+'%';
+    pctEl.textContent = Math.round(progress)+'%';
+  }
+
+  function animProgress(target, ms){
+    var start = progress, t0 = Date.now();
+    if (barTimer) clearInterval(barTimer);
+    barTimer = setInterval(function(){
+      var p = Math.min((Date.now()-t0)/ms,1);
+      setProgress(start+(target-start)*p);
+      if (p>=1) clearInterval(barTimer);
+    },30);
+  }
+
+  var navDone = false, weatherDone = false;
+
+  function checkDone(){
+    if (navDone && weatherDone){ animProgress(100,400); setTimeout(doExit,3500); }
+  }
+
+  function startLoading(){
+    animProgress(25,1200);
+    loadNAV();
+    loadWeatherForS2();
+    setTimeout(doExit,15000);
+  }
+
+  /* ── NAV ───────────────────────────────────────────── */
+
+  function loadNAV(){
+    var url = 'https://docs.google.com/spreadsheets/d/e/' +
+      '2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms' +
+      '/pub?output=csv';
+    var x = new XMLHttpRequest();
+    x.open('GET','https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url));
+    x.timeout = 8000;
+    x.onload = function(){
+      navDone = true;
+      if (x.status<200||x.status>=300){setProgress(60);checkDone();return;}
+      var lines = x.responseText.trim().split('\n');
+      if (lines.length<2){setProgress(60);checkDone();return;}
+      var vals = lines[1].split(',');
+      var raised = parseFloat((vals[0]||'').replace(/[$,%\s]/g,''));
+      var net = parseFloat((vals[1]||'').replace(/[$,%\s]/g,''));
+      if (isNaN(raised)||isNaN(net)||net===0){setProgress(60);checkDone();return;}
+      var cF=(net/raised)*100, cA=cF*0.9475;
+      animProgress(60,500);
+      animNAV('nxi-ba','nxi-ad','nxi-ap',cA,200);
+      animNAV('nxi-bf','nxi-fd','nxi-fp',cF,500);
+      checkDone();
+    };
+    x.onerror = x.ontimeout = function(){navDone=true;setProgress(60);checkDone();};
+    x.send();
+  }
+
+  function fmt(n){return '$'+n.toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  function animNAV(fillId,dId,pId,val,delay){
+    setTimeout(function(){
+      var fill=g(fillId),dEl=g(dId),pEl=g(pId);
+      if(!fill||!dEl||!pEl)return;
+      fill.style.width=Math.min(val,100)+'%';
+      var t0=performance.now();
+      (function step(ts){
+        var p=Math.min((ts-t0)/1800,1), v=1-Math.pow(1-p,3);
+        dEl.textContent=fmt(val*v);
+        pEl.textContent=(val*v).toFixed(2)+'%';
+        if(p<1)requestAnimationFrame(step);
+      })(t0);
+    },delay);
+  }
+
+  /* ── Weather ───────────────────────────────────────── */
+
+  var weatherText = '';
+
+  function fetchWeatherNow(){
+    var x = new XMLHttpRequest();
+    x.open('GET','https://ipapi.co/json/');
+    x.timeout = 5000;
+    x.onload = function(){
+      if(x.status<200||x.status>=300)return;
+      try{
+        var d=JSON.parse(x.responseText);
+        if(!d.city||d.latitude==null)return;
+        var x2=new XMLHttpRequest();
+        x2.open('GET','https://api.open-meteo.com/v1/forecast?latitude='+d.latitude+'&longitude='+d.longitude+'&current_weather=true');
+        x2.timeout=5000;
+        x2.onload=function(){
+          try{
+            var wd=JSON.parse(x2.responseText);
+            if(wd.current_weather){
+              weatherText=d.city+'  |  '+Math.round(wd.current_weather.temperature)+'\u00B0C';
+              var s1w=g('nxi-s1-weather');
+              if(s1w){s1w.textContent=weatherText;s1w.style.display='block';}
+            }
+          }catch(e){}
+        };
+        x2.onerror=x2.ontimeout=function(){};
+        x2.send();
+      }catch(e){}
+    };
+    x.onerror=x.ontimeout=function(){};
+    x.send();
+  }
+
+  fetchWeatherNow();
+
+  function loadWeatherForS2(){
+    if(weatherText){
+      var el=g('nxi-weather');
+      if(el){el.textContent=weatherText;el.style.display='block';}
+      weatherDone=true; setProgress(Math.max(progress,85)); checkDone(); return;
+    }
+    var waited=0;
+    var poll=setInterval(function(){
+      waited+=300;
+      if(weatherText){
+        clearInterval(poll);
+        var el=g('nxi-weather');
+        if(el){el.textContent=weatherText;el.style.display='block';}
+        weatherDone=true;setProgress(Math.max(progress,85));checkDone();
+      }else if(waited>=4000){
+        clearInterval(poll);weatherDone=true;setProgress(Math.max(progress,80));checkDone();
+      }
+    },300);
+  }
+
+  /* ── Exit ──────────────────────────────────────────── */
+
+  var exited = false;
+
+  function doExit(){
+    if(exited)return; exited=true;
+    if(barTimer)clearInterval(barTimer);
+    setProgress(100);
+
+    setTimeout(function(){
+      /* Fade out all screen 2 elements */
+      var fadeEls=[pctEl,statusEl,g('nxi-weather'),document.querySelector('.nxi-nav-box'),
+                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo'),g('nxi-motto-s2')];
+      fadeEls.forEach(function(el){
+        if(el){el.style.transition='opacity .5s ease';el.style.opacity='0';}
+      });
+
+      setTimeout(function(){
+        /* Hide screen 2 entirely */
+        s2.style.display='none';
+        ov.style.display='none';
+
+        /* Show thinker animation */
+        var thinker=g('nxi-thinker');
+        if(thinker){thinker.style.display='flex';}
+
+        /* After motto fully appears, add continuous glow then fade everything out */
+        setTimeout(function(){
+          var mottoThink=g('nxi-motto-think');
+          if(mottoThink)mottoThink.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
+
+          /* Hold the scene for a moment, then fade out */
+          setTimeout(function(){
+            if(thinker){thinker.style.transition='opacity 1.2s ease';thinker.style.opacity='0';}
+
+            /* Also fade stars */
+            ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
+              var el=document.getElementById(id);
+              if(el){el.style.transition='opacity 1.2s ease';el.style.opacity='0';}
+            });
+
+            setTimeout(function(){
+              if(thinker)thinker.remove();
+              ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
+                var el=document.getElementById(id); if(el)el.remove();
+              });
+              document.body.style.overflow='';
+              document.documentElement.style.overflow='';
+              document.body.style.background='#111';
+
+              /* ── PREVIEW: show fake page behind ── */
+              document.getElementById('page-behind').style.display = 'block';
+
+              /* ── LIVE: redirect to chosen language ── */
+              // if (targetLang === 'fr') {
+              //   window.location.href = 'https://nantis.ca/fr/';
+              // } else {
+              //   window.location.href = 'https://nantis.ca/home/';
+              // }
+
+            },1300);
+          },1800);
+        },3200);
+      },600);
+    },500);
+  }
+
+})();
+</script>
+<script>
+// Generate random starfield with round glowing dots + sparkle stars
+(function(){
+  function makeStars(id, count, minSize, maxSize, twinkleAnim, glowSize){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var shadows = [];
+    for(var i=0; i<count; i++){
+      var x = Math.random()*2000;
+      var y = Math.random()*2000;
+      var size = minSize + Math.random()*(maxSize-minSize);
+      var brightness = 0.2 + Math.random()*0.6;
+      var color = Math.random()>0.85
+        ? 'rgba(140,180,255,'+brightness+')'
+        : Math.random()>0.7
+          ? 'rgba(255,220,180,'+brightness+')'
+          : 'rgba(255,255,255,'+brightness+')';
+      shadows.push(x+'px '+y+'px '+glowSize+'px '+size+'px '+color);
+    }
+    el.style.boxShadow = shadows.join(',');
+    el.style.width = '1px';
+    el.style.height = '1px';
+    el.style.borderRadius = '50%';
+    if(twinkleAnim){
+      el.style.animation += ', '+twinkleAnim;
+    }
+  }
+
+  // 3 layers with increasing glow
+  makeStars('nxi-stars1', 300, 0, 0.4, 'nxTwinkle1 4s ease-in-out infinite', 0);
+  makeStars('nxi-stars2', 150, 0.3, 0.7, 'nxTwinkle2 6s ease-in-out infinite', 1);
+  makeStars('nxi-stars3', 50, 0.5, 1.2, 'nxTwinkle3 3s ease-in-out infinite', 2);
+
+  // Add sparkle ✦ star shapes for the brightest stars
+  var sparkleContainer = document.getElementById('nxi-sparkles');
+  if(sparkleContainer){
+    var shapes = ['✦','✧','⋆','✶','✴'];
+    for(var i=0; i<35; i++){
+      var span = document.createElement('span');
+      span.className = 'nxi-sparkle';
+      span.textContent = shapes[Math.floor(Math.random()*shapes.length)];
+      span.style.left = Math.random()*100+'%';
+      span.style.top = Math.random()*100+'%';
+      var size = 6 + Math.random()*14;
+      span.style.fontSize = size+'px';
+      span.style.animationDuration = (2+Math.random()*5)+'s';
+      span.style.animationDelay = Math.random()*4+'s';
+      var hue = Math.random()>0.6 ? 'rgba(180,210,255,.8)' : Math.random()>0.5 ? 'rgba(255,230,180,.7)' : 'rgba(255,255,255,.8)';
+      span.style.color = hue;
+      sparkleContainer.appendChild(span);
+    }
+  }
+})();
+</script>
+</body>
+</html>
