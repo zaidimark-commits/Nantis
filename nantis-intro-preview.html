@@ -344,7 +344,8 @@
   function checkDone() {
     if (navDone && weatherDone) {
       animProgress(100, 400);
-      setTimeout(doExit, 2200);
+      // Keep NAV data visible for 3.5s before exiting
+      setTimeout(doExit, 3500);
     }
   }
 
@@ -353,7 +354,7 @@
     loadNAV();
     loadWeather();
     // Hard deadline
-    setTimeout(doExit, 12000);
+    setTimeout(doExit, 15000);
   }
 
   /* ── NAV ──────────────────────────────────────────── */
