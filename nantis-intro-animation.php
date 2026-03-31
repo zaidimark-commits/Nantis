@@ -210,7 +210,7 @@ function nantis_intro_cb() {
   var navDone = false, weatherDone = false;
 
   function checkDone(){
-    if (navDone && weatherDone){ animProgress(100,400); setTimeout(doExit,2500); }
+    if (navDone && weatherDone){ animProgress(100,400); setTimeout(doExit,3500); }
   }
 
   function startLoading(){
