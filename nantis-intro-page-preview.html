@@ -34,7 +34,7 @@ body{margin:0;font-family:sans-serif;background:#111}
 #nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
 #nxi *{box-sizing:border-box;margin:0;padding:0}
 #nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
-#nxi-logo{width:120px;height:120px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
+#nxi-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
 #nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
 .nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
 .nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
@@ -80,23 +80,19 @@ body{margin:0;font-family:sans-serif;background:#111}
 
 /* ── Thinker exit animation ────────────────────────── */
 #nxi-thinker{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000000;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
-.nxi-thinker-wrap{position:relative;opacity:0;animation:nxThinkerIn .8s ease .2s forwards}
-.nxi-thinker-svg{width:200px;height:200px;filter:drop-shadow(0 0 12px rgba(0,168,232,.3))}
-.nxi-gear{transform-origin:145px 72px;animation:nxGearSpin 4s linear infinite}
-.nxi-thinker-logo{width:56px;height:56px;object-fit:cover;border-radius:50%;position:absolute;top:44px;left:88px;filter:drop-shadow(0 0 10px rgba(0,168,232,.6));opacity:0;animation:nxLogoFadeIn .6s ease .6s forwards}
+.nxi-thinker-wrap{opacity:0;animation:nxThinkerIn .8s ease .2s forwards}
+.nxi-thinker-svg{width:220px;height:240px;filter:drop-shadow(0 0 15px rgba(0,168,232,.25))}
 
 /* The motto emerging above the figure */
-#nxi-motto-think{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;padding:0 20px;margin-bottom:20px;animation:nxMottoEmerge 1.2s ease 1.4s forwards;text-shadow:0 0 20px rgba(0,168,232,.5),0 0 60px rgba(0,168,232,.2)}
+#nxi-motto-think{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;padding:0 20px;margin-bottom:16px;animation:nxMottoEmerge 1.2s ease 1.4s forwards;text-shadow:0 0 20px rgba(0,168,232,.5),0 0 60px rgba(0,168,232,.2)}
 
-@keyframes nxThinkerIn{0%{opacity:0;transform:scale(.8) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes nxGearSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes nxLogoFadeIn{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+@keyframes nxThinkerIn{0%{opacity:0;transform:scale(.85) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes nxMottoEmerge{0%{opacity:0;transform:translateY(20px) scale(.8)}60%{opacity:1;transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1);text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)}}
 @keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
 
 /* ── Mobile ────────────────────────────────────────── */
 @media(max-height:650px){
-  #nxi-logo{width:80px}
+  #nxi-logo{width:70px;height:70px}
   .nxi-title{font-size:1.7rem}
   .nxi-sub{font-size:.7rem}
   .nxi-btns{gap:16px;margin-top:18px}
@@ -108,9 +104,8 @@ body{margin:0;font-family:sans-serif;background:#111}
   #nxi-s2{gap:10px;padding:20px 16px}
   #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
   .nxi-nbw{height:18px}
-  .nxi-thinker-svg{width:150px;height:150px}
-  .nxi-thinker-logo{width:42px;height:42px;top:33px;left:66px}
-  #nxi-motto-think{font-size:1.3rem;letter-spacing:.12em;margin-bottom:14px}
+  .nxi-thinker-svg{width:160px;height:175px}
+  #nxi-motto-think{font-size:1.3rem;letter-spacing:.12em;margin-bottom:10px}
 }
 </style>
 </head>
@@ -192,30 +187,50 @@ body{margin:0;font-family:sans-serif;background:#111}
 <div id="nxi-thinker">
   <span id="nxi-motto-think">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
   <div class="nxi-thinker-wrap">
-    <svg class="nxi-thinker-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Head profile silhouette facing left -->
-      <path d="M70 175 C55 175, 48 168, 48 155 L48 145 C38 142, 30 135, 28 125 L26 118 C24 110, 26 102, 32 96 L34 94 C32 88, 30 80, 30 72 C30 45, 52 22, 82 20 C105 18, 125 28, 135 46 C140 55, 142 65, 140 76 L140 80 C148 82, 155 86, 158 92 C160 96, 158 100, 154 102 L148 104 C145 115, 135 124, 122 128 L118 130 C116 138, 110 148, 100 155 L95 158 C92 165, 85 175, 70 175 Z"
-            stroke="#00a8e8" stroke-width="2.5" fill="none"
-            stroke-linecap="round" stroke-linejoin="round"
-            opacity=".85"/>
-      <!-- Ear -->
-      <path d="M148 94 C154 92, 158 96, 158 102 C158 108, 154 112, 148 110"
-            stroke="#00a8e8" stroke-width="2" fill="none" opacity=".6"/>
-      <!-- Gear (cog) — spins around center 145,72 -->
-      <g class="nxi-gear">
-        <path d="M145 48 L148 48 L150 52 C153 52.5, 156 54, 158 56 L162 54 L165 57 L163 61 C164.5 63.5, 165.5 66, 166 69 L170 70 L170 74 L166 75 C165.5 78, 164.5 80.5, 163 83 L165 87 L162 90 L158 88 C156 90, 153 91.5, 150 92 L148 96 L145 96 L143 92 C140 91.5, 137 90, 135 88 L131 90 L128 87 L130 83 C128.5 80.5, 127.5 78, 127 75 L123 74 L123 70 L127 69 C127.5 66, 128.5 63.5, 130 61 L128 57 L131 54 L135 56 C137 54, 140 52.5, 143 52 Z"
-              stroke="rgba(255,255,255,.5)" stroke-width="1.8" fill="none"
-              stroke-linejoin="round"/>
-        <!-- Gear inner circle -->
-        <circle cx="145" cy="72" r="14" stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"/>
+    <svg class="nxi-thinker-svg" viewBox="0 0 220 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Head profile silhouette — exact trace of reference image, facing left -->
+      <path d="M 78 232
+               C 75 222, 68 208, 62 192
+               C 56 176, 50 160, 46 144
+               C 42 130, 38 116, 36 102
+               C 34 86, 36 72, 44 60
+               C 50 50, 60 40, 74 32
+               C 86 26, 100 22, 116 22
+               C 134 22, 150 30, 160 44
+               C 168 54, 172 68, 172 82
+               C 172 96, 168 110, 160 122
+               C 152 134, 142 148, 136 164
+               C 130 180, 124 200, 118 232"
+            stroke="#00a8e8" stroke-width="4" fill="none"
+            stroke-linecap="round" stroke-linejoin="round"/>
+
+      <!-- Clock circle — centered in brain area -->
+      <circle cx="115" cy="88" r="32" stroke="#00a8e8" stroke-width="3.5" fill="none"/>
+
+      <!-- Clock hands: minute (12 o'clock) and hour (3 o'clock) — L shape -->
+      <line x1="115" y1="88" x2="115" y2="62" stroke="#00a8e8" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="115" y1="88" x2="136" y2="88" stroke="#00a8e8" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- Center pivot dot -->
+      <circle cx="115" cy="88" r="3" fill="#00a8e8"/>
+
+      <!-- Spinning gear/cog — 8 teeth, overlapping clock upper-right -->
+      <g>
+        <animateTransform attributeName="transform" type="rotate"
+          from="0 150 65" to="360 150 65" dur="4s" repeatCount="indefinite"/>
+        <path d="M 147.4 50.2 L 146.0 42.3 L 154.0 42.3 L 152.6 50.2
+                 L 158.6 52.7 L 163.2 46.2 L 168.8 51.8 L 162.3 56.4
+                 L 164.8 62.4 L 172.7 61.0 L 172.7 69.0 L 164.8 67.6
+                 L 162.3 73.6 L 168.8 78.2 L 163.2 83.8 L 158.6 77.3
+                 L 152.6 79.8 L 154.0 87.7 L 146.0 87.7 L 147.4 79.8
+                 L 141.4 77.3 L 136.8 83.8 L 131.2 78.2 L 137.7 73.6
+                 L 135.2 67.6 L 127.3 69.0 L 127.3 61.0 L 135.2 62.4
+                 L 137.7 56.4 L 131.2 51.8 L 136.8 46.2 L 141.4 52.7 Z"
+              stroke="#00a8e8" stroke-width="2.5" fill="none"
+              stroke-linejoin="round" opacity=".8"/>
+        <!-- Gear hub circle -->
+        <circle cx="150" cy="65" r="8" stroke="#00a8e8" stroke-width="2" fill="none" opacity=".6"/>
       </g>
-      <!-- Circle behind logo — static, inside brain area -->
-      <circle cx="116" cy="72" r="30" stroke="#00a8e8" stroke-width="2" fill="rgba(0,0,0,.4)" opacity=".7"/>
-      <!-- Inner ring glow -->
-      <circle cx="116" cy="72" r="24" stroke="rgba(0,168,232,.25)" stroke-width="1" fill="none"/>
     </svg>
-    <!-- Nantis logo replaces clock hands -->
-    <img class="nxi-thinker-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="">
   </div>
 </div>
 
