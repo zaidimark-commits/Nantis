@@ -32,47 +32,47 @@ function nantis_intro_cb() {
     <span style="color:rgba(240,242,245,.6)!important;font-size:.85rem!important;letter-spacing:.18em!important;text-transform:uppercase!important;font-family:sans-serif!important;animation:nxUp .7s ease 1.3s both!important">Asset Management Inc.</span>
 
     <!-- Progress bar -->
-    <div style="width:220px!important;margin-top:10px!important">
-      <div style="width:100%!important;height:2px!important;background:rgba(0,168,232,.15)!important;border-radius:2px!important">
-        <div id="nxi-bar" style="width:0%!important;height:2px!important;background:#00a8e8!important;border-radius:2px!important;transition:width .15s linear!important;box-shadow:0 0 8px rgba(0,168,232,.8)!important"></div>
+    <div style="width:275px!important;margin-top:10px!important">
+      <div style="width:100%!important;height:3px!important;background:rgba(0,168,232,.15)!important;border-radius:2px!important">
+        <div id="nxi-bar" style="width:0%!important;height:3px!important;background:#00a8e8!important;border-radius:2px!important;transition:width .15s linear!important;box-shadow:0 0 8px rgba(0,168,232,.8)!important"></div>
       </div>
     </div>
 
-    <span id="nxi-bar-pct" style="color:#00a8e8!important;font-size:.6rem!important;letter-spacing:.15em!important;font-family:sans-serif!important;display:block!important;margin-top:4px!important;text-align:center!important;transition:opacity .4s ease!important">0%</span>
+    <span id="nxi-bar-pct" style="color:#00a8e8!important;font-size:.75rem!important;letter-spacing:.15em!important;font-family:sans-serif!important;display:block!important;margin-top:4px!important;text-align:center!important;transition:opacity .4s ease!important">0%</span>
 
-    <span id="nxi-status" style="color:rgba(240,242,245,.35)!important;font-size:.55rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important;text-align:center!important;animation:nxGlow 1.5s ease-in-out infinite!important">Loading data...</span>
+    <span id="nxi-status" style="color:rgba(240,242,245,.35)!important;font-size:.69rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important;text-align:center!important;animation:nxGlow 1.5s ease-in-out infinite!important">Loading data...</span>
 
-    <span style="color:rgba(240,242,245,.2)!important;font-size:.6rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:block!important;margin-top:4px!important">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
+    <span style="color:rgba(240,242,245,.2)!important;font-size:.75rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:block!important;margin-top:4px!important">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
 
-    <span id="nxi-weather" style="color:rgba(240,242,245,.6)!important;font-size:.6rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important"></span>
+    <span id="nxi-weather" style="color:rgba(240,242,245,.6)!important;font-size:.75rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important"></span>
 
   </div>
 
   <!-- Footer: NAV bars + motto -->
   <div id="nxi-footer" style="width:100%!important;padding:28px 40px 36px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:12px!important;border-top:1px solid rgba(0,168,232,.15)!important">
-    <div style="width:100%!important;max-width:320px!important;margin-bottom:16px!important">
-      <div style="color:rgba(240,242,245,.5)!important;font-size:.55rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;text-align:center!important;margin-bottom:10px!important">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
+    <div style="width:100%!important;max-width:400px!important;margin-bottom:16px!important">
+      <div style="color:rgba(240,242,245,.5)!important;font-size:.69rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;text-align:center!important;margin-bottom:10px!important">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
 
       <!-- Class A -->
       <div style="margin-bottom:8px!important">
-        <div style="color:#00c9d4!important;font-size:.55rem!important;letter-spacing:.15em!important;text-transform:uppercase!important;font-family:sans-serif!important;margin-bottom:4px!important">Class A</div>
-        <div style="width:100%!important;height:18px!important;background:rgba(255,255,255,.06)!important;border-radius:4px!important;position:relative!important;overflow:hidden!important">
+        <div style="color:#00c9d4!important;font-size:.69rem!important;letter-spacing:.15em!important;text-transform:uppercase!important;font-family:sans-serif!important;margin-bottom:4px!important">Class A</div>
+        <div style="width:100%!important;height:23px!important;background:rgba(255,255,255,.06)!important;border-radius:4px!important;position:relative!important;overflow:hidden!important">
           <div id="nxi-bar-a" style="height:100%!important;width:0%!important;background:linear-gradient(90deg,#006d75,#00c9d4)!important;border-radius:4px!important;transition:width 1.8s cubic-bezier(.22,1,.36,1)!important"></div>
           <div style="position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 8px!important">
-            <span id="nxi-nav-a-dollar" style="font-size:.6rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
-            <span id="nxi-nav-a-pct" style="font-size:.6rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
+            <span id="nxi-nav-a-dollar" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
+            <span id="nxi-nav-a-pct" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
           </div>
         </div>
       </div>
 
       <!-- Class F -->
       <div>
-        <div style="color:#00AEEF!important;font-size:.55rem!important;letter-spacing:.15em!important;text-transform:uppercase!important;font-family:sans-serif!important;margin-bottom:4px!important">Class F</div>
-        <div style="width:100%!important;height:18px!important;background:rgba(255,255,255,.06)!important;border-radius:4px!important;position:relative!important;overflow:hidden!important">
+        <div style="color:#00AEEF!important;font-size:.69rem!important;letter-spacing:.15em!important;text-transform:uppercase!important;font-family:sans-serif!important;margin-bottom:4px!important">Class F</div>
+        <div style="width:100%!important;height:23px!important;background:rgba(255,255,255,.06)!important;border-radius:4px!important;position:relative!important;overflow:hidden!important">
           <div id="nxi-bar-f" style="height:100%!important;width:0%!important;background:linear-gradient(90deg,#0a4a7a,#00AEEF)!important;border-radius:4px!important;transition:width 1.8s cubic-bezier(.22,1,.36,1)!important"></div>
           <div style="position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 8px!important">
-            <span id="nxi-nav-f-dollar" style="font-size:.6rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
-            <span id="nxi-nav-f-pct" style="font-size:.6rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
+            <span id="nxi-nav-f-dollar" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
+            <span id="nxi-nav-f-pct" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
           </div>
         </div>
       </div>
