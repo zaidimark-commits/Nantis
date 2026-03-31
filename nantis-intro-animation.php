@@ -80,7 +80,7 @@ function nantis_intro_cb() {
 .nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
 .nxi-loc{color:rgba(240,242,245,.2);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px;animation:nxUp .7s ease 1.5s both}
 .nxi-btns{display:flex;gap:20px;margin-top:24px;animation:nxUp .7s ease 1.8s both}
-.nxi-btn{padding:11.5px 41px;background:rgba(0,0,0,.85);border:1px solid #00a8e8;color:#00a8e8;font-size:.86rem;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:3px;box-shadow:0 0 12px rgba(0,168,232,.5);transition:background .3s,box-shadow .3s;-webkit-appearance:none}
+.nxi-btn{padding:14px 50px;background:rgba(0,0,0,.85);border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:3px;box-shadow:0 0 12px rgba(0,168,232,.5);transition:background .3s,box-shadow .3s;-webkit-appearance:none}
 .nxi-btn:hover{background:rgba(0,168,232,.15);box-shadow:0 0 24px rgba(0,168,232,.9)}
 .nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:9px;display:none;animation:nxUp .5s ease both}
 .nxi-contact{color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:6px;padding-bottom:0;animation:nxUp .7s ease 2s both,nxContactGlow 3s ease-in-out 2.5s infinite}
