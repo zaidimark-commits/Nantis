@@ -174,10 +174,10 @@ html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!impo
     document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;SameSite=Lax';
   }
 
-  /* ── If returning visitor (cookie set), skip intro → go to /home/ ── */
+  /* ── If returning visitor (cookie set), skip intro → go to homepage ── */
   if(getCookie('nx_intro')==='1'){
     document.getElementById('nxi').style.display='none';
-    window.location.replace('/home/');
+    window.location.replace('https://www.nantis.ca');
     return;
   }
 
@@ -434,9 +434,9 @@ html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!impo
           setTimeout(function(){
             /* Redirect to chosen language homepage */
             if (targetLang === 'fr') {
-              window.location.href = '/fr/';
+              window.location.href = 'https://www.nantis.ca/fr/';
             } else {
-              window.location.href = '/home/';
+              window.location.href = 'https://www.nantis.ca';
             }
           },2500);
         },1200);
