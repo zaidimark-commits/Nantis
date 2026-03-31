@@ -70,7 +70,7 @@ function nantis_intro_cb() {
   </div>
 </div>
 
-<style>
+<style data-no-optimize="1">
 #nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
 #nxi *{box-sizing:border-box;margin:0;padding:0}
 #nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
@@ -129,7 +129,7 @@ function nantis_intro_cb() {
 }
 </style>
 
-<script>
+<script data-no-optimize="1" data-no-defer="1">
 (function(){
   "use strict";
 
@@ -178,10 +178,6 @@ function nantis_intro_cb() {
       link.rel = 'prefetch';
       link.href = preloadUrl;
       document.head.appendChild(link);
-      var ifr = document.createElement('iframe');
-      ifr.style.cssText = 'position:absolute;width:0;height:0;border:0;opacity:0;pointer-events:none';
-      ifr.src = preloadUrl;
-      document.body.appendChild(ifr);
 
       s1.style.transition = 'opacity .5s ease';
       s1.style.opacity = '0';
