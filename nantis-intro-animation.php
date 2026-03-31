@@ -184,6 +184,19 @@ function nantis_intro_cb() {
       var lang = this.getAttribute('data-lang');
       targetURL = lang;
 
+      // Preload French page in background so redirect is instant
+      if (lang === 'fr') {
+        var link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = 'https://nantis.ca/fr/';
+        document.head.appendChild(link);
+        // Also warm the cache with a hidden iframe
+        var ifr = document.createElement('iframe');
+        ifr.style.cssText = 'position:absolute;width:0;height:0;border:0;opacity:0;pointer-events:none';
+        ifr.src = 'https://nantis.ca/fr/';
+        document.body.appendChild(ifr);
+      }
+
       s1.style.transition = 'opacity .5s ease';
       s1.style.opacity = '0';
       motto1.style.transition = 'opacity .5s ease';
