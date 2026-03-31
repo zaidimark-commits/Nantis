@@ -12,26 +12,8 @@ body{margin:0;font-family:sans-serif;background:#111}
 #page-behind h1{font-size:2rem;margin-bottom:20px}
 #page-behind p{color:#aaa;font-size:1rem}
 
-/* ── Starry sky background ─────────────────────────── */
-#nxi-stars1,#nxi-stars2,#nxi-stars3{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none;border-radius:50%}
-#nxi-stars1{background:transparent;animation:nxStarDrift 80s linear infinite}
-#nxi-stars2{background:transparent;animation:nxStarDrift 120s linear infinite}
-#nxi-stars3{background:transparent;animation:nxStarDrift 200s linear infinite}
-#nxi-sparkles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none;overflow:hidden}
-#nxi-milky{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999997;pointer-events:none;
-  background:radial-gradient(ellipse at 30% 20%,rgba(60,90,160,.04) 0%,transparent 50%),
-             radial-gradient(ellipse at 70% 80%,rgba(70,100,180,.035) 0%,transparent 45%),
-             radial-gradient(ellipse at 50% 50%,rgba(40,60,120,.03) 0%,transparent 60%);
-  opacity:.6}
-@keyframes nxStarDrift{0%{transform:translateY(0)}100%{transform:translateY(-20px)}}
-@keyframes nxTwinkle1{0%,100%{opacity:.2}50%{opacity:1}}
-@keyframes nxTwinkle2{0%,100%{opacity:.6}50%{opacity:.1}}
-@keyframes nxTwinkle3{0%,100%{opacity:.15}40%{opacity:1}60%{opacity:.8}100%{opacity:.15}}
-.nxi-sparkle{position:absolute;color:#fff;font-size:10px;animation:nxSparkle 3s ease-in-out infinite;pointer-events:none;text-shadow:0 0 5px rgba(180,210,255,.7),0 0 10px rgba(140,180,255,.35)}
-@keyframes nxSparkle{0%,100%{opacity:.1;transform:scale(.5) rotate(0deg)}25%{opacity:1;transform:scale(1.2) rotate(20deg)}50%{opacity:.3;transform:scale(.7) rotate(0deg)}75%{opacity:.9;transform:scale(1) rotate(-20deg)}}
-
 /* ── Intro page styles ─────────────────────────────── */
-#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
 #nxi *{box-sizing:border-box;margin:0;padding:0}
 #nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
 #nxi-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
@@ -120,12 +102,6 @@ body{margin:0;font-family:sans-serif;background:#111}
 <!-- ═══════════════════════════════════════════════════ -->
 <!-- INTRO PAGE                                         -->
 <!-- ═══════════════════════════════════════════════════ -->
-
-<div id="nxi-milky"></div>
-<div id="nxi-stars1"></div>
-<div id="nxi-stars2"></div>
-<div id="nxi-stars3"></div>
-<div id="nxi-sparkles"></div>
 
 <div id="nxi">
   <!-- Screen 1: Branding + Language Selection -->
@@ -446,109 +422,42 @@ body{margin:0;font-family:sans-serif;background:#111}
         s2.style.display='none';
         ov.style.display='none';
 
-        /* Fade out stars to pure black before showing thinker */
-        ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
-          var el=document.getElementById(id);
-          if(el){el.style.transition='opacity .6s ease';el.style.opacity='0';}
-        });
+        /* Show thinker on pure black */
+        var thinker=g('nxi-thinker');
+        if(thinker){thinker.style.display='flex';}
 
+        /* After motto fully appears, add continuous glow then fade out */
         setTimeout(function(){
-          /* Remove stars completely — clean black background */
-          ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky','nxi-sparkles'].forEach(function(id){
-            var el=document.getElementById(id); if(el)el.remove();
-          });
+          var mottoThink=g('nxi-motto-think');
+          if(mottoThink)mottoThink.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
 
-          /* Show thinker on pure black */
-          var thinker=g('nxi-thinker');
-          if(thinker){thinker.style.display='flex';}
-
-          /* After motto fully appears, add continuous glow then fade out */
+          /* Hold the scene, then fade out */
           setTimeout(function(){
-            var mottoThink=g('nxi-motto-think');
-            if(mottoThink)mottoThink.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
+            if(thinker){thinker.style.transition='opacity 1.2s ease';thinker.style.opacity='0';}
 
-            /* Hold the scene, then fade out */
             setTimeout(function(){
-              if(thinker){thinker.style.transition='opacity 1.2s ease';thinker.style.opacity='0';}
+              if(thinker)thinker.remove();
+              document.body.style.overflow='';
+              document.documentElement.style.overflow='';
+              document.body.style.background='#111';
 
-              setTimeout(function(){
-                if(thinker)thinker.remove();
-                document.body.style.overflow='';
-                document.documentElement.style.overflow='';
-                document.body.style.background='#111';
+              /* ── PREVIEW: show fake page behind ── */
+              document.getElementById('page-behind').style.display = 'block';
 
-                /* ── PREVIEW: show fake page behind ── */
-                document.getElementById('page-behind').style.display = 'block';
+              /* ── LIVE: redirect to chosen language ── */
+              // if (targetLang === 'fr') {
+              //   window.location.href = 'https://nantis.ca/fr/';
+              // } else {
+              //   window.location.href = 'https://nantis.ca/home/';
+              // }
 
-                /* ── LIVE: redirect to chosen language ── */
-                // if (targetLang === 'fr') {
-                //   window.location.href = 'https://nantis.ca/fr/';
-                // } else {
-                //   window.location.href = 'https://nantis.ca/home/';
-                // }
-
-              },1300);
-            },1800);
-          },3200);
-        },700);
+            },1300);
+          },1800);
+        },3200);
       },600);
     },500);
   }
 
-})();
-</script>
-<script>
-// Generate random starfield with round glowing dots + sparkle stars
-(function(){
-  function makeStars(id, count, minSize, maxSize, twinkleAnim, glowSize){
-    var el = document.getElementById(id);
-    if(!el) return;
-    var shadows = [];
-    for(var i=0; i<count; i++){
-      var x = Math.random()*2000;
-      var y = Math.random()*2000;
-      var size = minSize + Math.random()*(maxSize-minSize);
-      var brightness = 0.2 + Math.random()*0.6;
-      var color = Math.random()>0.85
-        ? 'rgba(140,180,255,'+brightness+')'
-        : Math.random()>0.7
-          ? 'rgba(255,220,180,'+brightness+')'
-          : 'rgba(255,255,255,'+brightness+')';
-      shadows.push(x+'px '+y+'px '+glowSize+'px '+size+'px '+color);
-    }
-    el.style.boxShadow = shadows.join(',');
-    el.style.width = '1px';
-    el.style.height = '1px';
-    el.style.borderRadius = '50%';
-    if(twinkleAnim){
-      el.style.animation += ', '+twinkleAnim;
-    }
-  }
-
-  // 3 layers with increasing glow
-  makeStars('nxi-stars1', 300, 0, 0.4, 'nxTwinkle1 4s ease-in-out infinite', 0);
-  makeStars('nxi-stars2', 150, 0.3, 0.7, 'nxTwinkle2 6s ease-in-out infinite', 1);
-  makeStars('nxi-stars3', 50, 0.5, 1.2, 'nxTwinkle3 3s ease-in-out infinite', 2);
-
-  // Add sparkle ✦ star shapes for the brightest stars
-  var sparkleContainer = document.getElementById('nxi-sparkles');
-  if(sparkleContainer){
-    var shapes = ['✦','✧','⋆','✶','✴'];
-    for(var i=0; i<35; i++){
-      var span = document.createElement('span');
-      span.className = 'nxi-sparkle';
-      span.textContent = shapes[Math.floor(Math.random()*shapes.length)];
-      span.style.left = Math.random()*100+'%';
-      span.style.top = Math.random()*100+'%';
-      var size = 6 + Math.random()*14;
-      span.style.fontSize = size+'px';
-      span.style.animationDuration = (2+Math.random()*5)+'s';
-      span.style.animationDelay = Math.random()*4+'s';
-      var hue = Math.random()>0.6 ? 'rgba(180,210,255,.8)' : Math.random()>0.5 ? 'rgba(255,230,180,.7)' : 'rgba(255,255,255,.8)';
-      span.style.color = hue;
-      sparkleContainer.appendChild(span);
-    }
-  }
 })();
 </script>
 </body>
