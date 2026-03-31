@@ -1,15 +1,86 @@
 <?php
 /**
  * Plugin Name: NANTIS Intro Animation
- * Version: 9.0
+ * Version: 9.1
  * Description: Two-screen intro splash with EN/FR language selection.
  *              Screen 1: static branding + language buttons (CSS only).
  *              Screen 2: progress bar, NAV data, weather (XHR on click).
  */
 
-add_action( 'wp_footer', 'nantis_intro_cb' );
+/* ── 1. CSS in <head> — renders before anything is visible ──────── */
 
-function nantis_intro_cb() {
+add_action( 'wp_head', 'nantis_intro_css' );
+
+function nantis_intro_css() {
+    if ( ! is_front_page() ) return;
+    if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
+?>
+<style data-no-optimize="1">
+#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#nxi *{box-sizing:border-box;margin:0;padding:0}
+#nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
+#nxi-logo{width:120px;height:auto;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
+#nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
+.nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
+.nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
+.nxi-loc{color:rgba(240,242,245,.2);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px;animation:nxUp .7s ease 1.5s both}
+.nxi-btns{display:flex;gap:20px;margin-top:24px;animation:nxUp .7s ease 1.8s both}
+.nxi-btn{padding:14px 50px;background:rgba(0,0,0,.85);border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:3px;box-shadow:0 0 12px rgba(0,168,232,.5);transition:background .3s,box-shadow .3s;-webkit-appearance:none}
+.nxi-btn:hover{background:rgba(0,168,232,.15);box-shadow:0 0 24px rgba(0,168,232,.9)}
+.nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:9px;display:none;animation:nxUp .5s ease both}
+.nxi-contact{color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:6px;padding-bottom:0;animation:nxUp .7s ease 2s both,nxContactGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact-icon{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:4px;filter:drop-shadow(0 0 4px rgba(0,168,232,.6));animation:nxIconGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact-sep{display:inline-block;margin:0 10px;color:rgba(240,242,245,.12)}
+#nxi-motto-s1{width:100%;padding:18px 24px 26px;text-align:center;flex-shrink:0;border-top:1px solid rgba(0,168,232,.15)}
+#nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
+.nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
+#nxi-s2{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:14px}
+.nxi-bar-wrap{width:260px}
+.nxi-bar-track{width:100%;height:3px;background:rgba(0,168,232,.15);border-radius:2px}
+#nxi-bar{width:0%;height:3px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8);transition:width .15s linear}
+#nxi-pct{color:#00a8e8;font-size:.75rem;letter-spacing:.15em;font-family:sans-serif;text-align:center;transition:opacity .4s ease}
+#nxi-status{color:rgba(240,242,245,.35);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;animation:nxGlow 1.5s ease-in-out infinite}
+#nxi-weather{color:rgba(240,242,245,.6);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;display:none}
+.nxi-nav-box{width:100%;max-width:380px;margin-top:10px}
+.nxi-nav-hdr{color:rgba(240,242,245,.5);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-bottom:10px}
+.nxi-nr{margin-bottom:8px}
+.nxi-nl{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:3px}
+.nxi-nbw{width:100%;height:22px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden}
+.nxi-nbf{height:100%;width:0%;border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
+.nxi-nbo{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+.nxi-nbo span{font-size:.75rem;color:#fff;font-family:sans-serif;font-weight:700}
+#nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
+#nxi.nxi-fadeout{opacity:0}
+@keyframes nxPop{0%{opacity:0;transform:scale(.3) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes nxUp{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes nxGrow{0%{width:0}100%{width:180px}}
+@keyframes nxGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
+@keyframes nxContactGlow{0%,100%{color:rgba(240,242,245,.25);text-shadow:0 0 6px rgba(0,168,232,.15)}50%{color:rgba(240,242,245,.45);text-shadow:0 0 14px rgba(0,168,232,.4)}}
+@keyframes nxIconGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(0,168,232,.4));opacity:.5}50%{filter:drop-shadow(0 0 10px rgba(0,168,232,.9));opacity:.85}}
+@keyframes nxLogoGlow{0%,100%{filter:drop-shadow(0 0 24px rgba(0,168,232,.45))}50%{filter:drop-shadow(0 0 40px rgba(0,168,232,.85))}}
+@media(max-height:650px){
+  #nxi-logo{width:80px}
+  .nxi-title{font-size:1.7rem}
+  .nxi-sub{font-size:.7rem}
+  .nxi-btns{gap:14px;margin-top:15px}
+  .nxi-btn{padding:12px 40px;font-size:.88rem}
+  .nxi-s1-weather{font-size:.6rem}
+  .nxi-contact{font-size:.6rem;padding-bottom:10px}
+  #nxi-motto-s1{padding:14px 20px 18px}
+  #nxi-motto-s1 span{font-size:1.1rem}
+  #nxi-s2{gap:10px;padding:20px 16px}
+  #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
+  .nxi-nbw{height:18px}
+}
+</style>
+<?php
+}
+
+/* ── 2. Overlay HTML right after <body> — first thing visible ───── */
+
+add_action( 'wp_body_open', 'nantis_intro_html' );
+
+function nantis_intro_html() {
     if ( ! is_front_page() ) return;
     if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
 ?>
@@ -69,66 +140,17 @@ function nantis_intro_cb() {
     <span id="nxi-motto-s2">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
   </div>
 </div>
-
-<style data-no-optimize="1">
-#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
-#nxi *{box-sizing:border-box;margin:0;padding:0}
-#nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
-#nxi-logo{width:120px;height:auto;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
-#nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
-.nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
-.nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
-.nxi-loc{color:rgba(240,242,245,.2);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px;animation:nxUp .7s ease 1.5s both}
-.nxi-btns{display:flex;gap:20px;margin-top:24px;animation:nxUp .7s ease 1.8s both}
-.nxi-btn{padding:14px 50px;background:rgba(0,0,0,.85);border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.3em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:3px;box-shadow:0 0 12px rgba(0,168,232,.5);transition:background .3s,box-shadow .3s;-webkit-appearance:none}
-.nxi-btn:hover{background:rgba(0,168,232,.15);box-shadow:0 0 24px rgba(0,168,232,.9)}
-.nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:9px;display:none;animation:nxUp .5s ease both}
-.nxi-contact{color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:6px;padding-bottom:0;animation:nxUp .7s ease 2s both,nxContactGlow 3s ease-in-out 2.5s infinite}
-.nxi-contact-icon{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:4px;filter:drop-shadow(0 0 4px rgba(0,168,232,.6));animation:nxIconGlow 3s ease-in-out 2.5s infinite}
-.nxi-contact-sep{display:inline-block;margin:0 10px;color:rgba(240,242,245,.12)}
-#nxi-motto-s1{width:100%;padding:18px 24px 26px;text-align:center;flex-shrink:0;border-top:1px solid rgba(0,168,232,.15)}
-#nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
-.nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
-#nxi-s2{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:14px}
-.nxi-bar-wrap{width:260px}
-.nxi-bar-track{width:100%;height:3px;background:rgba(0,168,232,.15);border-radius:2px}
-#nxi-bar{width:0%;height:3px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8);transition:width .15s linear}
-#nxi-pct{color:#00a8e8;font-size:.75rem;letter-spacing:.15em;font-family:sans-serif;text-align:center;transition:opacity .4s ease}
-#nxi-status{color:rgba(240,242,245,.35);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;animation:nxGlow 1.5s ease-in-out infinite}
-#nxi-weather{color:rgba(240,242,245,.6);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;display:none}
-.nxi-nav-box{width:100%;max-width:380px;margin-top:10px}
-.nxi-nav-hdr{color:rgba(240,242,245,.5);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-bottom:10px}
-.nxi-nr{margin-bottom:8px}
-.nxi-nl{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:3px}
-.nxi-nbw{width:100%;height:22px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden}
-.nxi-nbf{height:100%;width:0%;border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
-.nxi-nbo{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
-.nxi-nbo span{font-size:.75rem;color:#fff;font-family:sans-serif;font-weight:700}
-#nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
-#nxi.nxi-fadeout{opacity:0}
-@keyframes nxPop{0%{opacity:0;transform:scale(.3) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes nxUp{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes nxGrow{0%{width:0}100%{width:180px}}
-@keyframes nxGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
-@keyframes nxContactGlow{0%,100%{color:rgba(240,242,245,.25);text-shadow:0 0 6px rgba(0,168,232,.15)}50%{color:rgba(240,242,245,.45);text-shadow:0 0 14px rgba(0,168,232,.4)}}
-@keyframes nxIconGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(0,168,232,.4));opacity:.5}50%{filter:drop-shadow(0 0 10px rgba(0,168,232,.9));opacity:.85}}
-@keyframes nxLogoGlow{0%,100%{filter:drop-shadow(0 0 24px rgba(0,168,232,.45))}50%{filter:drop-shadow(0 0 40px rgba(0,168,232,.85))}}
-@media(max-height:650px){
-  #nxi-logo{width:80px}
-  .nxi-title{font-size:1.7rem}
-  .nxi-sub{font-size:.7rem}
-  .nxi-btns{gap:14px;margin-top:15px}
-  .nxi-btn{padding:12px 40px;font-size:.88rem}
-  .nxi-s1-weather{font-size:.6rem}
-  .nxi-contact{font-size:.6rem;padding-bottom:10px}
-  #nxi-motto-s1{padding:14px 20px 18px}
-  #nxi-motto-s1 span{font-size:1.1rem}
-  #nxi-s2{gap:10px;padding:20px 16px}
-  #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
-  .nxi-nbw{height:18px}
+<?php
 }
-</style>
 
+/* ── 3. JavaScript in footer — after DOM is ready ───────────────── */
+
+add_action( 'wp_footer', 'nantis_intro_js' );
+
+function nantis_intro_js() {
+    if ( ! is_front_page() ) return;
+    if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
+?>
 <script data-no-optimize="1" data-no-defer="1">
 (function(){
   "use strict";
@@ -172,7 +194,7 @@ function nantis_intro_cb() {
       var lang = this.getAttribute('data-lang');
       targetURL = lang;
 
-      // Preload target page in background so it's instant when intro finishes
+      // Preload target page in background
       var preloadUrl = lang === 'fr' ? 'https://nantis.ca/fr/' : 'https://nantis.ca/';
       var link = document.createElement('link');
       link.rel = 'prefetch';
