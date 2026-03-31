@@ -80,26 +80,18 @@ body{margin:0;font-family:sans-serif;background:#111}
 
 /* ── Thinker exit animation ────────────────────────── */
 #nxi-thinker{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:10000000;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+.nxi-thinker-wrap{position:relative;opacity:0;animation:nxThinkerIn .8s ease .2s forwards}
+.nxi-thinker-svg{width:200px;height:200px;filter:drop-shadow(0 0 12px rgba(0,168,232,.3))}
+.nxi-gear{transform-origin:145px 72px;animation:nxGearSpin 4s linear infinite}
+.nxi-thinker-logo{width:56px;height:56px;object-fit:cover;border-radius:50%;position:absolute;top:44px;left:88px;filter:drop-shadow(0 0 10px rgba(0,168,232,.6));opacity:0;animation:nxLogoFadeIn .6s ease .6s forwards}
 
-/* Head silhouette — CSS-only profile */
-.nxi-head{position:relative;width:80px;height:95px;margin-bottom:30px;opacity:0;animation:nxThinkerIn .8s ease .2s forwards}
-.nxi-head-skull{width:70px;height:78px;background:rgba(0,168,232,.12);border-radius:50% 50% 45% 48%;position:absolute;top:0;left:5px;border:1.5px solid rgba(0,168,232,.35)}
-.nxi-head-chin{width:28px;height:20px;background:rgba(0,168,232,.12);border-radius:0 0 50% 50%;position:absolute;bottom:2px;left:22px;border:1.5px solid rgba(0,168,232,.35);border-top:none}
-/* Eye */
-.nxi-head-eye{width:6px;height:6px;background:rgba(0,168,232,.6);border-radius:50%;position:absolute;top:30px;left:42px;box-shadow:0 0 8px rgba(0,168,232,.8)}
+/* The motto emerging above the figure */
+#nxi-motto-think{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;padding:0 20px;margin-bottom:20px;animation:nxMottoEmerge 1.2s ease 1.4s forwards;text-shadow:0 0 20px rgba(0,168,232,.5),0 0 60px rgba(0,168,232,.2)}
 
-/* Thought bubbles floating up from head */
-.nxi-thought{position:absolute;border-radius:50%;background:rgba(0,168,232,.08);border:1px solid rgba(0,168,232,.3);opacity:0}
-.nxi-thought-1{width:12px;height:12px;top:-12px;left:50%;margin-left:-6px;animation:nxBubbleUp 1s ease .6s forwards}
-.nxi-thought-2{width:20px;height:20px;top:-35px;left:50%;margin-left:-10px;animation:nxBubbleUp 1s ease .9s forwards}
-.nxi-thought-3{width:32px;height:28px;top:-68px;left:50%;margin-left:-16px;border-radius:45%;animation:nxBubbleUp 1s ease 1.2s forwards}
-
-/* The motto emerging from thought */
-#nxi-motto-think{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.18em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;padding:0 20px;animation:nxMottoEmerge 1.5s ease 1.6s forwards;text-shadow:0 0 20px rgba(0,168,232,.5),0 0 60px rgba(0,168,232,.2)}
-
-@keyframes nxThinkerIn{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
-@keyframes nxBubbleUp{0%{opacity:0;transform:scale(.3) translateY(10px)}60%{opacity:.8;transform:scale(1.1) translateY(-3px)}100%{opacity:.6;transform:scale(1) translateY(0)}}
-@keyframes nxMottoEmerge{0%{opacity:0;transform:translateY(30px) scale(.7);letter-spacing:.05em}50%{opacity:1;transform:translateY(-5px) scale(1.05);letter-spacing:.2em}100%{opacity:1;transform:translateY(0) scale(1);letter-spacing:.18em;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)}}
+@keyframes nxThinkerIn{0%{opacity:0;transform:scale(.8) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes nxGearSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes nxLogoFadeIn{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+@keyframes nxMottoEmerge{0%{opacity:0;transform:translateY(20px) scale(.8)}60%{opacity:1;transform:translateY(-4px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1);text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)}}
 @keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
 
 /* ── Mobile ────────────────────────────────────────── */
@@ -116,14 +108,9 @@ body{margin:0;font-family:sans-serif;background:#111}
   #nxi-s2{gap:10px;padding:20px 16px}
   #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
   .nxi-nbw{height:18px}
-  .nxi-head{width:60px;height:72px;margin-bottom:22px}
-  .nxi-head-skull{width:52px;height:58px}
-  .nxi-head-chin{width:22px;height:16px;left:16px}
-  .nxi-head-eye{top:22px;left:32px;width:5px;height:5px}
-  .nxi-thought-1{width:10px;height:10px;top:-10px}
-  .nxi-thought-2{width:16px;height:16px;top:-28px}
-  .nxi-thought-3{width:26px;height:22px;top:-54px}
-  #nxi-motto-think{font-size:1.4rem;letter-spacing:.12em}
+  .nxi-thinker-svg{width:150px;height:150px}
+  .nxi-thinker-logo{width:42px;height:42px;top:33px;left:66px}
+  #nxi-motto-think{font-size:1.3rem;letter-spacing:.12em;margin-bottom:14px}
 }
 </style>
 </head>
@@ -203,15 +190,33 @@ body{margin:0;font-family:sans-serif;background:#111}
 
 <!-- Thinker exit animation overlay -->
 <div id="nxi-thinker">
-  <div class="nxi-head">
-    <div class="nxi-head-skull"></div>
-    <div class="nxi-head-chin"></div>
-    <div class="nxi-head-eye"></div>
-    <div class="nxi-thought nxi-thought-1"></div>
-    <div class="nxi-thought nxi-thought-2"></div>
-    <div class="nxi-thought nxi-thought-3"></div>
-  </div>
   <span id="nxi-motto-think">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  <div class="nxi-thinker-wrap">
+    <svg class="nxi-thinker-svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- Head profile silhouette facing left -->
+      <path d="M70 175 C55 175, 48 168, 48 155 L48 145 C38 142, 30 135, 28 125 L26 118 C24 110, 26 102, 32 96 L34 94 C32 88, 30 80, 30 72 C30 45, 52 22, 82 20 C105 18, 125 28, 135 46 C140 55, 142 65, 140 76 L140 80 C148 82, 155 86, 158 92 C160 96, 158 100, 154 102 L148 104 C145 115, 135 124, 122 128 L118 130 C116 138, 110 148, 100 155 L95 158 C92 165, 85 175, 70 175 Z"
+            stroke="#00a8e8" stroke-width="2.5" fill="none"
+            stroke-linecap="round" stroke-linejoin="round"
+            opacity=".85"/>
+      <!-- Ear -->
+      <path d="M148 94 C154 92, 158 96, 158 102 C158 108, 154 112, 148 110"
+            stroke="#00a8e8" stroke-width="2" fill="none" opacity=".6"/>
+      <!-- Gear (cog) — spins around center 145,72 -->
+      <g class="nxi-gear">
+        <path d="M145 48 L148 48 L150 52 C153 52.5, 156 54, 158 56 L162 54 L165 57 L163 61 C164.5 63.5, 165.5 66, 166 69 L170 70 L170 74 L166 75 C165.5 78, 164.5 80.5, 163 83 L165 87 L162 90 L158 88 C156 90, 153 91.5, 150 92 L148 96 L145 96 L143 92 C140 91.5, 137 90, 135 88 L131 90 L128 87 L130 83 C128.5 80.5, 127.5 78, 127 75 L123 74 L123 70 L127 69 C127.5 66, 128.5 63.5, 130 61 L128 57 L131 54 L135 56 C137 54, 140 52.5, 143 52 Z"
+              stroke="rgba(255,255,255,.5)" stroke-width="1.8" fill="none"
+              stroke-linejoin="round"/>
+        <!-- Gear inner circle -->
+        <circle cx="145" cy="72" r="14" stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"/>
+      </g>
+      <!-- Circle behind logo — static, inside brain area -->
+      <circle cx="116" cy="72" r="30" stroke="#00a8e8" stroke-width="2" fill="rgba(0,0,0,.4)" opacity=".7"/>
+      <!-- Inner ring glow -->
+      <circle cx="116" cy="72" r="24" stroke="rgba(0,168,232,.25)" stroke-width="1" fill="none"/>
+    </svg>
+    <!-- Nantis logo replaces clock hands -->
+    <img class="nxi-thinker-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="">
+  </div>
 </div>
 
 <script>
