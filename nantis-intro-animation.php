@@ -7,6 +7,15 @@
  *              Screen 2: progress bar, NAV data, weather (XHR on click).
  */
 
+/* Hide page instantly on front page to prevent logo flash while overlay loads */
+add_action( 'wp_head', 'nantis_intro_hide' );
+
+function nantis_intro_hide() {
+    if ( ! is_front_page() ) return;
+    if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
+    echo '<style>body{visibility:hidden!important}</style>';
+}
+
 add_action( 'wp_footer', 'nantis_intro_cb' );
 
 function nantis_intro_cb() {
@@ -118,7 +127,7 @@ function nantis_intro_cb() {
   .nxi-title{font-size:1.7rem}
   .nxi-sub{font-size:.7rem}
   .nxi-btns{gap:14px;margin-top:15px}
-  .nxi-btn{padding:9px 32px;font-size:.75rem}
+  .nxi-btn{padding:12px 40px;font-size:.88rem}
   .nxi-s1-weather{font-size:.6rem}
   .nxi-contact{font-size:.6rem;padding-bottom:10px}
   #nxi-motto-s1{padding:14px 20px 18px}
@@ -160,6 +169,7 @@ function nantis_intro_cb() {
     new Date(Date.now() + 1800000).toUTCString() + '; SameSite=Lax';
   document.body.style.overflow = 'hidden';
   document.documentElement.style.overflow = 'hidden';
+  document.body.style.visibility = 'visible';
 
   /* ── Language button click → Screen 2 ────────────── */
 
