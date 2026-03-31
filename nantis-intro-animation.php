@@ -8,6 +8,11 @@
 /* CSS in head so styles are ready before page paints */
 add_action( 'wp_head', 'nantis_intro_css' );
 function nantis_intro_css() {
+    // Transition screen for French redirect
+    if ( isset( $_GET['nxi_t'] ) ) {
+        echo '<style data-no-optimize="1">#nxi-trans{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;transition:opacity .8s ease}</style>';
+        return;
+    }
     if ( ! is_front_page() ) return;
     if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
 ?>
@@ -330,6 +335,15 @@ function nantis_intro_cb() {
     if(barTimer)clearInterval(barTimer);
     setProgress(100);
 
+    // French: redirect immediately, NAV stays visible while /fr/ loads
+    if(targetURL==='fr'){
+      setTimeout(function(){
+        window.location.href='https://nantis.ca/fr/?nxi_t=1';
+      },500);
+      return;
+    }
+
+    // English: fade out data, show motto, then reveal page
     setTimeout(function(){
       var mottoS2=g('nxi-motto-s2');
       var navBox=document.querySelector('.nxi-nav-box');
@@ -346,10 +360,6 @@ function nantis_intro_cb() {
         if(mottoS2){mottoS2.style.fontSize='2.8rem';mottoS2.style.letterSpacing='.25em';}
 
         setTimeout(function(){
-          if(targetURL==='fr'){
-            window.location.href='https://nantis.ca/fr/';
-            return;
-          }
           ov.classList.add('nxi-fadeout');
           setTimeout(function(){
             ov.remove();
@@ -367,6 +377,36 @@ function nantis_intro_cb() {
     if(e.persisted){var o=g('nxi');if(o)o.remove();document.body.style.overflow='';document.documentElement.style.overflow='';}
   });
 
+})();
+</script>
+<?php
+}
+
+/* ── Transition screen for French page ──────────────────────────── */
+
+add_action( 'wp_footer', 'nantis_intro_transition' );
+function nantis_intro_transition() {
+    if ( ! isset( $_GET['nxi_t'] ) ) return;
+?>
+<div id="nxi-trans" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000"></div>
+<script data-no-optimize="1" data-no-defer="1">
+(function(){
+  var el = document.getElementById('nxi-trans');
+  if (!el) return;
+  // Clean the ?nxi_t=1 from URL without reload
+  if (window.history && window.history.replaceState) {
+    var url = window.location.href.replace(/[?&]nxi_t=1/,'').replace(/\?$/,'');
+    window.history.replaceState(null, '', url);
+  }
+  // Fade out black screen once page is loaded
+  window.addEventListener('load', function(){
+    setTimeout(function(){
+      el.style.opacity = '0';
+      setTimeout(function(){ el.remove(); }, 800);
+    }, 100);
+  });
+  // Safety: remove after 5s max
+  setTimeout(function(){ if(el.parentNode){ el.style.opacity='0'; setTimeout(function(){el.remove();},800); } }, 5000);
 })();
 </script>
 <?php
