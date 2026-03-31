@@ -1,425 +1,326 @@
 <?php
 /**
  * Plugin Name: NANTIS Intro Animation
- * Version: 6.0
+ * Version: 7.0
  * Description: Splash screen with progress bar, NAV data, and weather.
- *              Desktop auto-starts. Mobile waits for GO tap.
+ *              CSS-driven animations — no browser throttling issues.
  */
 
 add_action( 'wp_footer', 'nantis_intro_cb' );
 
 function nantis_intro_cb() {
-    if ( ! is_front_page() ) {
-        return;
-    }
-    if ( ! empty( $_COOKIE['nx_intro'] ) ) {
-        return;
-    }
-    ?>
-<div id="nxi" style="position:fixed!important;top:0!important;left:0!important;width:100%!important;height:100%!important;z-index:9999999!important;background:#000!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:0!important;box-sizing:border-box!important;overflow:hidden!important">
+    if ( ! is_front_page() ) return;
+    if ( ! empty( $_COOKIE['nx_intro'] ) ) return;
+?>
+<!--
+  NANTIS Intro v7 — Architecture:
+  • ALL animations are CSS @keyframes (compositor thread, never throttled).
+  • The progress bar auto-fills via CSS over 4s. No JS timer needed.
+  • JS fires data fetches IMMEDIATELY (inline, no setTimeout).
+  • When data arrives, JS updates DOM. CSS handles the reveal transitions.
+  • After data + minimum display time, CSS fade-out removes the overlay.
+  • Hard CSS fallback: animation-delay on .nxi-exit ensures overlay
+    disappears after 12s even if every fetch fails and JS breaks entirely.
+-->
 
-  <!-- Main content area -->
-  <div id="nxi-inner" style="display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;flex:1!important;width:100%!important;gap:20px!important;padding-top:40px!important">
+<div id="nxi" class="nxi-overlay">
+  <div id="nxi-inner" class="nxi-inner">
 
-    <img src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
-         style="width:130px!important;height:auto!important;display:block!important;filter:drop-shadow(0 0 24px rgba(0,168,232,.55))!important;animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both!important"
-         alt="NANTIS">
+    <img class="nxi-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="NANTIS">
+    <div class="nxi-line"></div>
+    <span class="nxi-title">NANTIS</span>
+    <span class="nxi-subtitle">Asset Management Inc.</span>
 
-    <div style="width:200px!important;height:2px!important;background:#00a8e8!important;border-radius:2px!important;animation:nxGrow .8s ease .7s both!important"></div>
-
-    <span style="color:#f0f2f5!important;font-size:2.4rem!important;font-weight:300!important;letter-spacing:.25em!important;text-transform:uppercase!important;font-family:'Architects Daughter',sans-serif!important;animation:nxUp .7s ease 1s both!important">NANTIS</span>
-
-    <span style="color:rgba(240,242,245,.6)!important;font-size:.85rem!important;letter-spacing:.18em!important;text-transform:uppercase!important;font-family:sans-serif!important;animation:nxUp .7s ease 1.3s both!important">Asset Management Inc.</span>
-
-    <!-- Progress bar -->
-    <div style="width:275px!important;margin-top:10px!important">
-      <div style="width:100%!important;height:3px!important;background:rgba(0,168,232,.15)!important;border-radius:2px!important">
-        <div id="nxi-bar" style="width:0%!important;height:3px!important;background:#00a8e8!important;border-radius:2px!important;transition:width .15s linear!important;box-shadow:0 0 8px rgba(0,168,232,.8)!important"></div>
+    <!-- Progress bar: CSS-driven, auto-fills over 4s -->
+    <div class="nxi-progress-wrap">
+      <div class="nxi-progress-track">
+        <div id="nxi-bar" class="nxi-progress-fill"></div>
       </div>
     </div>
+    <span id="nxi-status" class="nxi-status">Loading data...</span>
 
-    <span id="nxi-bar-pct" style="color:#00a8e8!important;font-size:.75rem!important;letter-spacing:.15em!important;font-family:sans-serif!important;display:block!important;margin-top:4px!important;text-align:center!important;transition:opacity .4s ease!important">0%</span>
-
-    <span id="nxi-status" style="color:rgba(240,242,245,.35)!important;font-size:.69rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important;text-align:center!important;animation:nxGlow 1.5s ease-in-out infinite!important">Loading data...</span>
-
-    <span style="color:rgba(240,242,245,.2)!important;font-size:.75rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:block!important;margin-top:4px!important">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
-
-    <span id="nxi-weather" style="color:rgba(240,242,245,.6)!important;font-size:.75rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;display:none!important;margin-top:2px!important"></span>
-
+    <span class="nxi-location">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
+    <span id="nxi-weather" class="nxi-weather"></span>
   </div>
 
-  <!-- Footer: NAV bars + motto -->
-  <div id="nxi-footer" style="width:100%!important;padding:28px 40px 36px!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:12px!important;border-top:1px solid rgba(0,168,232,.15)!important">
-    <div style="width:100%!important;max-width:400px!important;margin-bottom:16px!important">
-      <div style="color:rgba(240,242,245,.5)!important;font-size:.69rem!important;letter-spacing:.2em!important;text-transform:uppercase!important;font-family:sans-serif!important;text-align:center!important;margin-bottom:10px!important">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
+  <div id="nxi-footer" class="nxi-footer">
+    <div class="nxi-nav-section">
+      <div class="nxi-nav-header">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
 
-      <!-- Class A -->
-      <div style="margin-bottom:8px!important">
-        <div style="color:#00c9d4!important;font-size:.69rem!important;letter-spacing:.15em!important;text-transform:uppercase!important;font-family:sans-serif!important;margin-bottom:4px!important">Class A</div>
-        <div style="width:100%!important;height:23px!important;background:rgba(255,255,255,.06)!important;border-radius:4px!important;position:relative!important;overflow:hidden!important">
-          <div id="nxi-bar-a" style="height:100%!important;width:0%!important;background:linear-gradient(90deg,#006d75,#00c9d4)!important;border-radius:4px!important;transition:width 1.8s cubic-bezier(.22,1,.36,1)!important"></div>
-          <div style="position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 8px!important">
-            <span id="nxi-nav-a-dollar" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
-            <span id="nxi-nav-a-pct" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
+      <div class="nxi-nav-row">
+        <div class="nxi-nav-label nxi-nav-label-a">Class A</div>
+        <div class="nxi-nav-bar-wrap">
+          <div id="nxi-bar-a" class="nxi-nav-bar-fill nxi-fill-a"></div>
+          <div class="nxi-nav-bar-overlay">
+            <span id="nxi-nav-a-dollar" class="nxi-nav-val"></span>
+            <span id="nxi-nav-a-pct" class="nxi-nav-val"></span>
           </div>
         </div>
       </div>
 
-      <!-- Class F -->
-      <div>
-        <div style="color:#00AEEF!important;font-size:.69rem!important;letter-spacing:.15em!important;text-transform:uppercase!important;font-family:sans-serif!important;margin-bottom:4px!important">Class F</div>
-        <div style="width:100%!important;height:23px!important;background:rgba(255,255,255,.06)!important;border-radius:4px!important;position:relative!important;overflow:hidden!important">
-          <div id="nxi-bar-f" style="height:100%!important;width:0%!important;background:linear-gradient(90deg,#0a4a7a,#00AEEF)!important;border-radius:4px!important;transition:width 1.8s cubic-bezier(.22,1,.36,1)!important"></div>
-          <div style="position:absolute!important;top:0!important;left:0!important;right:0!important;bottom:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:0 8px!important">
-            <span id="nxi-nav-f-dollar" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
-            <span id="nxi-nav-f-pct" style="font-size:.75rem!important;color:#fff!important;font-family:sans-serif!important;font-weight:700!important"></span>
+      <div class="nxi-nav-row">
+        <div class="nxi-nav-label nxi-nav-label-f">Class F</div>
+        <div class="nxi-nav-bar-wrap">
+          <div id="nxi-bar-f" class="nxi-nav-bar-fill nxi-fill-f"></div>
+          <div class="nxi-nav-bar-overlay">
+            <span id="nxi-nav-f-dollar" class="nxi-nav-val"></span>
+            <span id="nxi-nav-f-pct" class="nxi-nav-val"></span>
           </div>
         </div>
       </div>
     </div>
 
-    <span id="nxi-motto" style="color:#00a8e8!important;font-size:1.5rem!important;letter-spacing:.12em!important;text-transform:uppercase!important;text-align:center!important;font-family:'Architects Daughter',sans-serif!important;display:block!important;animation:nxGlow 2.5s ease-in-out 2s infinite!important;transition:font-size 1s ease,letter-spacing 1s ease!important">THINK OUTSIDE THE BOX<sup style="font-size:.4em!important;vertical-align:super!important;letter-spacing:0!important">&trade;</sup></span>
+    <span id="nxi-motto" class="nxi-motto">
+      THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup>
+    </span>
   </div>
 </div>
 
 <style>
+/* ── Reset & overlay ──────────────────────────────── */
+.nxi-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;overflow:hidden;opacity:1;transition:opacity 1.2s ease}
+.nxi-overlay *{box-sizing:border-box;margin:0;padding:0}
+
+/* ── Inner section ────────────────────────────────── */
+.nxi-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:20px;padding-top:40px;transition:opacity .6s ease}
+
+/* ── Logo ─────────────────────────────────────────── */
+.nxi-logo{width:130px;height:auto;display:block;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both}
+
+/* ── Decorative line ──────────────────────────────── */
+.nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
+
+/* ── Title / subtitle ─────────────────────────────── */
+.nxi-title{color:#f0f2f5;font-size:2.4rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
+.nxi-subtitle{color:rgba(240,242,245,.6);font-size:.85rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
+
+/* ── Progress bar (CSS-driven — never throttled) ──── */
+.nxi-progress-wrap{width:275px;margin-top:10px}
+.nxi-progress-track{width:100%;height:3px;background:rgba(0,168,232,.15);border-radius:2px}
+.nxi-progress-fill{width:0%;height:3px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8);animation:nxFill 4s ease-out 1.8s both}
+
+/* ── Status text ──────────────────────────────────── */
+.nxi-status{color:rgba(240,242,245,.35);font-size:.69rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:2px;text-align:center;opacity:0;animation:nxUp .5s ease 2.5s both,nxGlow 1.5s ease-in-out 2.5s infinite}
+
+/* ── Location / weather ───────────────────────────── */
+.nxi-location{color:rgba(240,242,245,.2);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px}
+.nxi-weather{color:rgba(240,242,245,.6);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:2px;display:none}
+
+/* ── Footer ───────────────────────────────────────── */
+.nxi-footer{width:100%;padding:28px 40px 36px;display:flex;flex-direction:column;align-items:center;gap:12px;border-top:1px solid rgba(0,168,232,.15)}
+
+/* ── NAV section ──────────────────────────────────── */
+.nxi-nav-section{width:100%;max-width:400px;margin-bottom:16px}
+.nxi-nav-header{color:rgba(240,242,245,.5);font-size:.69rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-bottom:10px}
+.nxi-nav-row{margin-bottom:8px}
+.nxi-nav-label{font-size:.69rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:4px}
+.nxi-nav-label-a{color:#00c9d4}
+.nxi-nav-label-f{color:#00AEEF}
+.nxi-nav-bar-wrap{width:100%;height:23px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden}
+.nxi-nav-bar-fill{height:100%;width:0%;border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
+.nxi-fill-a{background:linear-gradient(90deg,#006d75,#00c9d4)}
+.nxi-fill-f{background:linear-gradient(90deg,#0a4a7a,#00AEEF)}
+.nxi-nav-bar-overlay{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+.nxi-nav-val{font-size:.75rem;color:#fff;font-family:sans-serif;font-weight:700}
+
+/* ── Motto ────────────────────────────────────────── */
+.nxi-motto{color:#00a8e8;font-size:1.5rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;display:block;animation:nxGlow 2.5s ease-in-out 2s infinite;transition:font-size 1s ease,letter-spacing 1s ease}
+.nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
+
+/* ── Exit states (toggled by JS adding classes) ───── */
+.nxi-overlay.nxi-exiting .nxi-inner{opacity:0}
+.nxi-overlay.nxi-exiting .nxi-footer{border-top:none}
+.nxi-overlay.nxi-done .nxi-inner{display:none}
+.nxi-overlay.nxi-done .nxi-motto{font-size:2.8rem;letter-spacing:.25em}
+.nxi-overlay.nxi-fadeout{opacity:0}
+
+/* ── Pure-CSS fallback: if JS completely dies, overlay
+     still disappears after 14s via CSS animation ──── */
+.nxi-overlay{animation:nxSafeExit 0s ease 14s forwards}
+
+/* ── Keyframes ────────────────────────────────────── */
 @keyframes nxPop{0%{opacity:0;transform:scale(.3) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes nxUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
 @keyframes nxGrow{0%{width:0}100%{width:200px}}
+@keyframes nxFill{0%{width:0%}70%{width:60%}100%{width:95%}}
 @keyframes nxGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
+@keyframes nxSafeExit{to{opacity:0;visibility:hidden;pointer-events:none}}
 </style>
 
 <script>
 (function(){
   "use strict";
 
-  /* ── Helpers ─────────────────────────────────────── */
+  var el = document.getElementById.bind(document);
 
-  function $(id){ return document.getElementById(id); }
+  /* ── Cookie helpers ──────────────────────────────── */
 
   function getCookie(n){
     var m = document.cookie.match(new RegExp('(?:^|; )' + n + '=([^;]*)'));
     return m ? m[1] : null;
   }
 
-  function setCookie(n, v, ms){
-    document.cookie = n + '=' + v + '; path=/; expires=' +
-      new Date(Date.now() + ms).toUTCString() + '; SameSite=Lax';
-  }
+  /* ── Bail out if cookie exists (double-check JS side) */
 
-  /** Fetch with a timeout (AbortController where supported, else race). */
-  function fetchWithTimeout(url, ms){
-    if (typeof AbortController !== 'undefined') {
-      var ctrl = new AbortController();
-      var tid  = setTimeout(function(){ ctrl.abort(); }, ms);
-      return fetch(url, { signal: ctrl.signal })
-        .finally(function(){ clearTimeout(tid); });
-    }
-    // Fallback: race against a rejection timer
-    return Promise.race([
-      fetch(url),
-      new Promise(function(_, rej){
-        setTimeout(function(){ rej(new Error('timeout')); }, ms);
-      })
-    ]);
-  }
-
-  /* ── Early bail-out ──────────────────────────────── */
-
-  var overlay = $('nxi');
+  var overlay = el('nxi');
   if (!overlay) return;
 
   if (getCookie('nx_intro')) {
-    overlay.parentNode.removeChild(overlay);
+    overlay.remove();
     return;
   }
 
-  // Set cookie (30 min)
-  setCookie('nx_intro', '1', 1800000);
+  /* ── Set cookie (30 min) and lock scroll ─────────── */
 
-  // Lock body scroll while overlay is visible
-  document.body.style.overflow   = 'hidden';
+  document.cookie = 'nx_intro=1; path=/; expires=' +
+    new Date(Date.now() + 1800000).toUTCString() + '; SameSite=Lax';
+  document.body.style.overflow = 'hidden';
   document.documentElement.style.overflow = 'hidden';
 
-  /* ── DOM refs ────────────────────────────────────── */
+  /* ── Fetch helper with timeout ───────────────────── */
 
-  var inner     = $('nxi-inner');
-  var footer    = $('nxi-footer');
-  var bar       = $('nxi-bar');
-  var pctEl     = $('nxi-bar-pct');
-  var statusTxt = $('nxi-status');
-  var motto     = $('nxi-motto');
-
-  /* ── Progress tracker ────────────────────────────── */
-  // Real progress: bar tracks actual data loading, not a fake timer.
-  // Steps: bar-anim(30%) → NAV-fetched(70%) → weather-fetched(90%) → done(100%)
-
-  var progress    = 0;
-  var barInterval = null;
-
-  function setProgress(target){
-    if (target <= progress) return;
-    progress = Math.min(target, 100);
-    if (bar)   bar.style.width   = Math.round(progress) + '%';
-    if (pctEl) pctEl.textContent = Math.round(progress) + '%';
-    if (progress >= 100) {
-      if (statusTxt) statusTxt.style.display = 'none';
-      if (pctEl)     pctEl.style.opacity     = '0';
-    }
+  function fetchT(url, ms){
+    var ctrl = new AbortController();
+    var tid  = setTimeout(function(){ ctrl.abort(); }, ms);
+    return fetch(url, { signal: ctrl.signal })
+      .finally(function(){ clearTimeout(tid); });
   }
 
-  /** Smoothly animate progress from current to target over durationMs. */
-  function animateProgress(target, durationMs){
-    var startVal  = progress;
-    var startTime = Date.now();
-    if (barInterval) clearInterval(barInterval);
-    barInterval = setInterval(function(){
-      var elapsed = Date.now() - startTime;
-      var pct     = Math.min(elapsed / durationMs, 1);
-      var val     = startVal + (target - startVal) * pct;
-      setProgress(val);
-      if (pct >= 1) clearInterval(barInterval);
-    }, 30);
+  /* ── Data promises — fire IMMEDIATELY, no timers ─── */
+
+  var navPromise = fetchT(
+    'https://api.codetabs.com/v1/proxy?quest=' +
+    encodeURIComponent('https://docs.google.com/spreadsheets/d/e/2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms/pub?output=csv'),
+    8000
+  )
+  .then(function(r){
+    if (!r.ok) throw new Error(r.status);
+    return r.text();
+  })
+  .then(function(text){
+    var lines = text.trim().split('\n');
+    if (lines.length < 2) throw new Error('empty');
+    var vals   = lines[1].split(',');
+    var raised = parseFloat((vals[0]||'').replace(/[$,%\s]/g, ''));
+    var net    = parseFloat((vals[1]||'').replace(/[$,%\s]/g, ''));
+    if (isNaN(raised) || isNaN(net) || net === 0) throw new Error('bad data');
+    return { classF: (net / raised) * 100, classA: (net / raised) * 100 * 0.9475 };
+  });
+
+  var weatherPromise = fetchT('https://ipapi.co/json/', 5000)
+  .then(function(r){
+    if (!r.ok) throw new Error(r.status);
+    return r.json();
+  })
+  .then(function(d){
+    if (!d.city || d.latitude == null) throw new Error('no loc');
+    return fetchT(
+      'https://api.open-meteo.com/v1/forecast?latitude=' + d.latitude +
+      '&longitude=' + d.longitude + '&current_weather=true', 5000
+    )
+    .then(function(r){ return r.json(); })
+    .then(function(wd){
+      return d.city + '  |  ' + Math.round(wd.current_weather.temperature) + '\u00B0C';
+    });
+  });
+
+  /* ── Render NAV data when it arrives ─────────────── */
+
+  function fmt(n){
+    return '$' + n.toLocaleString('en-CA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
+
+  function animNAV(fillId, dollarId, pctId, val, delay){
+    setTimeout(function(){
+      var fill = el(fillId), dEl = el(dollarId), pEl = el(pctId);
+      if (!fill || !dEl || !pEl) return;
+      fill.style.width = Math.min(val, 100) + '%';
+      var t0 = null;
+      (function step(ts){
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / 1800, 1);
+        var v = 1 - Math.pow(1 - p, 3);
+        dEl.textContent = fmt(val * v);
+        pEl.textContent = (val * v).toFixed(2) + '%';
+        if (p < 1) requestAnimationFrame(step);
+      })(performance.now());
+    }, delay);
+  }
+
+  navPromise.then(function(d){
+    animNAV('nxi-bar-a', 'nxi-nav-a-dollar', 'nxi-nav-a-pct', d.classA, 100);
+    animNAV('nxi-bar-f', 'nxi-nav-f-dollar', 'nxi-nav-f-pct', d.classF, 400);
+  }).catch(function(){/* NAV unavailable — bars stay empty */});
+
+  /* ── Render weather when it arrives ──────────────── */
+
+  weatherPromise.then(function(text){
+    var w = el('nxi-weather');
+    if (w) { w.textContent = text; w.style.display = 'block'; }
+  }).catch(function(){/* weather unavailable — hidden */});
 
   /* ── Exit sequence ───────────────────────────────── */
 
-  var exitDone = false;
-
-  function removeOverlay(){
-    overlay.style.transition = 'opacity 1.2s ease';
-    overlay.style.opacity    = '0';
-    setTimeout(function(){
-      if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-      document.body.style.overflow   = '';
-      document.documentElement.style.overflow = '';
-    }, 1300);
-  }
+  var exited = false;
 
   function doExit(){
-    if (exitDone) return;
-    exitDone = true;
-    if (barInterval) clearInterval(barInterval);
-    setProgress(100);
+    if (exited) return;
+    exited = true;
 
-    inner.style.transition = 'opacity .6s ease';
-    inner.style.opacity    = '0';
-    footer.style.borderTop = 'none';
+    // Cancel the CSS safety-net animation
+    overlay.style.animation = 'none';
 
+    // Phase 1: fade inner content
+    overlay.classList.add('nxi-exiting');
+
+    // Phase 2: show motto enlarged
     setTimeout(function(){
-      inner.style.display       = 'none';
-      motto.style.fontSize      = '2.8rem';
-      motto.style.letterSpacing = '.25em';
-      setTimeout(removeOverlay, 2500);
+      overlay.classList.add('nxi-done');
+
+      // Phase 3: fade entire overlay
+      setTimeout(function(){
+        overlay.classList.add('nxi-fadeout');
+        setTimeout(function(){
+          overlay.remove();
+          document.body.style.overflow = '';
+          document.documentElement.style.overflow = '';
+        }, 1300);
+      }, 2500);
     }, 650);
   }
 
-  /* ── Data fetchers ───────────────────────────────── */
+  /* ── Wait for both data + minimum display time ───── */
+  // Show the intro for at least 4s (CSS bar fill time), then exit
+  // once data is resolved. If data is slow, exit when it arrives.
+  // Absolute hard deadline: 12s (JS) + 14s (CSS safety net).
 
-  var navDone     = false;
-  var weatherDone = false;
+  var minTime = new Promise(function(ok){ setTimeout(ok, 4000); });
 
-  function checkAllDone(){
-    if (navDone && weatherDone) {
-      setProgress(100);
-      // Give user time to see the final data before exiting
-      setTimeout(doExit, 2200);
-    }
-  }
-
-  function fetchNAV(){
-    var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/' +
-      '2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms' +
-      '/pub?output=csv';
-
-    function parseNum(s){ return s ? parseFloat(s.replace(/[$,%\s]/g, '')) : NaN; }
-    function fmt(n){
-      return '$' + n.toLocaleString('en-CA', {
-        minimumFractionDigits: 2, maximumFractionDigits: 2
-      });
-    }
-
-    function animNAVBar(fillId, dollarId, pctId, dollarVal, pctVal, delay){
-      setTimeout(function(){
-        var fill = $(fillId);
-        var dEl  = $(dollarId);
-        var pEl  = $(pctId);
-        if (!fill || !dEl || !pEl) return;
-        fill.style.width = Math.min(pctVal, 100) + '%';
-        var start = null;
-        function step(ts){
-          if (!start) start = ts;
-          var p = Math.min((ts - start) / 1800, 1);
-          var v = 1 - Math.pow(1 - p, 3);          // ease-out cubic
-          dEl.textContent = fmt(dollarVal * v);
-          pEl.textContent = (pctVal * v).toFixed(2) + '%';
-          if (p < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-      }, delay);
-    }
-
-    fetchWithTimeout(
-      'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(SHEET_URL),
-      8000
-    )
-    .then(function(r){
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.text();
-    })
-    .then(function(text){
-      var lines = text.trim().split('\n');
-      if (lines.length < 2) throw new Error('No data rows');
-      var vals   = lines[1].split(',');
-      var raised = parseNum(vals[0]);
-      var net    = parseNum(vals[1]);
-      if (isNaN(raised) || isNaN(net) || net === 0) throw new Error('Bad NAV data');
-
-      var classF = (net / raised) * 100;
-      var classA = classF * 0.9475;
-
-      animNAVBar('nxi-bar-a', 'nxi-nav-a-dollar', 'nxi-nav-a-pct', classA, classA, 300);
-      animNAVBar('nxi-bar-f', 'nxi-nav-f-dollar', 'nxi-nav-f-pct', classF, classF, 600);
-
-      setProgress(70);
-      navDone = true;
-      checkAllDone();
-    })
-    .catch(function(){
-      // NAV fetch failed — mark done so we still exit gracefully
-      navDone = true;
-      setProgress(70);
-      checkAllDone();
-    });
-  }
-
-  function fetchWeather(){
-    fetchWithTimeout('https://ipapi.co/json/', 5000)
-    .then(function(r){
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
-    .then(function(d){
-      var city = d.city || '';
-      var lat  = d.latitude;
-      var lon  = d.longitude;
-      if (!city || lat == null) throw new Error('No location');
-
-      return fetchWithTimeout(
-        'https://api.open-meteo.com/v1/forecast?latitude=' + lat +
-        '&longitude=' + lon + '&current_weather=true',
-        5000
-      )
-      .then(function(r){
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(function(wd){
-        var temp = Math.round(wd.current_weather.temperature);
-        var el   = $('nxi-weather');
-        if (el) {
-          el.textContent  = city + '  |  ' + temp + '\u00B0C';
-          el.style.display = 'block';
-        }
-      });
-    })
-    .catch(function(){
-      // Weather is non-critical — silently continue
-    })
-    .finally(function(){
-      weatherDone = true;
-      setProgress(90);
-      checkAllDone();
-    });
-  }
-
-  /* ── Start sequence ──────────────────────────────── */
-
-  var started = false;
-
-  function startEverything(){
-    if (started) return;
-    started = true;
-
-    if (statusTxt) statusTxt.style.display = 'block';
-
-    // Animate bar to 30% over 1.5s (visual feedback while fetching)
-    animateProgress(30, 1500);
-
-    fetchNAV();
-    fetchWeather();
-
-    // Hard deadline: if data hasn't loaded in 15s, exit anyway
-    setTimeout(function(){
-      if (!exitDone) doExit();
-    }, 15000);
-  }
-
-  /* ── Auto-start on all devices ─────────────────────
-   * Some browsers (Edge, Firefox, iOS Safari) throttle
-   * setTimeout and defer fetch() until user interaction.
-   * We use every possible trigger to guarantee startup.
-   * startEverything() is idempotent — only runs once.
-   * ─────────────────────────────────────────────────── */
-
-  // 1. Primary: timer after intro animations
-  setTimeout(startEverything, 1800);
-
-  // 2. rAF chain — fires even when setTimeout is throttled
-  var rafCount = 0;
-  function rafStart(){
-    rafCount++;
-    if (rafCount >= 108) {
-      startEverything();
-    } else if (!started) {
-      requestAnimationFrame(rafStart);
-    }
-  }
-  requestAnimationFrame(rafStart);
-
-  // 3. window.onload — very reliable across all browsers
-  window.addEventListener('load', function(){
-    setTimeout(startEverything, 1200);
+  Promise.all([
+    minTime,
+    navPromise.catch(function(){ return null; }),
+    weatherPromise.catch(function(){ return null; })
+  ]).then(function(){
+    // Small extra pause so user can read the NAV numbers
+    setTimeout(doExit, 2000);
   });
 
-  // 4. Any user interaction on the overlay or page
-  function onInteract(){
-    startEverything();
-    // Clean up all listeners once started
-    overlay.removeEventListener('touchstart', onInteract);
-    overlay.removeEventListener('click', onInteract);
-    overlay.removeEventListener('mousemove', onInteract);
-    document.removeEventListener('mousemove', onInteract);
-    document.removeEventListener('keydown', onInteract);
-    document.removeEventListener('scroll', onInteract);
-  }
-  overlay.addEventListener('touchstart', onInteract, { passive: true });
-  overlay.addEventListener('click', onInteract);
-  overlay.addEventListener('mousemove', onInteract);
-  document.addEventListener('mousemove', onInteract);
-  document.addEventListener('keydown', onInteract);
-  document.addEventListener('scroll', onInteract, { passive: true });
+  // JS hard deadline (backup if Promise.all somehow hangs)
+  setTimeout(function(){ doExit(); }, 12000);
 
-  // 5. Visibility change (tab switching)
-  document.addEventListener('visibilitychange', function(){
-    if (document.visibilityState === 'visible' && !started) {
-      startEverything();
-    }
-  });
-
-  /* ── BFCache: clean up on back-navigation ────────── */
+  /* ── BFCache cleanup ─────────────────────────────── */
 
   window.addEventListener('pageshow', function(e){
     if (e.persisted) {
-      var el = $('nxi');
-      if (el && el.parentNode) el.parentNode.removeChild(el);
-      document.body.style.overflow   = '';
+      var o = el('nxi');
+      if (o) o.remove();
+      document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
     }
   });
 
 })();
 </script>
-    <?php
+<?php
 }
 ?>
