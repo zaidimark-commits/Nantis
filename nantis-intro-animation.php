@@ -355,9 +355,43 @@ function nantis_intro_cb() {
     }, 15000);
   }
 
-  /* ── Auto-start on all devices after intro animations settle ── */
+  /* ── Auto-start on all devices ─────────────────────
+   * Mobile browsers (especially iOS Safari) can throttle
+   * setTimeout and defer fetch() until user interaction.
+   * We use multiple triggers to guarantee startup:
+   *   1. setTimeout (works on desktop, most Android)
+   *   2. requestAnimationFrame chain (more reliable on mobile)
+   *   3. Touch/click on overlay as fallback
+   *   4. visibilitychange as final safety net
+   * startEverything() is idempotent — only runs once.
+   * ─────────────────────────────────────────────────── */
 
+  // Primary: timer after intro animations
   setTimeout(startEverything, 1800);
+
+  // Secondary: rAF chain — fires even when setTimeout is throttled
+  var rafCount = 0;
+  function rafStart(){
+    rafCount++;
+    // ~1.8s worth of frames (roughly 108 frames at 60fps)
+    if (rafCount >= 108) {
+      startEverything();
+    } else if (!started) {
+      requestAnimationFrame(rafStart);
+    }
+  }
+  requestAnimationFrame(rafStart);
+
+  // Tertiary: any touch/click on the overlay kicks it off immediately
+  overlay.addEventListener('touchstart', function(){ startEverything(); }, { passive: true });
+  overlay.addEventListener('click', function(){ startEverything(); });
+
+  // Safety net: if page becomes visible and we still haven't started
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible' && !started) {
+      startEverything();
+    }
+  });
 
   /* ── BFCache: clean up on back-navigation ────────── */
 
