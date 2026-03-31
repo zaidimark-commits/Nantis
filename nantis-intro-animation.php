@@ -375,13 +375,17 @@ function nantis_intro_cb() {
         }
 
         setTimeout(function(){
+          // French: redirect immediately while overlay is still visible
+          if (targetURL === 'fr') {
+            window.location.href = 'https://nantis.ca/fr/';
+            return;
+          }
+          // English: fade out overlay to reveal nantis.ca underneath
           ov.classList.add('nxi-fadeout');
           setTimeout(function(){
             ov.remove();
             document.body.style.overflow = '';
             document.documentElement.style.overflow = '';
-            // French: redirect to /fr/. English: already on nantis.ca, no redirect needed.
-            if (targetURL === 'fr') window.location.href = 'https://nantis.ca/fr/';
           }, 1300);
         }, 2500);
       }, 550);
