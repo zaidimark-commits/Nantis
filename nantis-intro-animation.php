@@ -24,7 +24,7 @@ function nantis_intro_css() {
 ?>
 <style data-no-optimize="1">
 #nxi *{box-sizing:border-box;margin:0;padding:0}
-#nxi-logo{width:120px;height:auto;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
+#nxi-logo{width:120px;height:120px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
 #nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
 .nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
 .nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
