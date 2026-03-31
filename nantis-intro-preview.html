@@ -18,7 +18,7 @@
     transition: opacity 1.2s ease;
   }
 
-  /* ── Screen 1: Static intro (logo, name, buttons) ─ */
+  /* ── Screen 1: Static intro ─────────────────────── */
   #nxi-s1 {
     display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -28,7 +28,7 @@
   #nxi-logo {
     width:120px; height:auto;
     filter: drop-shadow(0 0 24px rgba(0,168,232,.55));
-    animation: nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both;
+    animation: nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both, nxLogoGlow 3s ease-in-out 1.5s infinite;
   }
 
   #nxi-line {
@@ -79,9 +79,28 @@
     box-shadow:0 0 24px rgba(0,168,232,.9);
   }
 
-  /* ── Motto (bottom of screen 1) ─────────────────── */
+  /* ── Contact info (above divider line) ──────────── */
+  .nxi-contact {
+    color:rgba(240,242,245,.25); font-size:.7rem;
+    letter-spacing:.18em; text-transform:uppercase;
+    font-family:sans-serif; text-align:center;
+    margin-top:auto; padding-bottom:14px;
+    animation: nxUp .7s ease 2s both, nxContactGlow 3s ease-in-out 2.5s infinite;
+  }
+  .nxi-contact-icon {
+    display:inline-block; width:14px; height:14px;
+    vertical-align:-2px; margin-right:4px;
+    filter: drop-shadow(0 0 4px rgba(0,168,232,.6));
+    animation: nxIconGlow 3s ease-in-out 2.5s infinite;
+  }
+  .nxi-contact-sep {
+    display:inline-block; margin:0 10px;
+    color:rgba(240,242,245,.12);
+  }
+
+  /* ── Footer: motto ──────────────────────────────── */
   #nxi-motto-s1 {
-    width:100%; padding:20px 24px 28px;
+    width:100%; padding:18px 24px 26px;
     text-align:center; flex-shrink:0;
     border-top:1px solid rgba(0,168,232,.15);
   }
@@ -93,7 +112,7 @@
   }
   .nxi-tm { font-size:.4em; vertical-align:super; letter-spacing:0; }
 
-  /* ── Screen 2: Data loading (hidden initially) ──── */
+  /* ── Screen 2: Data loading ─────────────────────── */
   #nxi-s2 {
     display:none; flex-direction:column;
     align-items:center; justify-content:center;
@@ -164,7 +183,7 @@
     font-family:sans-serif; font-weight:700;
   }
 
-  /* ── Motto (screen 2 bottom) ────────────────────── */
+  /* ── Motto (screen 2) ──────────────────────────── */
   #nxi-motto-s2 {
     color:#00a8e8; font-size:1.35rem; letter-spacing:.12em;
     text-transform:uppercase; text-align:center;
@@ -176,6 +195,14 @@
 
   /* ── Exit states ────────────────────────────────── */
   #nxi.nxi-fadeout { opacity:0; }
+
+  /* ── Page behind (fades in) ─────────────────────── */
+  #page-behind {
+    display:none; opacity:0;
+    transition: opacity 1s ease;
+    padding:60px; color:#fff; font-family:sans-serif; text-align:center;
+  }
+  #page-behind.visible { opacity:1; }
 
   /* ── Keyframes ──────────────────────────────────── */
   @keyframes nxPop {
@@ -191,6 +218,18 @@
     0%,100% { color:#00a8e8; text-shadow:0 0 10px rgba(0,168,232,.3); }
     50%     { color:#33bcf5; text-shadow:0 0 30px rgba(0,168,232,.8); }
   }
+  @keyframes nxContactGlow {
+    0%,100% { color:rgba(240,242,245,.25); text-shadow:0 0 6px rgba(0,168,232,.15); }
+    50%     { color:rgba(240,242,245,.45); text-shadow:0 0 14px rgba(0,168,232,.4); }
+  }
+  @keyframes nxIconGlow {
+    0%,100% { filter: drop-shadow(0 0 4px rgba(0,168,232,.4)); opacity:.5; }
+    50%     { filter: drop-shadow(0 0 10px rgba(0,168,232,.9)); opacity:.85; }
+  }
+  @keyframes nxLogoGlow {
+    0%,100% { filter: drop-shadow(0 0 24px rgba(0,168,232,.45)); }
+    50%     { filter: drop-shadow(0 0 40px rgba(0,168,232,.85)); }
+  }
 
   /* ── Mobile ─────────────────────────────────────── */
   @media (max-height:650px) {
@@ -199,6 +238,7 @@
     .nxi-sub { font-size:.7rem; }
     .nxi-btns { gap:14px; margin-top:10px; }
     .nxi-btn { padding:8px 28px; font-size:.65rem; }
+    .nxi-contact { font-size:.6rem; padding-bottom:10px; }
     #nxi-motto-s1 { padding:14px 20px 18px; }
     #nxi-motto-s1 span { font-size:1.1rem; }
     #nxi-s2 { gap:10px; padding:20px 16px; }
@@ -223,13 +263,18 @@
       <button class="nxi-btn" data-lang="en">ENGLISH</button>
       <button class="nxi-btn" data-lang="fr">FRAN&Ccedil;AIS</button>
     </div>
+
+    <!-- Contact info — sits above the divider line -->
+    <div class="nxi-contact">
+      <svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>514.416.3466<span class="nxi-contact-sep">||</span><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>INFO@NANTIS.CA
+    </div>
   </div>
 
   <div id="nxi-motto-s1">
     <span>THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
   </div>
 
-  <!-- ═══ SCREEN 2: Data loading (after button press) ═ -->
+  <!-- ═══ SCREEN 2: Data loading ═══════════════════ -->
   <div id="nxi-s2">
     <img class="nxi-s2-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
          style="width:90px;height:auto;filter:drop-shadow(0 0 20px rgba(0,168,232,.45));margin-bottom:4px" alt="">
@@ -263,7 +308,7 @@
   </div>
 </div>
 
-<div id="page-behind" style="display:none;padding:60px;color:#fff;font-family:sans-serif;text-align:center">
+<div id="page-behind">
   <h1>Welcome to NANTIS</h1>
   <p style="color:#888;margin-top:20px">This is the main site content behind the intro.</p>
   <p style="color:#555;margin-top:10px" id="lang-info"></p>
@@ -311,13 +356,13 @@
           s2.style.opacity = '1';
         });
 
-        // Start loading data (user clicked — no browser deferral)
+        // Start loading data
         startLoading();
       }, 500);
     });
   }
 
-  /* ── Data loading (triggered by button click) ────── */
+  /* ── Data loading ────────────────────────────────── */
 
   var progress = 0;
   var barTimer = null;
@@ -353,7 +398,6 @@
     animProgress(25, 1200);
     loadNAV();
     loadWeather();
-    // Hard deadline
     setTimeout(doExit, 15000);
   }
 
@@ -460,7 +504,6 @@
     if (barTimer) clearInterval(barTimer);
     setProgress(100);
 
-    // In preview: fade overlay, show page behind
     setTimeout(function(){
       var mottoS2 = g('nxi-motto-s2');
       var navBox  = document.querySelector('.nxi-nav-box');
@@ -483,19 +526,24 @@
           mottoS2.style.letterSpacing = '.25em';
         }
 
-        // Fade entire overlay
+        // Fade overlay, fade in page behind
         setTimeout(function(){
           ov.classList.add('nxi-fadeout');
+
+          // Show page behind and fade it in simultaneously
+          var page = g('page-behind');
+          if (page) {
+            page.style.display = 'block';
+            g('lang-info').textContent = 'Selected: ' + targetURL;
+            requestAnimationFrame(function(){
+              page.classList.add('visible');
+            });
+          }
+
           setTimeout(function(){
             ov.remove();
             document.body.style.overflow = '';
-            // In real WP: redirect to targetURL
-            // window.location.href = targetURL;
-            var page = g('page-behind');
-            if (page) {
-              page.style.display = 'block';
-              g('lang-info').textContent = 'Selected: ' + targetURL;
-            }
+            // In real WP: window.location.href = targetURL;
           }, 1300);
         }, 2500);
       }, 550);
