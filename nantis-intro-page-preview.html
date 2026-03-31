@@ -12,8 +12,23 @@ body{margin:0;font-family:sans-serif;background:#111}
 #page-behind h1{font-size:2rem;margin-bottom:20px}
 #page-behind p{color:#aaa;font-size:1rem}
 
+/* ── Starry sky background ─────────────────────────── */
+#nxi-stars1,#nxi-stars2,#nxi-stars3{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none}
+#nxi-stars1{background:transparent;animation:nxStarDrift 80s linear infinite}
+#nxi-stars2{background:transparent;animation:nxStarDrift 120s linear infinite}
+#nxi-stars3{background:transparent;animation:nxStarDrift 200s linear infinite}
+#nxi-milky{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999997;pointer-events:none;
+  background:radial-gradient(ellipse at 30% 20%,rgba(80,120,200,.06) 0%,transparent 50%),
+             radial-gradient(ellipse at 70% 80%,rgba(100,140,220,.05) 0%,transparent 45%),
+             radial-gradient(ellipse at 50% 50%,rgba(60,80,160,.04) 0%,transparent 60%);
+  opacity:.8}
+@keyframes nxStarDrift{0%{transform:translateY(0)}100%{transform:translateY(-20px)}}
+@keyframes nxTwinkle1{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes nxTwinkle2{0%,100%{opacity:.5}50%{opacity:.15}}
+@keyframes nxTwinkle3{0%,100%{opacity:.2}50%{opacity:.9}}
+
 /* ── Intro page styles ─────────────────────────────── */
-#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
 #nxi *{box-sizing:border-box;margin:0;padding:0}
 #nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
 #nxi-logo{width:120px;height:120px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
@@ -88,6 +103,11 @@ body{margin:0;font-family:sans-serif;background:#111}
 <!-- ═══════════════════════════════════════════════════ -->
 <!-- INTRO PAGE                                         -->
 <!-- ═══════════════════════════════════════════════════ -->
+
+<div id="nxi-milky"></div>
+<div id="nxi-stars1"></div>
+<div id="nxi-stars2"></div>
+<div id="nxi-stars3"></div>
 
 <div id="nxi">
   <!-- Screen 1: Branding + Language Selection -->
@@ -348,8 +368,13 @@ body{margin:0;font-family:sans-serif;background:#111}
           ov.classList.add('nxi-fadeout');
           setTimeout(function(){
             ov.remove();
+            // Remove star layers
+            ['nxi-stars1','nxi-stars2','nxi-stars3','nxi-milky'].forEach(function(id){
+              var el=document.getElementById(id); if(el)el.remove();
+            });
             document.body.style.overflow='';
             document.documentElement.style.overflow='';
+            document.body.style.background='#111';
 
             /* ── PREVIEW: show fake page behind ── */
             document.getElementById('page-behind').style.display = 'block';
@@ -367,6 +392,38 @@ body{margin:0;font-family:sans-serif;background:#111}
     },500);
   }
 
+})();
+</script>
+<script>
+// Generate random starfield
+(function(){
+  function makeStars(id, count, minSize, maxSize, twinkleAnim){
+    var el = document.getElementById(id);
+    if(!el) return;
+    var shadows = [];
+    for(var i=0; i<count; i++){
+      var x = Math.random()*2000;
+      var y = Math.random()*2000;
+      var size = minSize + Math.random()*(maxSize-minSize);
+      var brightness = 0.3 + Math.random()*0.7;
+      var color = Math.random()>0.85
+        ? 'rgba(140,180,255,'+brightness+')'   // blue-ish stars
+        : Math.random()>0.7
+          ? 'rgba(255,220,180,'+brightness+')' // warm stars
+          : 'rgba(255,255,255,'+brightness+')'; // white stars
+      shadows.push(x+'px '+y+'px 0 '+size+'px '+color);
+    }
+    el.style.boxShadow = shadows.join(',');
+    el.style.width = '1px';
+    el.style.height = '1px';
+    if(twinkleAnim){
+      el.style.animation += ', '+twinkleAnim;
+    }
+  }
+  // 3 layers: tiny distant, medium, bright close
+  makeStars('nxi-stars1', 300, 0, 0.3, 'nxTwinkle1 4s ease-in-out infinite');
+  makeStars('nxi-stars2', 150, 0.2, 0.6, 'nxTwinkle2 6s ease-in-out infinite');
+  makeStars('nxi-stars3', 50, 0.4, 1.0, 'nxTwinkle3 3s ease-in-out infinite');
 })();
 </script>
 </body>
