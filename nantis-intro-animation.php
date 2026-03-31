@@ -8,9 +8,15 @@
 /* CSS in head so styles are ready before page paints */
 add_action( 'wp_head', 'nantis_intro_css' );
 function nantis_intro_css() {
-    // Transition screen for French redirect
+    // Transition screen for French redirect — motto animation then fade
     if ( isset( $_GET['nxi_t'] ) ) {
-        echo '<style data-no-optimize="1">#nxi-trans{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;transition:opacity .8s ease}</style>';
+        echo '<style data-no-optimize="1">';
+        echo '#nxi-trans{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity 1.2s ease}';
+        echo '#nxi-trans span{color:#00a8e8;font-size:2.8rem;letter-spacing:.25em;text-transform:uppercase;font-family:"Architects Daughter",sans-serif;animation:nxTGlow 2.5s ease-in-out infinite}';
+        echo '.nxi-trans-tm{font-size:.4em;vertical-align:super;letter-spacing:0}';
+        echo '@keyframes nxTGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}';
+        echo '#nxi-trans.nxi-trans-fade{opacity:0}';
+        echo '</style>';
         return;
     }
     if ( ! is_front_page() ) return;
@@ -335,20 +341,12 @@ function nantis_intro_cb() {
     if(barTimer)clearInterval(barTimer);
     setProgress(100);
 
-    // French: redirect immediately, NAV stays visible while /fr/ loads
-    if(targetURL==='fr'){
-      setTimeout(function(){
-        window.location.href='https://nantis.ca/fr/?nxi_t=1';
-      },500);
-      return;
-    }
-
-    // English: fade out data, show motto, then reveal page
     setTimeout(function(){
       var mottoS2=g('nxi-motto-s2');
       var navBox=document.querySelector('.nxi-nav-box');
       var barWrap=document.querySelector('.nxi-bar-wrap');
 
+      // Fade out data elements
       [pctEl,statusEl,g('nxi-weather'),navBox,barWrap,document.querySelector('.nxi-s2-logo')].forEach(function(el){
         if(el){el.style.transition='opacity .5s ease';el.style.opacity='0';}
       });
@@ -357,9 +355,16 @@ function nantis_intro_cb() {
         [pctEl,statusEl,g('nxi-weather'),navBox,barWrap,document.querySelector('.nxi-s2-logo')].forEach(function(el){
           if(el)el.style.display='none';
         });
+        // Enlarge motto
         if(mottoS2){mottoS2.style.fontSize='2.8rem';mottoS2.style.letterSpacing='.25em';}
 
         setTimeout(function(){
+          if(targetURL==='fr'){
+            // French: redirect while motto is still visible
+            window.location.href='https://nantis.ca/fr/?nxi_t=1';
+            return;
+          }
+          // English: fade out overlay to reveal page
           ov.classList.add('nxi-fadeout');
           setTimeout(function(){
             ov.remove();
@@ -388,7 +393,9 @@ add_action( 'wp_footer', 'nantis_intro_transition' );
 function nantis_intro_transition() {
     if ( ! isset( $_GET['nxi_t'] ) ) return;
 ?>
-<div id="nxi-trans" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000"></div>
+<div id="nxi-trans" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;align-items:center;justify-content:center">
+  <span>THINK OUTSIDE THE BOX<sup class="nxi-trans-tm">&trade;</sup></span>
+</div>
 <script data-no-optimize="1" data-no-defer="1">
 (function(){
   var el = document.getElementById('nxi-trans');
@@ -398,15 +405,15 @@ function nantis_intro_transition() {
     var url = window.location.href.replace(/[?&]nxi_t=1/,'').replace(/\?$/,'');
     window.history.replaceState(null, '', url);
   }
-  // Fade out black screen once page is loaded
+  // Once page is loaded, show motto briefly then fade out
   window.addEventListener('load', function(){
     setTimeout(function(){
-      el.style.opacity = '0';
-      setTimeout(function(){ el.remove(); }, 800);
-    }, 100);
+      el.classList.add('nxi-trans-fade');
+      setTimeout(function(){ el.remove(); }, 1300);
+    }, 1500);
   });
-  // Safety: remove after 5s max
-  setTimeout(function(){ if(el.parentNode){ el.style.opacity='0'; setTimeout(function(){el.remove();},800); } }, 5000);
+  // Safety: remove after 8s max
+  setTimeout(function(){ if(el.parentNode){ el.classList.add('nxi-trans-fade'); setTimeout(function(){el.remove();},1300); } }, 8000);
 })();
 </script>
 <?php
