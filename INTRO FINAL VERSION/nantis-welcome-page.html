@@ -161,15 +161,11 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
   function setCookie(name, val, minutes){
     var d = new Date();
     d.setTime(d.getTime() + minutes*60*1000);
-    document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;domain=.nantis.ca;SameSite=Lax';
+    document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;domain=.nantis.ca;SameSite=Lax;Secure';
   }
 
-  /* ── If returning visitor (cookie set), skip intro → go to homepage ── */
-  if(getCookie('nx_intro')==='1'){
-    document.getElementById('nxi').style.display='none';
-    window.location.replace('https://www.nantis.ca/');
-    return;
-  }
+  /* Cookie check removed — PHP snippet is the gatekeeper.
+     If this HTML is served, the intro should always play. */
 
   var g = document.getElementById.bind(document);
   var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2');
