@@ -144,7 +144,7 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
   function setCookie(name, val, minutes){
     var d = new Date();
     d.setTime(d.getTime() + minutes*60*1000);
-    document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;SameSite=Lax';
+    document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;domain=.nantis.ca;SameSite=Lax';
   }
 
   /* ── If returning visitor (cookie set), skip intro → go to homepage ── */
