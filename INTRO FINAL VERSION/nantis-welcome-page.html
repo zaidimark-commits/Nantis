@@ -164,15 +164,13 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
     document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;domain=.nantis.ca;SameSite=Lax;Secure';
   }
 
-  /* Cookie check removed — PHP snippet is the gatekeeper.
-     If this HTML is served, the intro should always play.
-     Loop guard: if we've already played the intro this session, skip straight to redirect. */
+  /* Loop guard: if intro already played this session but PHP/cache re-served it,
+     skip straight to homepage with ?nxi=1 to bypass the PHP snippet URI check. */
   if(sessionStorage.getItem('nxi_done')){
     document.getElementById('nxi').style.display='none';
     var lang = sessionStorage.getItem('nxi_lang') || 'en';
-    sessionStorage.removeItem('nxi_done');
-    sessionStorage.removeItem('nxi_lang');
-    window.location.replace(lang === 'fr' ? 'https://www.nantis.ca/fr/' : 'https://www.nantis.ca/');
+    var base = window.location.origin + (lang === 'fr' ? '/fr/' : '/');
+    window.location.replace(base + '?nxi=1');
     return;
   }
 
@@ -465,12 +463,8 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
             /* Mark session so loop guard can catch a cached re-serve */
             sessionStorage.setItem('nxi_done','1');
             sessionStorage.setItem('nxi_lang', targetLang);
-            /* Redirect to chosen language homepage */
-            if (targetLang === 'fr') {
-              window.location.href = 'https://www.nantis.ca/fr/';
-            } else {
-              window.location.href = 'https://www.nantis.ca/';
-            }
+            /* Redirect to chosen language homepage (same origin to preserve sessionStorage) */
+            window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
           },2500);
         },1200);
       },600);
