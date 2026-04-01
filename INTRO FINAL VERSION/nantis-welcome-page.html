@@ -47,6 +47,13 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 #nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
 #nxi.nxi-fadeout{opacity:0;transition:opacity 1.2s ease}
 
+/* ── Buy Back / Rachat ────────────────────────────── */
+.nxi-buyback-box{width:100%;max-width:380px;margin-top:14px;text-align:center}
+.nxi-buyback-hdr{color:rgba(240,242,245,.5);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-bottom:8px}
+.nxi-countdown{color:#7dd3fc;font-size:1.3rem;letter-spacing:.15em;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 12px rgba(125,211,252,.5),0 0 30px rgba(125,211,252,.2);animation:nxCountGlow 2.5s ease-in-out infinite;transition:opacity .8s ease}
+.nxi-buyback-msg{color:rgba(240,242,245,.7);font-size:.7rem;letter-spacing:.12em;font-family:sans-serif;line-height:1.6;margin-top:8px;opacity:0;transition:opacity 1s ease;max-width:340px;margin-left:auto;margin-right:auto}
+@keyframes nxCountGlow{0%,100%{text-shadow:0 0 12px rgba(125,211,252,.4),0 0 30px rgba(125,211,252,.15)}50%{text-shadow:0 0 24px rgba(125,211,252,.9),0 0 50px rgba(125,211,252,.4)}}
+
 /* ── Animations ────────────────────────────────────── */
 @keyframes nxPop{0%{opacity:0;transform:scale(.3) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 @keyframes nxUp{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
@@ -71,6 +78,9 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
   #nxi-s2{gap:10px;padding:20px 16px}
   #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
   .nxi-nbw{height:18px}
+  .nxi-buyback-box{margin-top:10px}
+  .nxi-countdown{font-size:1rem}
+  .nxi-buyback-msg{font-size:.6rem}
 }
 </style>
 </head>
@@ -128,6 +138,13 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
         </div>
       </div>
     </div>
+    <!-- Buy Back / Rachat Section -->
+    <div class="nxi-buyback-box">
+      <div class="nxi-buyback-hdr">BUY BACK &nbsp;|&nbsp; RACHAT</div>
+      <div id="nxi-countdown" class="nxi-countdown"></div>
+      <div id="nxi-buyback-msg" class="nxi-buyback-msg"></div>
+    </div>
+
     <span id="nxi-motto-s2">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
   </div>
 </div>
@@ -371,6 +388,43 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
     },300);
   }
 
+  /* ── Countdown – Buy Back / Rachat ──────────────────── */
+
+  var countdownTarget = new Date('2026-06-01T09:30:00-04:00').getTime(); // June 1, 2026 9:30 AM EST (EDT)
+  var countdownEl = g('nxi-countdown');
+  var buybackMsg = g('nxi-buyback-msg');
+  var countdownExpired = false;
+
+  function padZ(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function updateCountdown(){
+    var now = Date.now();
+    var diff = countdownTarget - now;
+    if(diff <= 0){
+      if(!countdownExpired){
+        countdownExpired = true;
+        countdownEl.textContent = '00 : 00 : 00 : 00';
+        countdownEl.style.opacity = '0.3';
+        /* Show language-specific message */
+        if(targetLang === 'fr'){
+          buybackMsg.textContent = 'Veuillez vendre vos parts via votre plateforme de courtage en tant qu\u2019ordre au march\u00e9. La S.E.C. (NANTIS 2025) les rach\u00e8tera \u00e0 la valeur liquidative finale.';
+        } else {
+          buybackMsg.textContent = 'Please sell your shares via your trading platform as a market order. The LP (NANTIS 2025) will be buying them back at the final NAV value.';
+        }
+        buybackMsg.style.opacity = '1';
+      }
+      return;
+    }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    countdownEl.textContent = padZ(d) + ' : ' + padZ(h) + ' : ' + padZ(m) + ' : ' + padZ(s);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
   /* ── Exit ──────────────────────────────────────────── */
 
   var exited = false;
@@ -383,7 +437,8 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
     setTimeout(function(){
       /* Fade out all screen 2 elements EXCEPT the motto */
       var fadeEls=[pctEl,statusEl,g('nxi-weather'),document.querySelector('.nxi-nav-box'),
-                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo')];
+                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo'),
+                   document.querySelector('.nxi-buyback-box')];
       fadeEls.forEach(function(el){
         if(el){el.style.transition='opacity .5s ease';el.style.opacity='0';}
       });
