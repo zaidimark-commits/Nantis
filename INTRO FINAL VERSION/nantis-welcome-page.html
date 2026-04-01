@@ -1,37 +1,12 @@
-<!--
-  ═══════════════════════════════════════════════════════════
-  NANTIS WELCOME PAGE — Paste into Elementor Custom HTML
-  ═══════════════════════════════════════════════════════════
-
-  SETUP INSTRUCTIONS:
-  ───────────────────
-  1. In WordPress → Pages → Add New → Title: "Welcome"
-  2. Open with Elementor → drag an "HTML" widget onto the page
-  3. Paste ALL of this code into the HTML widget
-  4. Publish the page
-  5. Go to Settings → Reading → set "Welcome" as your Static Front Page
-  6. Make sure your English homepage lives at /home/
-  7. Make sure your French homepage lives at /fr/
-
-  HOW IT WORKS:
-  ─────────────
-  - First-time visitors to nantis.ca → see this intro
-  - They pick ENGLISH or FRANÇAIS
-  - Cookie is set (30 min) so they don't see it again
-  - ENGLISH → redirects to /home/
-  - FRANÇAIS → redirects to /fr/
-  - If they come back within 30 min → auto-redirected to /home/
-
-  LOGO: https://nantis.ca/wp-content/uploads/2026/03/logo.png
-  ═══════════════════════════════════════════════════════════
--->
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NANTIS</title>
 <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
-
 <style>
-/* ── Override page styles when intro is active ── */
-html.nxi-active,
-html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!important;background:#000!important}
+body{margin:0;padding:0;overflow:hidden;background:#000}
 
 /* ── Intro page styles ─────────────────────────────── */
 #nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
@@ -98,10 +73,8 @@ html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!impo
   .nxi-nbw{height:18px}
 }
 </style>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- INTRO PAGE                                         -->
-<!-- ═══════════════════════════════════════════════════ -->
+</head>
+<body>
 
 <div id="nxi">
   <!-- Screen 1: Branding + Language Selection -->
@@ -180,9 +153,6 @@ html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!impo
     window.location.replace('https://www.nantis.ca');
     return;
   }
-
-  /* ── Activate full-screen mode (hide Elementor chrome) ── */
-  document.documentElement.classList.add('nxi-active');
 
   var g = document.getElementById.bind(document);
   var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2');
@@ -297,7 +267,7 @@ html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!impo
     animProgress(25,1200);
     loadNAV();
     loadWeatherForS2();
-    setTimeout(doExit,15000);
+    setTimeout(doExit,10000);
   }
 
   /* ── NAV ───────────────────────────────────────────── */
@@ -446,3 +416,5 @@ html.nxi-active body{margin:0!important;padding:0!important;overflow:hidden!impo
 
 })();
 </script>
+</body>
+</html>
