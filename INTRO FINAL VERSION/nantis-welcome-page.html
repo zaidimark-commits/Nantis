@@ -194,17 +194,6 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
       /* Set cookie — 30 minute expiry */
       setCookie('nx_intro','1',30);
 
-      /* Prerender the target homepage while the intro animation plays */
-      var targetURL = targetLang === 'fr' ? 'https://www.nantis.ca/fr/' : 'https://www.nantis.ca/';
-      var preLink = document.createElement('link');
-      preLink.rel = 'prerender';
-      preLink.href = targetURL;
-      document.head.appendChild(preLink);
-      var prefLink = document.createElement('link');
-      prefLink.rel = 'prefetch';
-      prefLink.href = targetURL;
-      document.head.appendChild(prefLink);
-
       /* ── Black hole effect: everything gets sucked into the logo ── */
       var logo = g('nxi-logo');
       var logoRect = logo.getBoundingClientRect();
