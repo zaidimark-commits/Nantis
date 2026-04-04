@@ -68,11 +68,12 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 @keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
 
 /* ── Screen 3: Quote + Motto ─────────────────────── */
-#nxi-s3{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 40px;gap:20px}
-#nxi-quote{opacity:0;text-align:center;max-width:600px;transition:opacity 1.2s ease}
+#nxi-s3{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 40px;gap:20px;background:url('https://nantis.ca/intro/lone%20wolf%20(1).jpg') center center / cover no-repeat;position:relative}
+#nxi-s3::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55)}
+#nxi-quote{opacity:0;text-align:center;max-width:600px;transition:opacity 1.2s ease;position:relative;z-index:1}
 #nxi-quote-text{color:rgba(240,242,245,.55);font-size:1.05rem;letter-spacing:.06em;font-family:'Architects Daughter',sans-serif;line-height:1.7;text-shadow:0 0 15px rgba(240,242,245,.15);font-style:italic}
 #nxi-quote-author{color:rgba(240,242,245,.3);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:12px}
-#nxi-motto-s3{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3);transition:opacity 1s ease}
+#nxi-motto-s3{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3);transition:opacity 1s ease;position:relative;z-index:1}
 
 /* ── Mobile ────────────────────────────────────────── */
 @media(max-height:650px){
