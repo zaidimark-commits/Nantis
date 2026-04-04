@@ -8,8 +8,11 @@
 <style>
 body{margin:0;padding:0;overflow:hidden;background:#000}
 
+/* ── Shooting Stars ───────────────────────────────── */
+#nxi-stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none}
+
 /* ── Intro page styles ─────────────────────────────── */
-#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
 #nxi *{box-sizing:border-box;margin:0;padding:0}
 #nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
 #nxi-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
@@ -64,6 +67,13 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 @keyframes nxLogoGlow{0%,100%{filter:drop-shadow(0 0 24px rgba(0,168,232,.45))}50%{filter:drop-shadow(0 0 40px rgba(0,168,232,.85))}}
 @keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
 
+/* ── Screen 3: Quote + Motto ─────────────────────── */
+#nxi-s3{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 40px;gap:20px}
+#nxi-quote{opacity:0;text-align:center;max-width:600px;transition:opacity 1.2s ease}
+#nxi-quote-text{color:rgba(240,242,245,.55);font-size:1.05rem;letter-spacing:.06em;font-family:'Architects Daughter',sans-serif;line-height:1.7;text-shadow:0 0 15px rgba(240,242,245,.15);font-style:italic}
+#nxi-quote-author{color:rgba(240,242,245,.3);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:12px}
+#nxi-motto-s3{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3);transition:opacity 1s ease}
+
 /* ── Mobile ────────────────────────────────────────── */
 @media(max-height:650px){
   #nxi-logo{width:70px;height:70px}
@@ -81,10 +91,15 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
   .nxi-buyback-box{margin-top:10px}
   .nxi-countdown{font-size:1rem}
   .nxi-buyback-msg{font-size:.6rem}
+  #nxi-quote-text{font-size:.88rem}
+  #nxi-motto-s3{font-size:1.5rem}
 }
 </style>
 </head>
 <body>
+
+<!-- Shooting Stars Canvas -->
+<canvas id="nxi-stars"></canvas>
 
 <div id="nxi">
   <!-- Screen 1: Branding + Language Selection -->
@@ -147,11 +162,122 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 
     <span id="nxi-motto-s2">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
   </div>
+
+  <!-- Screen 3: Quote + Motto Exit -->
+  <div id="nxi-s3">
+    <div id="nxi-quote">
+      <div id="nxi-quote-text"></div>
+      <div id="nxi-quote-author"></div>
+    </div>
+    <span id="nxi-motto-s3">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  </div>
 </div>
 
 <script>
 (function(){
   "use strict";
+
+  /* ── Shooting Stars ──────────────────────────────────── */
+  var canvas = document.getElementById('nxi-stars');
+  var ctx = canvas.getContext('2d');
+  var shootingStars = [];
+  var SW, SH;
+
+  function resizeCanvas(){
+    SW = canvas.width = window.innerWidth;
+    SH = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function spawnStar(){
+    var speed = 2 + Math.random() * 4;
+    var angle = (15 + Math.random() * 30) * Math.PI / 180;
+    var fromRight = Math.random() > 0.5;
+    shootingStars.push({
+      x: fromRight ? SW + 10 : -10 + Math.random() * SW * 0.6,
+      y: -10 + Math.random() * SH * 0.4,
+      vx: (fromRight ? -1 : 1) * Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      len: 20 + Math.random() * 40,
+      life: 1,
+      decay: 0.003 + Math.random() * 0.006,
+      size: 0.5 + Math.random() * 1.2
+    });
+  }
+
+  function drawStars(){
+    ctx.clearRect(0, 0, SW, SH);
+    for(var i = shootingStars.length - 1; i >= 0; i--){
+      var s = shootingStars[i];
+      s.x += s.vx; s.y += s.vy; s.life -= s.decay;
+      if(s.life <= 0 || s.x < -100 || s.x > SW + 100 || s.y > SH + 100){
+        shootingStars.splice(i, 1); continue;
+      }
+      var alpha = s.life * 0.7;
+      var mag = Math.sqrt(s.vx*s.vx + s.vy*s.vy);
+      var tailX = s.x - s.vx * s.len / mag * 3;
+      var tailY = s.y - s.vy * s.len / mag * 3;
+      var grad = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
+      grad.addColorStop(0, 'rgba(255,255,255,' + alpha + ')');
+      grad.addColorStop(0.3, 'rgba(180,220,255,' + (alpha * 0.6) + ')');
+      grad.addColorStop(1, 'rgba(180,220,255,0)');
+      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(tailX, tailY);
+      ctx.strokeStyle = grad; ctx.lineWidth = s.size; ctx.lineCap = 'round'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.size * 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(200,230,255,' + (alpha * 0.5) + ')'; ctx.fill();
+    }
+    requestAnimationFrame(drawStars);
+  }
+
+  function scheduleNextStar(){
+    setTimeout(function(){
+      spawnStar();
+      if(Math.random() > 0.6) spawnStar();
+      scheduleNextStar();
+    }, 300 + Math.random() * 1200);
+  }
+
+  drawStars();
+  scheduleNextStar();
+
+  /* ── Daily Business Quotes ────────────────────────────── */
+  var quotes = [
+    { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+    { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+    { text: "Risk comes from not knowing what you are doing.", author: "Warren Buffett" },
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { text: "Price is what you pay. Value is what you get.", author: "Warren Buffett" },
+    { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { text: "It is not the strongest that survive, but the most adaptable.", author: "Charles Darwin" },
+    { text: "Compound interest is the eighth wonder of the world.", author: "Albert Einstein" },
+    { text: "Fortune favors the bold.", author: "Virgil" },
+    { text: "The market is a device for transferring money from the impatient to the patient.", author: "Warren Buffett" },
+    { text: "Do not wait to strike till the iron is hot, but make it hot by striking.", author: "William Butler Yeats" },
+    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+    { text: "Opportunities don\u2019t happen. You create them.", author: "Chris Grosser" },
+    { text: "The harder I work, the luckier I get.", author: "Samuel Goldwyn" },
+    { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+    { text: "What we know is a drop, what we don\u2019t know is an ocean.", author: "Isaac Newton" },
+    { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+    { text: "It always seems impossible until it\u2019s done.", author: "Nelson Mandela" },
+    { text: "Be fearful when others are greedy and greedy when others are fearful.", author: "Warren Buffett" },
+    { text: "Vision without execution is hallucination.", author: "Thomas Edison" },
+    { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
+    { text: "Great things in business are never done by one person. They\u2019re done by a team.", author: "Steve Jobs" },
+    { text: "Time is more valuable than money. You can get more money, but you cannot get more time.", author: "Jim Rohn" },
+    { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+    { text: "Wealth is the ability to fully experience life.", author: "Henry David Thoreau" },
+    { text: "You miss 100% of the shots you don\u2019t take.", author: "Wayne Gretzky" },
+    { text: "Discipline is the bridge between goals and accomplishment.", author: "Jim Rohn" },
+    { text: "The biggest risk is not taking any risk.", author: "Mark Zuckerberg" },
+    { text: "A smooth sea never made a skilled sailor.", author: "Franklin D. Roosevelt" },
+    { text: "Buy when there\u2019s blood in the streets, even if the blood is your own.", author: "Baron Rothschild" }
+  ];
+
+  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  var todayQuote = quotes[dayOfYear % quotes.length];
 
   /* ── Cookie helper ──────────────────────────────────── */
   function getCookie(name){
@@ -438,37 +564,46 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
     setProgress(100);
 
     setTimeout(function(){
-      /* Fade out all screen 2 elements EXCEPT the motto */
-      var fadeEls=[pctEl,statusEl,g('nxi-weather'),document.querySelector('.nxi-nav-box'),
-                   document.querySelector('.nxi-bar-wrap'),document.querySelector('.nxi-s2-logo'),
-                   document.querySelector('.nxi-buyback-box')];
-      fadeEls.forEach(function(el){
-        if(el){el.style.transition='opacity .5s ease';el.style.opacity='0';}
-      });
+      /* Fade out entire Screen 2 */
+      s2.style.transition = 'opacity .6s ease';
+      s2.style.opacity = '0';
 
       setTimeout(function(){
-        fadeEls.forEach(function(el){ if(el)el.style.display='none'; });
+        s2.style.display = 'none';
 
-        var mottoS2=g('nxi-motto-s2');
-        if(mottoS2){
-          mottoS2.style.transition='font-size .8s ease, text-shadow .8s ease';
-          mottoS2.style.fontSize='2rem';
-          mottoS2.style.textShadow='0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3)';
-        }
+        /* Show Screen 3 */
+        var s3 = g('nxi-s3');
+        s3.style.display = 'flex';
 
+        /* Show daily quote */
+        var quoteEl = g('nxi-quote');
+        var quoteText = g('nxi-quote-text');
+        var quoteAuthor = g('nxi-quote-author');
+        quoteText.textContent = '\u201C' + todayQuote.text + '\u201D';
+        quoteAuthor.textContent = '\u2014 ' + todayQuote.author;
+
+        setTimeout(function(){ quoteEl.style.opacity = '1'; }, 300);
+
+        /* After 4 seconds, fade out quote and show motto */
         setTimeout(function(){
-          if(mottoS2)mottoS2.style.animation='nxMottoGlowFinal 2.5s ease-in-out infinite';
+          quoteEl.style.opacity = '0';
 
           setTimeout(function(){
-            /* Mark session so loop guard can catch a cached re-serve */
-            sessionStorage.setItem('nxi_done','1');
-            sessionStorage.setItem('nxi_lang', targetLang);
-            /* Redirect to chosen language homepage (same origin to preserve sessionStorage) */
-            window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
-          },2500);
-        },1200);
-      },600);
-    },500);
+            quoteEl.style.display = 'none';
+            var mottoS3 = g('nxi-motto-s3');
+            mottoS3.style.opacity = '1';
+            mottoS3.style.animation = 'nxMottoGlowFinal 2.5s ease-in-out infinite';
+
+            /* Redirect after motto displays */
+            setTimeout(function(){
+              sessionStorage.setItem('nxi_done','1');
+              sessionStorage.setItem('nxi_lang', targetLang);
+              window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
+            }, 2500);
+          }, 1000);
+        }, 4000);
+      }, 700);
+    }, 500);
   }
 
 })();
