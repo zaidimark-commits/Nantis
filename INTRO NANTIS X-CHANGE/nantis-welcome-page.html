@@ -31,10 +31,6 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 #nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
 .nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
 
-/* ── Screen 1.5: Product Selection ─────────────────── */
-#nxi-s15{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:20px;position:absolute;top:0;left:0;z-index:2;background:#000}
-.nxi-btns-product{animation:nxUp .7s ease .2s both}
-
 /* ── Screen 2 ──────────────────────────────────────── */
 #nxi-s2{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:14px}
 .nxi-bar-wrap{width:260px}
@@ -119,9 +115,14 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
       <span class="nxi-contact-item"><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>514.416.3466</span><span class="nxi-contact-item"><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>INFO@NANTIS.CA</span>
     </div>
 
-    <div class="nxi-btns">
+    <div class="nxi-btns" id="nxi-lang-btns">
       <button class="nxi-btn" data-lang="en">ENGLISH</button>
       <button class="nxi-btn" data-lang="fr">FRAN&Ccedil;AIS</button>
+    </div>
+
+    <div class="nxi-btns" id="nxi-product-btns" style="display:none">
+      <button class="nxi-btn" id="nxi-btn-funds">FUNDS</button>
+      <button class="nxi-btn" id="nxi-btn-xchange">X-CHANGE<sup class="nxi-tm">&trade;</sup></button>
     </div>
 
     <span id="nxi-s1-weather" class="nxi-s1-weather"></span>
@@ -129,16 +130,6 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 
   <div id="nxi-motto-s1">
     <span>THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
-  </div>
-
-  <!-- Screen 1.5: Product Selection (FUNDS vs X-CHANGE) -->
-  <div id="nxi-s15">
-    <img class="nxi-s15-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
-         style="width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxLogoGlow 3s ease-in-out infinite;margin-bottom:8px" alt="NANTIS">
-    <div class="nxi-btns nxi-btns-product">
-      <button class="nxi-btn" id="nxi-btn-funds">FUNDS</button>
-      <button class="nxi-btn" id="nxi-btn-xchange">X-CHANGE<sup class="nxi-tm">&trade;</sup></button>
-    </div>
   </div>
 
   <!-- Screen 2: Progress + NAV Data -->
@@ -650,8 +641,10 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
   }
 
   var g = document.getElementById.bind(document);
-  var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2'), s15 = g('nxi-s15');
+  var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2');
   var motto1 = g('nxi-motto-s1');
+  var langBtns = g('nxi-lang-btns');
+  var productBtns = g('nxi-product-btns');
   var bar = g('nxi-bar'), pctEl = g('nxi-pct'), statusEl = g('nxi-status');
 
   if (!ov) return;
@@ -663,101 +656,135 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 
   var targetLang = '';
 
-  var btns = document.querySelectorAll('.nxi-btn');
-  for (var i = 0; i < btns.length; i++) {
-    btns[i].addEventListener('click', function(e){
+  /* ── Language buttons: fade out EN/FR, fade in FUNDS/X-CHANGE ── */
+  var langBtnEls = langBtns.querySelectorAll('.nxi-btn');
+  for (var i = 0; i < langBtnEls.length; i++) {
+    langBtnEls[i].addEventListener('click', function(e){
       e.preventDefault();
       targetLang = this.getAttribute('data-lang');
 
       /* Set cookie — 30 minute expiry */
       setCookie('nx_intro','1',30);
 
-      /* ── Black hole effect: everything gets sucked into the logo ── */
-      var logo = g('nxi-logo');
-      var logoRect = logo.getBoundingClientRect();
-      var cx = logoRect.left + logoRect.width/2;
-      var cy = logoRect.top + logoRect.height/2;
+      /* Update FUNDS button label based on language */
+      g('nxi-btn-funds').textContent = targetLang === 'fr' ? 'FONDS' : 'FUNDS';
 
-      /* Elements to swallow — everything on Screen 1 except the logo */
-      var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-btn, .nxi-s1-weather, .nxi-contact, #nxi-line');
-      var mottoSpan = motto1.querySelector('span');
-
-      /* Animate each element toward the logo center */
-      targets.forEach(function(el){
-        var cs = window.getComputedStyle(el);
-        if(cs.display === 'inline') el.style.display = 'inline-block';
-        var r = el.getBoundingClientRect();
-        var ex = r.left + r.width/2;
-        var ey = r.top + r.height/2;
-        var dx = cx - ex;
-        var dy = cy - ey;
-        el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
-        el.style.transformOrigin = 'center center';
-        el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
-        el.style.opacity = '0';
-      });
-
-      /* Swallow the motto too */
-      if(mottoSpan){
-        mottoSpan.style.display = 'inline-block';
-        var mr = mottoSpan.getBoundingClientRect();
-        var mdx = cx - (mr.left + mr.width/2);
-        var mdy = cy - (mr.top + mr.height/2);
-        mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
-        mottoSpan.style.transform = 'translate('+mdx+'px,'+mdy+'px) scale(0)';
-        mottoSpan.style.opacity = '0';
-      }
-
-      /* Logo pulses as it absorbs everything */
-      logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
-      logo.style.transform = 'scale(1.15)';
-      logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
-
-      /* After absorption, logo shrinks away and we transition */
-      setTimeout(function(){
-        logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
-        logo.style.transform = 'scale(0)';
-        logo.style.opacity = '0';
-      }, 900);
+      /* Fade out language buttons */
+      langBtns.style.transition = 'opacity .4s ease';
+      langBtns.style.opacity = '0';
 
       setTimeout(function(){
-        s1.style.display = 'none';
-        motto1.style.display = 'none';
-        /* Show Screen 1.5: Product Selection */
-        s15.style.display = 'flex';
-        s15.style.opacity = '0';
-        s15.style.transition = 'opacity .5s ease';
-        /* Update FUNDS button label based on language */
-        g('nxi-btn-funds').textContent = targetLang === 'fr' ? 'FONDS' : 'FUNDS';
-        requestAnimationFrame(function(){ s15.style.opacity = '1'; });
-      }, 1400);
+        langBtns.style.display = 'none';
+        /* Fade in product buttons */
+        productBtns.style.display = 'flex';
+        productBtns.style.opacity = '0';
+        productBtns.style.transition = 'opacity .4s ease';
+        requestAnimationFrame(function(){ productBtns.style.opacity = '1'; });
+      }, 400);
     });
   }
 
-  /* ── Product Selection buttons ──────────────────────── */
-
-  /* FUNDS / FONDS → go to Screen 2 (NAV, progress, buyback) */
+  /* ── FUNDS / FONDS → black hole → Screen 2 (NAV, progress, buyback) ── */
   g('nxi-btn-funds').addEventListener('click', function(e){
     e.preventDefault();
-    s15.style.transition = 'opacity .5s ease';
-    s15.style.opacity = '0';
+
+    /* Black hole effect */
+    var logo = g('nxi-logo');
+    var logoRect = logo.getBoundingClientRect();
+    var cx = logoRect.left + logoRect.width/2;
+    var cy = logoRect.top + logoRect.height/2;
+
+    var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, #nxi-product-btns, .nxi-s1-weather, .nxi-contact, #nxi-line');
+    var mottoSpan = motto1.querySelector('span');
+
+    targets.forEach(function(el){
+      var cs = window.getComputedStyle(el);
+      if(cs.display === 'inline') el.style.display = 'inline-block';
+      var r = el.getBoundingClientRect();
+      var dx = cx - (r.left + r.width/2);
+      var dy = cy - (r.top + r.height/2);
+      el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+      el.style.transformOrigin = 'center center';
+      el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
+      el.style.opacity = '0';
+    });
+
+    if(mottoSpan){
+      mottoSpan.style.display = 'inline-block';
+      var mr = mottoSpan.getBoundingClientRect();
+      mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+      mottoSpan.style.transform = 'translate('+(cx-(mr.left+mr.width/2))+'px,'+(cy-(mr.top+mr.height/2))+'px) scale(0)';
+      mottoSpan.style.opacity = '0';
+    }
+
+    logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
+    logo.style.transform = 'scale(1.15)';
+    logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
+
     setTimeout(function(){
-      s15.style.display = 'none';
+      logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
+      logo.style.transform = 'scale(0)';
+      logo.style.opacity = '0';
+    }, 900);
+
+    setTimeout(function(){
+      s1.style.display = 'none';
+      motto1.style.display = 'none';
       s2.style.display = 'flex';
       s2.style.opacity = '0';
       s2.style.transition = 'opacity .5s ease';
       requestAnimationFrame(function(){ s2.style.opacity = '1'; });
       startLoading();
-    }, 500);
+    }, 1400);
   });
 
-  /* X-CHANGE™ → skip to Screen 3 (quote + motto + wolf) then redirect to X-CHANGE page */
+  /* ── X-CHANGE™ → black hole → Screen 3 (quote + wolf + motto) ── */
   g('nxi-btn-xchange').addEventListener('click', function(e){
     e.preventDefault();
-    s15.style.transition = 'opacity .5s ease';
-    s15.style.opacity = '0';
+
+    /* Black hole effect */
+    var logo = g('nxi-logo');
+    var logoRect = logo.getBoundingClientRect();
+    var cx = logoRect.left + logoRect.width/2;
+    var cy = logoRect.top + logoRect.height/2;
+
+    var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, #nxi-product-btns, .nxi-s1-weather, .nxi-contact, #nxi-line');
+    var mottoSpan = motto1.querySelector('span');
+
+    targets.forEach(function(el){
+      var cs = window.getComputedStyle(el);
+      if(cs.display === 'inline') el.style.display = 'inline-block';
+      var r = el.getBoundingClientRect();
+      var dx = cx - (r.left + r.width/2);
+      var dy = cy - (r.top + r.height/2);
+      el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+      el.style.transformOrigin = 'center center';
+      el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
+      el.style.opacity = '0';
+    });
+
+    if(mottoSpan){
+      mottoSpan.style.display = 'inline-block';
+      var mr = mottoSpan.getBoundingClientRect();
+      mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+      mottoSpan.style.transform = 'translate('+(cx-(mr.left+mr.width/2))+'px,'+(cy-(mr.top+mr.height/2))+'px) scale(0)';
+      mottoSpan.style.opacity = '0';
+    }
+
+    logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
+    logo.style.transform = 'scale(1.15)';
+    logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
+
     setTimeout(function(){
-      s15.style.display = 'none';
+      logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
+      logo.style.transform = 'scale(0)';
+      logo.style.opacity = '0';
+    }, 900);
+
+    setTimeout(function(){
+      s1.style.display = 'none';
+      motto1.style.display = 'none';
+
       /* Show Screen 3 directly */
       var s3 = g('nxi-s3');
       s3.style.display = 'flex';
@@ -789,7 +816,7 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
           }, 2500);
         }, 1000);
       }, 6000);
-    }, 500);
+    }, 1400);
   });
 
   /* ── Progress ──────────────────────────────────────── */
