@@ -178,11 +178,12 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 (function(){
   "use strict";
 
-  /* ── Shooting Stars ──────────────────────────────────── */
+  /* ── Ambient Sparkles ─────────────────────────────────── */
   var canvas = document.getElementById('nxi-stars');
   var ctx = canvas.getContext('2d');
-  var shootingStars = [];
+  var sparkles = [];
   var SW, SH;
+  var MAX_SPARKLES = 60;
 
   function resizeCanvas(){
     SW = canvas.width = window.innerWidth;
@@ -191,56 +192,55 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
 
-  function spawnStar(){
-    var speed = 2 + Math.random() * 4;
-    var angle = (15 + Math.random() * 30) * Math.PI / 180;
-    var fromRight = Math.random() > 0.5;
-    shootingStars.push({
-      x: fromRight ? SW + 10 : -10 + Math.random() * SW * 0.6,
-      y: -10 + Math.random() * SH * 0.4,
-      vx: (fromRight ? -1 : 1) * Math.cos(angle) * speed,
-      vy: Math.sin(angle) * speed,
-      len: 20 + Math.random() * 40,
-      life: 1,
-      decay: 0.003 + Math.random() * 0.006,
-      size: 0.5 + Math.random() * 1.2
+  /* Pre-fill sparkles */
+  for(var si = 0; si < MAX_SPARKLES; si++){
+    sparkles.push({
+      x: Math.random() * SW,
+      y: Math.random() * SH,
+      r: 0.5 + Math.random() * 1.5,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.008 + Math.random() * 0.015,
+      drift: -0.08 + Math.random() * 0.16,
+      hue: Math.random() > 0.7 ? 200 : 0
     });
   }
 
-  function drawStars(){
+  function drawSparkles(){
     ctx.clearRect(0, 0, SW, SH);
-    for(var i = shootingStars.length - 1; i >= 0; i--){
-      var s = shootingStars[i];
-      s.x += s.vx; s.y += s.vy; s.life -= s.decay;
-      if(s.life <= 0 || s.x < -100 || s.x > SW + 100 || s.y > SH + 100){
-        shootingStars.splice(i, 1); continue;
+    for(var i = 0; i < sparkles.length; i++){
+      var p = sparkles[i];
+      p.phase += p.speed;
+      p.y += p.drift;
+      p.x += p.drift * 0.3;
+      /* Wrap around */
+      if(p.y < -5) p.y = SH + 5;
+      if(p.y > SH + 5) p.y = -5;
+      if(p.x < -5) p.x = SW + 5;
+      if(p.x > SW + 5) p.x = -5;
+
+      var alpha = 0.15 + Math.sin(p.phase) * 0.35;
+      if(alpha < 0) alpha = 0;
+      var glow = p.r * (1.5 + Math.sin(p.phase) * 0.8);
+
+      if(p.hue > 0){
+        /* Blue-tinted sparkle */
+        ctx.fillStyle = 'rgba(140,200,255,' + alpha + ')';
+        ctx.shadowColor = 'rgba(100,180,255,' + (alpha * 0.6) + ')';
+      } else {
+        /* White sparkle */
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+        ctx.shadowColor = 'rgba(255,255,255,' + (alpha * 0.4) + ')';
       }
-      var alpha = s.life * 0.7;
-      var mag = Math.sqrt(s.vx*s.vx + s.vy*s.vy);
-      var tailX = s.x - s.vx * s.len / mag * 3;
-      var tailY = s.y - s.vy * s.len / mag * 3;
-      var grad = ctx.createLinearGradient(s.x, s.y, tailX, tailY);
-      grad.addColorStop(0, 'rgba(255,255,255,' + alpha + ')');
-      grad.addColorStop(0.3, 'rgba(180,220,255,' + (alpha * 0.6) + ')');
-      grad.addColorStop(1, 'rgba(180,220,255,0)');
-      ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(tailX, tailY);
-      ctx.strokeStyle = grad; ctx.lineWidth = s.size; ctx.lineCap = 'round'; ctx.stroke();
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.size * 1.5, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(200,230,255,' + (alpha * 0.5) + ')'; ctx.fill();
+      ctx.shadowBlur = glow * 3;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
     }
-    requestAnimationFrame(drawStars);
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(drawSparkles);
   }
 
-  function scheduleNextStar(){
-    setTimeout(function(){
-      spawnStar();
-      if(Math.random() > 0.6) spawnStar();
-      scheduleNextStar();
-    }, 300 + Math.random() * 1200);
-  }
-
-  drawStars();
-  scheduleNextStar();
+  drawSparkles();
 
   /* ── Daily Business Quotes ────────────────────────────── */
   var quotes = [
