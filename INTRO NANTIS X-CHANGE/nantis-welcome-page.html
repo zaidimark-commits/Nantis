@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NANTIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+<style>
+body{margin:0;padding:0;overflow:hidden;background:#000}
+
+/* ── Shooting Stars ───────────────────────────────── */
+#nxi-stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none}
+
+/* ── Intro page styles ─────────────────────────────── */
+#nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
+#nxi *{box-sizing:border-box;margin:0;padding:0}
+#nxi-s1{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;width:100%;gap:16px;padding:30px 20px 0}
+#nxi-logo{width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxPop .8s cubic-bezier(.34,1.56,.64,1) .2s both,nxLogoGlow 3s ease-in-out 1.5s infinite}
+#nxi-line{height:2px;background:#00a8e8;border-radius:2px;animation:nxGrow .8s ease .7s both}
+.nxi-title{color:#f0f2f5;font-size:2.2rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxUp .7s ease 1s both}
+.nxi-sub{color:rgba(240,242,245,.6);font-size:.82rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;animation:nxUp .7s ease 1.3s both}
+.nxi-loc{color:rgba(240,242,245,.2);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:4px;animation:nxUp .7s ease 1.5s both}
+.nxi-btns{display:flex;gap:20px;margin-top:20px;animation:nxUp .7s ease 1.9s both}
+.nxi-btn{padding:14px 64px;background:transparent;border:1px solid #00a8e8;color:#00a8e8;font-size:1rem;letter-spacing:.35em;text-transform:uppercase;text-decoration:none;font-family:'Architects Daughter',sans-serif;cursor:pointer;border-radius:2px;box-shadow:none;transition:background .3s,box-shadow .3s;-webkit-appearance:none}
+.nxi-btn:hover{background:rgba(0,168,232,.1);box-shadow:0 0 20px rgba(0,168,232,.6)}
+.nxi-s1-weather{color:rgba(240,242,245,.5);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:12px;display:none;animation:nxUp .5s ease both}
+.nxi-contact{display:flex;align-items:center;justify-content:center;gap:60px;color:rgba(240,242,245,.25);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-top:8px;animation:nxUp .7s ease 1.6s both,nxContactGlow 3s ease-in-out 2.5s infinite}
+.nxi-contact-item{display:flex;align-items:center;gap:6px}
+.nxi-contact-icon{width:14px;height:14px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(0,168,232,.6));animation:nxIconGlow 3s ease-in-out 2.5s infinite}
+#nxi-motto-s1{width:100%;padding:18px 24px 26px;text-align:center;flex-shrink:0;border-top:1px solid rgba(0,168,232,.15)}
+#nxi-motto-s1 span{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;font-family:'Architects Daughter',sans-serif;animation:nxGlow 2.5s ease-in-out 2s infinite}
+.nxi-tm{font-size:.4em;vertical-align:super;letter-spacing:0}
+
+/* ── Screen 1.5: Product Selection ─────────────────── */
+#nxi-s15{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:20px}
+.nxi-btns-product{animation:nxUp .7s ease .2s both}
+
+/* ── Screen 2 ──────────────────────────────────────── */
+#nxi-s2{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 20px;gap:14px}
+.nxi-bar-wrap{width:260px}
+.nxi-bar-track{width:100%;height:3px;background:rgba(0,168,232,.15);border-radius:2px}
+#nxi-bar{width:0%;height:3px;background:#00a8e8;border-radius:2px;box-shadow:0 0 8px rgba(0,168,232,.8);transition:width .15s linear}
+#nxi-pct{color:#00a8e8;font-size:.75rem;letter-spacing:.15em;font-family:sans-serif;text-align:center;transition:opacity .4s ease}
+#nxi-status{color:rgba(240,242,245,.35);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;animation:nxGlow 1.5s ease-in-out infinite}
+#nxi-weather{color:rgba(240,242,245,.6);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;display:none}
+.nxi-nav-box{width:100%;max-width:380px;margin-top:10px}
+.nxi-nav-hdr{color:rgba(240,242,245,.5);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;text-align:center;margin-bottom:10px}
+.nxi-nr{margin-bottom:8px}
+.nxi-nl{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;margin-bottom:3px}
+.nxi-nbw{width:100%;height:22px;background:rgba(255,255,255,.06);border-radius:4px;position:relative;overflow:hidden}
+.nxi-nbf{height:100%;width:0%;border-radius:4px;transition:width 1.8s cubic-bezier(.22,1,.36,1)}
+.nxi-nbo{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+.nxi-nbo span{font-size:.75rem;color:#fff;font-family:sans-serif;font-weight:700}
+#nxi-motto-s2{color:#00a8e8;font-size:1.35rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;margin-top:20px;animation:nxGlow 2.5s ease-in-out infinite;transition:font-size 1s ease,letter-spacing 1s ease}
+#nxi.nxi-fadeout{opacity:0;transition:opacity 1.2s ease}
+
+/* ── Buy Back / Rachat ────────────────────────────── */
+.nxi-buyback-box{width:100%;max-width:380px;margin-top:14px;text-align:center}
+.nxi-buyback-hdr{color:rgba(240,242,245,.5);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-bottom:8px}
+.nxi-countdown{color:#7dd3fc;font-size:1.3rem;letter-spacing:.15em;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 12px rgba(125,211,252,.5),0 0 30px rgba(125,211,252,.2);animation:nxCountGlow 2.5s ease-in-out infinite;transition:opacity .8s ease}
+.nxi-buyback-msg{color:rgba(240,242,245,.7);font-size:.7rem;letter-spacing:.12em;font-family:sans-serif;line-height:1.6;margin-top:8px;opacity:0;transition:opacity 1s ease;max-width:340px;margin-left:auto;margin-right:auto}
+@keyframes nxCountGlow{0%,100%{text-shadow:0 0 12px rgba(125,211,252,.4),0 0 30px rgba(125,211,252,.15)}50%{text-shadow:0 0 24px rgba(125,211,252,.9),0 0 50px rgba(125,211,252,.4)}}
+
+/* ── Animations ────────────────────────────────────── */
+@keyframes nxPop{0%{opacity:0;transform:scale(.3) translateY(30px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes nxUp{0%{opacity:0;transform:translateY(15px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes nxGrow{0%{width:0}100%{width:180px}}
+@keyframes nxGlow{0%,100%{color:#00a8e8;text-shadow:0 0 10px rgba(0,168,232,.3)}50%{color:#33bcf5;text-shadow:0 0 30px rgba(0,168,232,.8)}}
+@keyframes nxContactGlow{0%,100%{color:rgba(240,242,245,.25);text-shadow:0 0 6px rgba(0,168,232,.15)}50%{color:rgba(240,242,245,.45);text-shadow:0 0 14px rgba(0,168,232,.4)}}
+@keyframes nxIconGlow{0%,100%{filter:drop-shadow(0 0 4px rgba(0,168,232,.4));opacity:.5}50%{filter:drop-shadow(0 0 10px rgba(0,168,232,.9));opacity:.85}}
+@keyframes nxLogoGlow{0%,100%{filter:drop-shadow(0 0 24px rgba(0,168,232,.45))}50%{filter:drop-shadow(0 0 40px rgba(0,168,232,.85))}}
+@keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
+
+/* ── Screen 3: Quote + Motto ─────────────────────── */
+#nxi-s3{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 40px;gap:20px;background:url('https://nantis.ca/intro/lone%20wolf%20(1).jpg') center center / cover no-repeat;position:relative}
+#nxi-s3::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55)}
+#nxi-quote{opacity:0;text-align:center;max-width:600px;transition:opacity 1.2s ease;position:relative;z-index:1}
+#nxi-quote-text{color:rgba(240,242,245,.55);font-size:1.05rem;letter-spacing:.06em;font-family:'Architects Daughter',sans-serif;line-height:1.7;text-shadow:0 0 15px rgba(240,242,245,.15);font-style:italic}
+#nxi-quote-author{color:rgba(240,242,245,.3);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:12px}
+#nxi-motto-s3{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3);transition:opacity 1s ease;position:relative;z-index:1}
+
+/* ── Mobile ────────────────────────────────────────── */
+@media(max-height:650px){
+  #nxi-logo{width:70px;height:70px}
+  .nxi-title{font-size:1.7rem}
+  .nxi-sub{font-size:.7rem}
+  .nxi-btns{gap:16px;margin-top:18px}
+  .nxi-btn{padding:12px 40px;font-size:.88rem;letter-spacing:.3em}
+  .nxi-s1-weather{font-size:.6rem;margin-top:8px}
+  .nxi-contact{font-size:.6rem;gap:40px}
+  #nxi-motto-s1{padding:14px 20px 18px}
+  #nxi-motto-s1 span{font-size:1.1rem}
+  #nxi-s2{gap:10px;padding:20px 16px}
+  #nxi-motto-s2{font-size:1.1rem;margin-top:12px}
+  .nxi-nbw{height:18px}
+  .nxi-buyback-box{margin-top:10px}
+  .nxi-countdown{font-size:1rem}
+  .nxi-buyback-msg{font-size:.6rem}
+  #nxi-quote-text{font-size:.88rem}
+  #nxi-motto-s3{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Shooting Stars Canvas -->
+<canvas id="nxi-stars"></canvas>
+
+<div id="nxi">
+  <!-- Screen 1: Branding + Language Selection -->
+  <div id="nxi-s1">
+    <img id="nxi-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png" alt="NANTIS">
+    <div id="nxi-line"></div>
+    <span class="nxi-title">NANTIS</span>
+    <span class="nxi-sub">Asset Management Inc.</span>
+    <span class="nxi-loc">EST. 2023 &nbsp;|&nbsp; Montr&eacute;al &nbsp;|&nbsp; Canada</span>
+
+    <div class="nxi-contact">
+      <span class="nxi-contact-item"><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.12 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>514.416.3466</span><span class="nxi-contact-item"><svg class="nxi-contact-icon" viewBox="0 0 24 24" fill="none" stroke="rgba(0,168,232,.7)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>INFO@NANTIS.CA</span>
+    </div>
+
+    <div class="nxi-btns">
+      <button class="nxi-btn" data-lang="en">ENGLISH</button>
+      <button class="nxi-btn" data-lang="fr">FRAN&Ccedil;AIS</button>
+    </div>
+
+    <span id="nxi-s1-weather" class="nxi-s1-weather"></span>
+  </div>
+
+  <div id="nxi-motto-s1">
+    <span>THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  </div>
+
+  <!-- Screen 1.5: Product Selection (FUNDS vs X-CHANGE) -->
+  <div id="nxi-s15">
+    <img class="nxi-s15-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
+         style="width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 24px rgba(0,168,232,.55));animation:nxLogoGlow 3s ease-in-out infinite;margin-bottom:8px" alt="NANTIS">
+    <div class="nxi-btns nxi-btns-product">
+      <button class="nxi-btn" id="nxi-btn-funds">FUNDS</button>
+      <button class="nxi-btn" id="nxi-btn-xchange">X-CHANGE<sup class="nxi-tm">&trade;</sup></button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Progress + NAV Data -->
+  <div id="nxi-s2">
+    <img class="nxi-s2-logo" src="https://nantis.ca/wp-content/uploads/2026/03/logo.png"
+         style="width:90px;height:90px;object-fit:cover;border-radius:50%;filter:drop-shadow(0 0 20px rgba(0,168,232,.45));margin-bottom:4px" alt="">
+    <div class="nxi-bar-wrap">
+      <div class="nxi-bar-track"><div id="nxi-bar"></div></div>
+    </div>
+    <span id="nxi-pct">0%</span>
+    <span id="nxi-status">Loading data...</span>
+    <span id="nxi-weather"></span>
+    <div class="nxi-nav-box">
+      <div class="nxi-nav-hdr">2025 &nbsp;|&nbsp; Class A &amp; Class F NAV</div>
+      <div class="nxi-nr">
+        <div class="nxi-nl" style="color:#00c9d4">Class A</div>
+        <div class="nxi-nbw">
+          <div id="nxi-ba" class="nxi-nbf" style="background:linear-gradient(90deg,#006d75,#00c9d4)"></div>
+          <div class="nxi-nbo"><span id="nxi-ad"></span><span id="nxi-ap"></span></div>
+        </div>
+      </div>
+      <div class="nxi-nr">
+        <div class="nxi-nl" style="color:#00AEEF">Class F</div>
+        <div class="nxi-nbw">
+          <div id="nxi-bf" class="nxi-nbf" style="background:linear-gradient(90deg,#0a4a7a,#00AEEF)"></div>
+          <div class="nxi-nbo"><span id="nxi-fd"></span><span id="nxi-fp"></span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Buy Back / Rachat Section -->
+    <div class="nxi-buyback-box">
+      <div class="nxi-buyback-hdr">BUY BACK &nbsp;|&nbsp; RACHAT</div>
+      <div id="nxi-countdown" class="nxi-countdown"></div>
+      <div id="nxi-buyback-msg" class="nxi-buyback-msg"></div>
+    </div>
+
+    <span id="nxi-motto-s2">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  </div>
+
+  <!-- Screen 3: Quote + Motto Exit -->
+  <div id="nxi-s3">
+    <div id="nxi-quote">
+      <div id="nxi-quote-text"></div>
+      <div id="nxi-quote-author"></div>
+    </div>
+    <span id="nxi-motto-s3">THINK OUTSIDE THE BOX<sup class="nxi-tm">&trade;</sup></span>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── Ambient Sparkles ─────────────────────────────────── */
+  var canvas = document.getElementById('nxi-stars');
+  var ctx = canvas.getContext('2d');
+  var sparkles = [];
+  var SW, SH;
+  var MAX_SPARKLES = 60;
+
+  function resizeCanvas(){
+    SW = canvas.width = window.innerWidth;
+    SH = canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  /* Pre-fill sparkles */
+  for(var si = 0; si < MAX_SPARKLES; si++){
+    sparkles.push({
+      x: Math.random() * SW,
+      y: Math.random() * SH,
+      r: 0.5 + Math.random() * 1.5,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.008 + Math.random() * 0.015,
+      drift: -0.08 + Math.random() * 0.16,
+      hue: Math.random() > 0.7 ? 200 : 0
+    });
+  }
+
+  function drawSparkles(){
+    ctx.clearRect(0, 0, SW, SH);
+    for(var i = 0; i < sparkles.length; i++){
+      var p = sparkles[i];
+      p.phase += p.speed;
+      p.y += p.drift;
+      p.x += p.drift * 0.3;
+      /* Wrap around */
+      if(p.y < -5) p.y = SH + 5;
+      if(p.y > SH + 5) p.y = -5;
+      if(p.x < -5) p.x = SW + 5;
+      if(p.x > SW + 5) p.x = -5;
+
+      var alpha = 0.15 + Math.sin(p.phase) * 0.35;
+      if(alpha < 0) alpha = 0;
+      var glow = p.r * (1.5 + Math.sin(p.phase) * 0.8);
+
+      if(p.hue > 0){
+        /* Blue-tinted sparkle */
+        ctx.fillStyle = 'rgba(140,200,255,' + alpha + ')';
+        ctx.shadowColor = 'rgba(100,180,255,' + (alpha * 0.6) + ')';
+      } else {
+        /* White sparkle */
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+        ctx.shadowColor = 'rgba(255,255,255,' + (alpha * 0.4) + ')';
+      }
+      ctx.shadowBlur = glow * 3;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(drawSparkles);
+  }
+
+  drawSparkles();
+
+  /* ── Daily Business Quotes ────────────────────────────── */
+  var quotes = [
+    { text: "The best way to predict the future is to create it.", author: "Peter Drucker" },
+    { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
+    { text: "Risk comes from not knowing what you are doing.", author: "Warren Buffett" },
+    { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+    { text: "Price is what you pay. Value is what you get.", author: "Warren Buffett" },
+    { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+    { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+    { text: "It is not the strongest that survive, but the most adaptable.", author: "Charles Darwin" },
+    { text: "Compound interest is the eighth wonder of the world.", author: "Albert Einstein" },
+    { text: "Fortune favors the bold.", author: "Virgil" },
+    { text: "The market is a device for transferring money from the impatient to the patient.", author: "Warren Buffett" },
+    { text: "Do not wait to strike till the iron is hot, but make it hot by striking.", author: "William Butler Yeats" },
+    { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", author: "Winston Churchill" },
+    { text: "Opportunities don\u2019t happen. You create them.", author: "Chris Grosser" },
+    { text: "The harder I work, the luckier I get.", author: "Samuel Goldwyn" },
+    { text: "An investment in knowledge pays the best interest.", author: "Benjamin Franklin" },
+    { text: "What we know is a drop, what we don\u2019t know is an ocean.", author: "Isaac Newton" },
+    { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+    { text: "It always seems impossible until it\u2019s done.", author: "Nelson Mandela" },
+    { text: "Be fearful when others are greedy and greedy when others are fearful.", author: "Warren Buffett" },
+    { text: "Vision without execution is hallucination.", author: "Thomas Edison" },
+    { text: "The only limit to our realization of tomorrow is our doubts of today.", author: "Franklin D. Roosevelt" },
+    { text: "Great things in business are never done by one person. They\u2019re done by a team.", author: "Steve Jobs" },
+    { text: "Time is more valuable than money. You can get more money, but you cannot get more time.", author: "Jim Rohn" },
+    { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+    { text: "Wealth is the ability to fully experience life.", author: "Henry David Thoreau" },
+    { text: "You miss 100% of the shots you don\u2019t take.", author: "Wayne Gretzky" },
+    { text: "Discipline is the bridge between goals and accomplishment.", author: "Jim Rohn" },
+    { text: "The biggest risk is not taking any risk.", author: "Mark Zuckerberg" },
+    { text: "A smooth sea never made a skilled sailor.", author: "Franklin D. Roosevelt" },
+    { text: "Buy when there\u2019s blood in the streets, even if the blood is your own.", author: "Baron Rothschild" },
+    { text: "The intelligent investor is a realist who sells to optimists and buys from pessimists.", author: "Benjamin Graham" },
+    { text: "Know what you own, and know why you own it.", author: "Peter Lynch" },
+    { text: "The four most dangerous words in investing are: this time it\u2019s different.", author: "Sir John Templeton" },
+    { text: "Wide diversification is only required when investors do not understand what they are doing.", author: "Warren Buffett" },
+    { text: "In investing, what is comfortable is rarely profitable.", author: "Robert Arnott" },
+    { text: "The stock market is filled with individuals who know the price of everything, but the value of nothing.", author: "Philip Fisher" },
+    { text: "It\u2019s not whether you\u2019re right or wrong that\u2019s important, but how much money you make when you\u2019re right.", author: "George Soros" },
+    { text: "The individual investor should act consistently as an investor and not as a speculator.", author: "Benjamin Graham" },
+    { text: "I will tell you how to become rich. Be fearful when others are greedy. Be greedy when others are fearful.", author: "Warren Buffett" },
+    { text: "The goal of a successful trader is to make the best trades. Money is secondary.", author: "Alexander Elder" },
+    { text: "Courage taught me that no matter how bad a crisis gets, any sound investment will eventually pay off.", author: "Carlos Slim" },
+    { text: "The desire to perform all the time is usually a barrier to performing over time.", author: "Robert Olstein" },
+    { text: "Investing should be more like watching paint dry or watching grass grow.", author: "Paul Samuelson" },
+    { text: "Do not save what is left after spending, but spend what is left after saving.", author: "Warren Buffett" },
+    { text: "Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver.", author: "Ayn Rand" },
+    { text: "It\u2019s not how much money you make, but how much money you keep.", author: "Robert Kiyosaki" },
+    { text: "Formal education will make you a living; self-education will make you a fortune.", author: "Jim Rohn" },
+    { text: "Every once in a while, the market does something so stupid it takes your breath away.", author: "Jim Cramer" },
+    { text: "The most important quality for an investor is temperament, not intellect.", author: "Warren Buffett" },
+    { text: "If you don\u2019t find a way to make money while you sleep, you will work until you die.", author: "Warren Buffett" },
+    { text: "Your most unhappy customers are your greatest source of learning.", author: "Bill Gates" },
+    { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
+    { text: "Move fast and break things. Unless you are breaking stuff, you are not moving fast enough.", author: "Mark Zuckerberg" },
+    { text: "The best investment you can make is in yourself.", author: "Warren Buffett" },
+    { text: "I never dreamed about success. I worked for it.", author: "Est\u00e9e Lauder" },
+    { text: "Don\u2019t be afraid to give up the good to go for the great.", author: "John D. Rockefeller" },
+    { text: "A business that makes nothing but money is a poor business.", author: "Henry Ford" },
+    { text: "Capital isn\u2019t scarce; vision is.", author: "Sam Walton" },
+    { text: "Chase the vision, not the money; the money will end up following you.", author: "Tony Hsieh" },
+    { text: "If people like you, they\u2019ll listen to you, but if they trust you, they\u2019ll do business with you.", author: "Zig Ziglar" },
+    { text: "What seems to us as bitter trials are often blessings in disguise.", author: "Oscar Wilde" },
+    { text: "The road to success and the road to failure are almost exactly the same.", author: "Colin R. Davis" },
+    { text: "I have not failed. I\u2019ve just found 10,000 ways that won\u2019t work.", author: "Thomas Edison" },
+    { text: "A penny saved is a penny earned.", author: "Benjamin Franklin" },
+    { text: "Never depend on a single income. Make investments to create a second source.", author: "Warren Buffett" },
+    { text: "The only place where success comes before work is in the dictionary.", author: "Vidal Sassoon" },
+    { text: "Winners never quit, and quitters never win.", author: "Vince Lombardi" },
+    { text: "If you want to go fast, go alone. If you want to go far, go together.", author: "African Proverb" },
+    { text: "Business opportunities are like buses; there\u2019s always another one coming.", author: "Richard Branson" },
+    { text: "I knew that if I failed I wouldn\u2019t regret that, but the one thing I might regret is not trying.", author: "Jeff Bezos" },
+    { text: "Your work is going to fill a large part of your life. The only way to be truly satisfied is to do great work.", author: "Steve Jobs" },
+    { text: "Whether you think you can or you think you can\u2019t, you\u2019re right.", author: "Henry Ford" },
+    { text: "The only thing standing between you and your goal is the story you keep telling yourself.", author: "Jordan Belfort" },
+    { text: "Don\u2019t let yesterday take up too much of today.", author: "Will Rogers" },
+    { text: "People who succeed have momentum. The more they succeed, the more they want to succeed.", author: "Tony Robbins" },
+    { text: "There is only one boss: the customer.", author: "Sam Walton" },
+    { text: "I owe my success to having listened respectfully to the very best advice, and then going away and doing the exact opposite.", author: "G.K. Chesterton" },
+    { text: "Logic will get you from A to B. Imagination will take you everywhere.", author: "Albert Einstein" },
+    { text: "If you really look closely, most overnight successes took a long time.", author: "Steve Jobs" },
+    { text: "The man who has confidence in himself gains the confidence of others.", author: "Hasidic Proverb" },
+    { text: "What you do speaks so loudly that I cannot hear what you say.", author: "Ralph Waldo Emerson" },
+    { text: "Coming together is a beginning, staying together is progress, and working together is success.", author: "Henry Ford" },
+    { text: "The advance of technology is based on making it fit in so that you don\u2019t really even notice it.", author: "Bill Gates" },
+    { text: "All progress takes place outside the comfort zone.", author: "Michael John Bobak" },
+    { text: "Do one thing every day that scares you.", author: "Eleanor Roosevelt" },
+    { text: "Believe you can and you\u2019re halfway there.", author: "Theodore Roosevelt" },
+    { text: "Knowing is not enough; we must apply. Willing is not enough; we must do.", author: "Johann Wolfgang von Goethe" },
+    { text: "We generate fears while we sit. We overcome them by action.", author: "Dr. Henry Link" },
+    { text: "The best revenge is massive success.", author: "Frank Sinatra" },
+    { text: "A leader is one who knows the way, goes the way, and shows the way.", author: "John C. Maxwell" },
+    { text: "If you\u2019re offered a seat on a rocket ship, don\u2019t ask what seat. Just get on.", author: "Sheryl Sandberg" },
+    { text: "Everything you\u2019ve ever wanted is on the other side of fear.", author: "George Addair" },
+    { text: "The question isn\u2019t who is going to let me; it\u2019s who is going to stop me.", author: "Ayn Rand" },
+    { text: "Don\u2019t be distracted by criticism. The only taste of success some people get is to take a bite out of you.", author: "Zig Ziglar" },
+    { text: "Build your own dreams, or someone else will hire you to build theirs.", author: "Farrah Gray" },
+    { text: "The successful warrior is the average man, with laser-like focus.", author: "Bruce Lee" },
+    { text: "Develop success from failures. Discouragement and failure are two of the surest stepping stones to success.", author: "Dale Carnegie" },
+    { text: "Action is the foundational key to all success.", author: "Pablo Picasso" },
+    { text: "Think big, act small, fail fast, learn rapidly.", author: "Eric Ries" },
+    { text: "Without continual growth and progress, such words as improvement and success have no meaning.", author: "Benjamin Franklin" },
+    { text: "The only strategy that is guaranteed to fail is not taking risks.", author: "Mark Zuckerberg" },
+    { text: "Good business leaders create a vision, articulate the vision, and relentlessly drive it to completion.", author: "Jack Welch" },
+    { text: "If you can dream it, you can do it.", author: "Walt Disney" },
+    { text: "Make your product easier to buy than your competition, or you will find your customers buying from them.", author: "Mark Cuban" },
+    { text: "Diligence is the mother of good luck.", author: "Benjamin Franklin" },
+    { text: "To win without risk is to triumph without glory.", author: "Pierre Corneille" },
+    { text: "Money often costs too much.", author: "Ralph Waldo Emerson" },
+    { text: "Empty pockets never held anyone back. Only empty heads and empty hearts can do that.", author: "Norman Vincent Peale" },
+    { text: "Beware of little expenses. A small leak will sink a great ship.", author: "Benjamin Franklin" },
+    { text: "Wealth is not about having a lot of money; it\u2019s about having a lot of options.", author: "Chris Rock" },
+    { text: "A wise person should have money in their head, but not in their heart.", author: "Jonathan Swift" },
+    { text: "Never spend your money before you have earned it.", author: "Thomas Jefferson" },
+    { text: "It is not the man who has too little, but the man who craves more, that is poor.", author: "Seneca" },
+    { text: "He who loses money, loses much; he who loses a friend, loses much more; he who loses faith, loses all.", author: "Eleanor Roosevelt" },
+    { text: "The real measure of your wealth is how much you\u2019d be worth if you lost all your money.", author: "J. Paul Getty" },
+    { text: "The philosophy of the rich and the poor is this: the rich invest their money and spend what is left; the poor spend their money and invest what is left.", author: "Robert Kiyosaki" },
+    { text: "Every day I get up and look through the Forbes list of the richest people in America. If I\u2019m not there, I go to work.", author: "Robert Orben" },
+    { text: "It\u2019s good to have money and the things that money can buy, but it\u2019s good too, to check up once in a while and make sure that you haven\u2019t lost the things that money can\u2019t buy.", author: "George Lorimer" },
+    { text: "I make myself rich by making my wants few.", author: "Henry David Thoreau" },
+    { text: "Not everything that counts can be counted, and not everything that can be counted counts.", author: "William Bruce Cameron" },
+    { text: "The habit of saving is itself an education; it fosters every virtue, teaches self-denial, and broadens the mind.", author: "T.T. Munger" },
+    { text: "Financial peace isn\u2019t the acquisition of stuff. It\u2019s learning to live on less than you make.", author: "Dave Ramsey" },
+    { text: "You must gain control over your money or the lack of it will forever control you.", author: "Dave Ramsey" },
+    { text: "Stop buying things you don\u2019t need to impress people you don\u2019t even like.", author: "Suze Orman" },
+    { text: "Rich people have small TVs and big libraries, and poor people have small libraries and big TVs.", author: "Zig Ziglar" },
+    { text: "The only thing worse than starting something and failing is not starting something.", author: "Seth Godin" },
+    { text: "If your actions inspire others to dream more, learn more, do more, and become more, you are a leader.", author: "John Quincy Adams" },
+    { text: "Management is doing things right; leadership is doing the right things.", author: "Peter Drucker" },
+    { text: "Before you are a leader, success is all about growing yourself. When you become a leader, success is all about growing others.", author: "Jack Welch" },
+    { text: "A person who never made a mistake never tried anything new.", author: "Albert Einstein" },
+    { text: "You don\u2019t have to be great to start, but you have to start to be great.", author: "Zig Ziglar" },
+    { text: "The entrepreneur always searches for change, responds to it, and exploits it as an opportunity.", author: "Peter Drucker" },
+    { text: "Persistence is very important. You should not give up unless you are forced to give up.", author: "Elon Musk" },
+    { text: "Life is what happens to you while you\u2019re busy making other plans.", author: "John Lennon" },
+    { text: "Twenty years from now you will be more disappointed by the things you didn\u2019t do than by the ones you did.", author: "Mark Twain" },
+    { text: "You only have to do a very few things right in your life so long as you don\u2019t do too many things wrong.", author: "Warren Buffett" },
+    { text: "Rule No. 1: Never lose money. Rule No. 2: Never forget Rule No. 1.", author: "Warren Buffett" },
+    { text: "In the business world, the rearview mirror is always clearer than the windshield.", author: "Warren Buffett" },
+    { text: "It takes 20 years to build a reputation and five minutes to ruin it.", author: "Warren Buffett" },
+    { text: "Someone is sitting in the shade today because someone planted a tree a long time ago.", author: "Warren Buffett" },
+    { text: "Chains of habit are too light to be felt until they are too heavy to be broken.", author: "Warren Buffett" },
+    { text: "Only buy something that you\u2019d be perfectly happy to hold if the market shut down for 10 years.", author: "Warren Buffett" },
+    { text: "Our favorite holding period is forever.", author: "Warren Buffett" },
+    { text: "The difference between successful people and really successful people is that really successful people say no to almost everything.", author: "Warren Buffett" },
+    { text: "It\u2019s far better to buy a wonderful company at a fair price than a fair company at a wonderful price.", author: "Warren Buffett" },
+    { text: "Honesty is a very expensive gift. Don\u2019t expect it from cheap people.", author: "Warren Buffett" },
+    { text: "Somebody once said that in looking for people to hire, you look for three qualities: integrity, intelligence, and energy.", author: "Warren Buffett" },
+    { text: "We simply attempt to be fearful when others are greedy and to be greedy only when others are fearful.", author: "Warren Buffett" },
+    { text: "Spend each day trying to be a little wiser than you were when you woke up.", author: "Charlie Munger" },
+    { text: "The big money is not in the buying and selling, but in the waiting.", author: "Charlie Munger" },
+    { text: "Knowing what you don\u2019t know is more useful than being brilliant.", author: "Charlie Munger" },
+    { text: "In my whole life, I have known no wise people who didn\u2019t read all the time.", author: "Charlie Munger" },
+    { text: "Invert, always invert: Turn a situation or problem upside down. Look at it backward.", author: "Charlie Munger" },
+    { text: "The world is not driven by greed; it\u2019s driven by envy.", author: "Charlie Munger" },
+    { text: "Those who keep learning will keep rising in life.", author: "Charlie Munger" },
+    { text: "If you want to succeed in your life, remember this phrase: that past does not equal the future.", author: "Tony Robbins" },
+    { text: "Setting goals is the first step in turning the invisible into the visible.", author: "Tony Robbins" },
+    { text: "The path to success is to take massive, determined action.", author: "Tony Robbins" },
+    { text: "Success leaves clues.", author: "Tony Robbins" },
+    { text: "Whatever the mind of man can conceive and believe, it can achieve.", author: "Napoleon Hill" },
+    { text: "Strength and growth come only through continuous effort and struggle.", author: "Napoleon Hill" },
+    { text: "The starting point of all achievement is desire.", author: "Napoleon Hill" },
+    { text: "Every adversity, every failure, every heartache carries with it the seed of an equal or greater benefit.", author: "Napoleon Hill" },
+    { text: "A goal is a dream with a deadline.", author: "Napoleon Hill" },
+    { text: "When defeat comes, accept it as a signal that your plans are not sound, rebuild those plans, and set sail once more.", author: "Napoleon Hill" },
+    { text: "Don\u2019t wait. The time will never be just right.", author: "Napoleon Hill" },
+    { text: "Success usually comes to those who are too busy to be looking for it.", author: "Henry David Thoreau" },
+    { text: "Don\u2019t judge each day by the harvest you reap but by the seeds that you plant.", author: "Robert Louis Stevenson" },
+    { text: "The only impossible journey is the one you never begin.", author: "Tony Robbins" },
+    { text: "I find that the harder I work, the more luck I seem to have.", author: "Thomas Jefferson" },
+    { text: "Success is walking from failure to failure with no loss of enthusiasm.", author: "Winston Churchill" },
+    { text: "If you are not willing to risk the usual, you will have to settle for the ordinary.", author: "Jim Rohn" },
+    { text: "All our dreams can come true, if we have the courage to pursue them.", author: "Walt Disney" },
+    { text: "The function of leadership is to produce more leaders, not more followers.", author: "Ralph Nader" },
+    { text: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
+    { text: "Two roads diverged in a wood, and I took the one less traveled by, and that has made all the difference.", author: "Robert Frost" },
+    { text: "Do what you can, with what you have, where you are.", author: "Theodore Roosevelt" },
+    { text: "There is no substitute for hard work.", author: "Thomas Edison" },
+    { text: "To succeed in life, you need two things: ignorance and confidence.", author: "Mark Twain" },
+    { text: "The only person you are destined to become is the person you decide to be.", author: "Ralph Waldo Emerson" },
+    { text: "I attribute my success to this: I never gave or took any excuse.", author: "Florence Nightingale" },
+    { text: "If you set your goals ridiculously high and it\u2019s a failure, you will fail above everyone else\u2019s success.", author: "James Cameron" },
+    { text: "Things work out best for those who make the best of how things work out.", author: "John Wooden" },
+    { text: "If A is a success in life, then A equals X plus Y plus Z. Work is X; Y is play; and Z is keeping your mouth shut.", author: "Albert Einstein" },
+    { text: "We become what we think about most of the time, and that\u2019s the strangest secret.", author: "Earl Nightingale" },
+    { text: "He who is not courageous enough to take risks will accomplish nothing in life.", author: "Muhammad Ali" },
+    { text: "It does not matter how slowly you go as long as you do not stop.", author: "Confucius" },
+    { text: "Our greatest glory is not in never falling, but in rising every time we fall.", author: "Confucius" },
+    { text: "The man who moves a mountain begins by carrying away small stones.", author: "Confucius" },
+    { text: "Real knowledge is to know the extent of one\u2019s ignorance.", author: "Confucius" },
+    { text: "When it is obvious that the goals cannot be reached, don\u2019t adjust the goals, adjust the action steps.", author: "Confucius" },
+    { text: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
+    { text: "A leader is best when people barely know he exists. When his work is done, they will say: we did it ourselves.", author: "Lao Tzu" },
+    { text: "Mastering others is strength. Mastering yourself is true power.", author: "Lao Tzu" },
+    { text: "Nature does not hurry, yet everything is accomplished.", author: "Lao Tzu" },
+    { text: "The wise man does not lay up his own treasures. The more he gives to others, the more he has for his own.", author: "Lao Tzu" },
+    { text: "Victorious warriors win first and then go to war, while defeated warriors go to war first and then seek to win.", author: "Sun Tzu" },
+    { text: "In the midst of chaos, there is also opportunity.", author: "Sun Tzu" },
+    { text: "Appear weak when you are strong, and strong when you are weak.", author: "Sun Tzu" },
+    { text: "The supreme art of war is to subdue the enemy without fighting.", author: "Sun Tzu" },
+    { text: "Opportunities multiply as they are seized.", author: "Sun Tzu" },
+    { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" },
+    { text: "Knowing yourself is the beginning of all wisdom.", author: "Aristotle" },
+    { text: "Quality is not an act, it is a habit.", author: "Aristotle" },
+    { text: "Patience is bitter, but its fruit is sweet.", author: "Aristotle" },
+    { text: "It is the mark of an educated mind to be able to entertain a thought without accepting it.", author: "Aristotle" },
+    { text: "It is not that we have a short time to live, but that we waste a good deal of it.", author: "Seneca" },
+    { text: "Luck is what happens when preparation meets opportunity.", author: "Seneca" },
+    { text: "Difficulties strengthen the mind, as labor does the body.", author: "Seneca" },
+    { text: "The whole future lies in uncertainty: live immediately.", author: "Seneca" },
+    { text: "Sometimes even to live is an act of courage.", author: "Seneca" },
+    { text: "You have power over your mind, not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius" },
+    { text: "The happiness of your life depends upon the quality of your thoughts.", author: "Marcus Aurelius" },
+    { text: "Waste no more time arguing about what a good man should be. Be one.", author: "Marcus Aurelius" },
+    { text: "Very little is needed to make a happy life; it is all within yourself, in your way of thinking.", author: "Marcus Aurelius" },
+    { text: "The obstacle is the way.", author: "Marcus Aurelius" },
+    { text: "Never interrupt your enemy when he is making a mistake.", author: "Napoleon Bonaparte" },
+    { text: "The world suffers a lot. Not because of the violence of bad people, but because of the silence of good people.", author: "Napoleon Bonaparte" },
+    { text: "If you want a thing done well, do it yourself.", author: "Napoleon Bonaparte" },
+    { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+    { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
+    { text: "I learned that courage was not the absence of fear, but the triumph over it.", author: "Nelson Mandela" },
+    { text: "A good head and a good heart are always a formidable combination.", author: "Nelson Mandela" },
+    { text: "The brave man is not he who does not feel afraid, but he who conquers that fear.", author: "Nelson Mandela" },
+    { text: "We make a living by what we get, but we make a life by what we give.", author: "Winston Churchill" },
+    { text: "To improve is to change; to be perfect is to change often.", author: "Winston Churchill" },
+    { text: "The pessimist sees difficulty in every opportunity. The optimist sees opportunity in every difficulty.", author: "Winston Churchill" },
+    { text: "You will never reach your destination if you stop and throw stones at every dog that barks.", author: "Winston Churchill" },
+    { text: "Kites rise highest against the wind, not with it.", author: "Winston Churchill" },
+    { text: "Courage is what it takes to stand up and speak; courage is also what it takes to sit down and listen.", author: "Winston Churchill" },
+    { text: "If you are going through hell, keep going.", author: "Winston Churchill" },
+    { text: "Nothing in the world can take the place of persistence.", author: "Calvin Coolidge" },
+    { text: "The only thing we have to fear is fear itself.", author: "Franklin D. Roosevelt" },
+    { text: "In the long run, we shape our lives, and we shape ourselves.", author: "Eleanor Roosevelt" },
+    { text: "Great minds discuss ideas; average minds discuss events; small minds discuss people.", author: "Eleanor Roosevelt" },
+    { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
+    { text: "Well done is better than well said.", author: "Benjamin Franklin" },
+    { text: "Energy and persistence conquer all things.", author: "Benjamin Franklin" },
+    { text: "By failing to prepare, you are preparing to fail.", author: "Benjamin Franklin" },
+    { text: "Either write something worth reading or do something worth writing.", author: "Benjamin Franklin" },
+    { text: "Tell me and I forget. Teach me and I remember. Involve me and I learn.", author: "Benjamin Franklin" },
+    { text: "Whether you\u2019re a startup or a Fortune 500, your brand is the single most important investment you can make.", author: "Steve Forbes" },
+    { text: "When something is important enough, you do it even if the odds are not in your favor.", author: "Elon Musk" },
+    { text: "I think it is possible for ordinary people to choose to be extraordinary.", author: "Elon Musk" },
+    { text: "Some people don\u2019t like change, but you need to embrace change if the alternative is disaster.", author: "Elon Musk" },
+    { text: "Failure is an option here. If things are not failing, you are not innovating enough.", author: "Elon Musk" },
+    { text: "Life is too short to be small.", author: "Benjamin Disraeli" },
+    { text: "The only person you should try to be better than is the person you were yesterday.", author: "Matty Mullins" },
+    { text: "Pain is temporary. Quitting lasts forever.", author: "Lance Armstrong" },
+    { text: "It is during our darkest moments that we must focus to see the light.", author: "Aristotle Onassis" },
+    { text: "I have learned over the years that when one\u2019s mind is made up, this diminishes fear.", author: "Rosa Parks" },
+    { text: "Life shrinks or expands in proportion to one\u2019s courage.", author: "Ana\u00efs Nin" },
+    { text: "Everything has beauty, but not everyone can see.", author: "Confucius" },
+    { text: "In order to succeed, we must first believe that we can.", author: "Nikos Kazantzakis" },
+    { text: "Limitation is only a creation of the mind.", author: "Bruce Lee" },
+    { text: "Absorb what is useful, discard what is useless, and add what is specifically your own.", author: "Bruce Lee" },
+    { text: "Be happy not because everything is good, but because you can see the good side of everything.", author: "Confucius" },
+    { text: "The measure of intelligence is the ability to change.", author: "Albert Einstein" },
+    { text: "Try not to become a man of success, but rather try to become a man of value.", author: "Albert Einstein" },
+    { text: "Imagination is more important than knowledge.", author: "Albert Einstein" },
+    { text: "Learn from yesterday, live for today, hope for tomorrow.", author: "Albert Einstein" },
+    { text: "Life is like riding a bicycle. To keep your balance, you must keep moving.", author: "Albert Einstein" },
+    { text: "Anyone who has never made a mistake has never tried anything new.", author: "Albert Einstein" },
+    { text: "The only source of knowledge is experience.", author: "Albert Einstein" },
+    { text: "The creation of a thousand forests is in one acorn.", author: "Ralph Waldo Emerson" },
+    { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
+    { text: "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.", author: "Ralph Waldo Emerson" },
+    { text: "The greatest wealth is to live content with little.", author: "Plato" },
+    { text: "Good actions give strength to ourselves and inspire good actions in others.", author: "Plato" },
+    { text: "We can easily forgive a child who is afraid of the dark; the real tragedy of life is when men are afraid of the light.", author: "Plato" },
+    { text: "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.", author: "Buddha" },
+    { text: "An ounce of action is worth a ton of theory.", author: "Ralph Waldo Emerson" },
+    { text: "There are no secrets to success. It is the result of preparation, hard work, and learning from failure.", author: "Colin Powell" },
+    { text: "Go as far as you can see; when you get there, you\u2019ll be able to see further.", author: "J.P. Morgan" },
+    { text: "A man always has two reasons for doing anything: a good reason and the real reason.", author: "J.P. Morgan" },
+    { text: "The first man gets the oyster, the second man gets the shell.", author: "Andrew Carnegie" },
+    { text: "As I grow older, I pay less attention to what men say. I just watch what they do.", author: "Andrew Carnegie" },
+    { text: "No person will make a great business who wants to do it all himself or get all the credit.", author: "Andrew Carnegie" },
+    { text: "Do your duty and a little more and the future will take care of itself.", author: "Andrew Carnegie" },
+    { text: "The man who dies rich, dies disgraced.", author: "Andrew Carnegie" },
+    { text: "If you want to be happy, set a goal that commands your thoughts, liberates your energy, and inspires your hopes.", author: "Andrew Carnegie" },
+    { text: "I don\u2019t believe in taking right decisions. I take decisions and then make them right.", author: "Ratan Tata" },
+    { text: "Hire character. Train skill.", author: "Peter Schutz" },
+    { text: "The only way to win is to learn faster than anyone else.", author: "Eric Ries" },
+    { text: "Your brand is what other people say about you when you\u2019re not in the room.", author: "Jeff Bezos" },
+    { text: "We see our customers as invited guests to a party, and we are the hosts.", author: "Jeff Bezos" },
+    { text: "One of the only ways to get out of a tight box is to invent your way out.", author: "Jeff Bezos" },
+    { text: "If you double the number of experiments you do per year you\u2019re going to double your inventiveness.", author: "Jeff Bezos" },
+    { text: "Be stubborn on vision, but flexible on details.", author: "Jeff Bezos" },
+    { text: "A brand for a company is like a reputation for a person.", author: "Jeff Bezos" },
+    { text: "Life is not about finding yourself. Life is about creating yourself.", author: "George Bernard Shaw" },
+    { text: "Progress is impossible without change, and those who cannot change their minds cannot change anything.", author: "George Bernard Shaw" },
+    { text: "The people who are crazy enough to think they can change the world are the ones who do.", author: "Steve Jobs" },
+    { text: "My biggest motivation? Just to keep challenging myself.", author: "Richard Branson" },
+    { text: "Do not be embarrassed by your failures, learn from them and start again.", author: "Richard Branson" },
+    { text: "Business opportunities are like buses, there\u2019s always another one coming.", author: "Richard Branson" },
+    { text: "You don\u2019t learn to walk by following rules. You learn by doing, and by falling over.", author: "Richard Branson" },
+    { text: "The secret to successful hiring is this: look for the people who want to change the world.", author: "Marc Benioff" },
+    { text: "In a world that is changing really quickly, the only strategy that is guaranteed to fail is not taking risks.", author: "Mark Zuckerberg" },
+    { text: "Done is better than perfect.", author: "Sheryl Sandberg" },
+    { text: "Culture eats strategy for breakfast.", author: "Peter Drucker" },
+    { text: "The best leaders are those most interested in surrounding themselves with assistants smarter than they are.", author: "John C. Maxwell" },
+    { text: "High expectations are the key to everything.", author: "Sam Walton" },
+    { text: "There is only one way to avoid criticism: do nothing, say nothing, and be nothing.", author: "Aristotle" },
+    { text: "Fall seven times, stand up eight.", author: "Japanese Proverb" },
+    { text: "Success is liking yourself, liking what you do, and liking how you do it.", author: "Maya Angelou" },
+    { text: "I\u2019ve learned that people will forget what you said, people will forget what you did, but people will never forget how you made them feel.", author: "Maya Angelou" },
+    { text: "The most common way people give up their power is by thinking they don\u2019t have any.", author: "Alice Walker" },
+    { text: "What would you do if you weren\u2019t afraid?", author: "Sheryl Sandberg" },
+    { text: "If you don\u2019t build your dream, someone else will hire you to help them build theirs.", author: "Dhirubhai Ambani" },
+    { text: "When everything seems to be going against you, remember that the airplane takes off against the wind.", author: "Henry Ford" },
+    { text: "Failure is simply the opportunity to begin again, this time more intelligently.", author: "Henry Ford" },
+    { text: "Don\u2019t find fault, find a remedy.", author: "Henry Ford" },
+    { text: "Quality means doing it right when no one is looking.", author: "Henry Ford" },
+    { text: "Anyone who stops learning is old, whether at twenty or eighty.", author: "Henry Ford" },
+    { text: "The whole secret of a successful life is to find out what is one\u2019s destiny to do, and then do it.", author: "Henry Ford" },
+    { text: "The best time to repair the roof is when the sun is shining.", author: "John F. Kennedy" },
+    { text: "Ask not what your country can do for you; ask what you can do for your country.", author: "John F. Kennedy" },
+    { text: "Efforts and courage are not enough without purpose and direction.", author: "John F. Kennedy" },
+    { text: "Change is the law of life. And those who look only to the past or present are certain to miss the future.", author: "John F. Kennedy" },
+    { text: "The time is always right to do what is right.", author: "Martin Luther King Jr." },
+    { text: "Our lives begin to end the day we become silent about things that matter.", author: "Martin Luther King Jr." },
+    { text: "Intelligence plus character, that is the goal of true education.", author: "Martin Luther King Jr." },
+    { text: "The ultimate measure of a man is not where he stands in moments of comfort, but where he stands at times of challenge.", author: "Martin Luther King Jr." },
+    { text: "You can\u2019t build a reputation on what you are going to do.", author: "Henry Ford" },
+    { text: "I\u2019m convinced that about half of what separates the successful entrepreneurs from the non-successful ones is pure perseverance.", author: "Steve Jobs" },
+    { text: "The people who are crazy enough to think they can change the world are the ones who do.", author: "Apple Inc." },
+    { text: "If today were the last day of my life, would I want to do what I am about to do today?", author: "Steve Jobs" },
+    { text: "My favorite things in life don\u2019t cost any money. It\u2019s really clear that the most precious resource we all have is time.", author: "Steve Jobs" },
+    { text: "Details matter, it\u2019s worth waiting to get it right.", author: "Steve Jobs" },
+    { text: "Have the courage to follow your heart and intuition. They somehow already know what you truly want to become.", author: "Steve Jobs" },
+    { text: "Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose.", author: "Steve Jobs" },
+    { text: "Pain plus reflection equals progress.", author: "Ray Dalio" },
+    { text: "He who knows best knows how little he knows.", author: "Thomas Jefferson" },
+    { text: "Don\u2019t let the fear of losing be greater than the excitement of winning.", author: "Robert Kiyosaki" },
+    { text: "The successful man will profit from his mistakes and try again in a different way.", author: "Dale Carnegie" },
+    { text: "Most of the important things in the world have been accomplished by people who have kept on trying when there seemed to be no hope at all.", author: "Dale Carnegie" },
+    { text: "Any fool can criticize, complain, and condemn, and most fools do. But it takes character and self-control to be understanding and forgiving.", author: "Dale Carnegie" },
+    { text: "You can close more business in two months by becoming interested in other people than you can in two years by trying to get people interested in you.", author: "Dale Carnegie" },
+    { text: "Think and grow rich.", author: "Napoleon Hill" },
+    { text: "The only real mistake is the one from which we learn nothing.", author: "Henry Ford" },
+    { text: "Success is how high you bounce when you hit bottom.", author: "George S. Patton" },
+    { text: "An army of sheep led by a lion can defeat an army of lions led by a sheep.", author: "African Proverb" },
+    { text: "If you look at what you have in life, you\u2019ll always have more.", author: "Oprah Winfrey" },
+    { text: "Turn your wounds into wisdom.", author: "Oprah Winfrey" },
+    { text: "The biggest adventure you can take is to live the life of your dreams.", author: "Oprah Winfrey" },
+    { text: "Surround yourself with only people who are going to lift you higher.", author: "Oprah Winfrey" },
+    { text: "Be thankful for what you have; you\u2019ll end up having more.", author: "Oprah Winfrey" },
+    { text: "I don\u2019t think of work as work and play as play. It\u2019s all living.", author: "Richard Branson" },
+    { text: "Take risks. If you win, you will be happy. If you lose, you will be wise.", author: "Ancient Proverb" },
+    { text: "Not all who wander are lost.", author: "J.R.R. Tolkien" },
+    { text: "The true test of character is not how much we know how to do, but how we behave when we don\u2019t know what to do.", author: "John Holt" },
+    { text: "Good things come to people who wait, but better things come to those who go out and get them.", author: "Abraham Lincoln" },
+    { text: "Give me six hours to chop down a tree and I will spend the first four sharpening the axe.", author: "Abraham Lincoln" },
+    { text: "Nearly all men can stand adversity, but if you want to test a man\u2019s character, give him power.", author: "Abraham Lincoln" },
+    { text: "The best thing about the future is that it comes one day at a time.", author: "Abraham Lincoln" },
+    { text: "Whatever you are, be a good one.", author: "Abraham Lincoln" },
+    { text: "You cannot escape the responsibility of tomorrow by evading it today.", author: "Abraham Lincoln" },
+    { text: "I walk slowly, but I never walk backward.", author: "Abraham Lincoln" },
+    { text: "The only true wisdom is in knowing you know nothing.", author: "Socrates" },
+    { text: "Act as if what you do makes a difference. It does.", author: "William James" },
+    { text: "What gets measured gets managed.", author: "Peter Drucker" },
+    { text: "The secret of change is to focus all your energy not on fighting the old, but on building the new.", author: "Socrates" },
+    { text: "To handle yourself, use your head; to handle others, use your heart.", author: "Eleanor Roosevelt" }
+  ];
+
+  var dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  var todayQuote = quotes[dayOfYear % quotes.length];
+
+  /* ── Cookie helper ──────────────────────────────────── */
+  function getCookie(name){
+    var v = document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');
+    return v ? v.pop() : '';
+  }
+  function setCookie(name, val, minutes){
+    var d = new Date();
+    d.setTime(d.getTime() + minutes*60*1000);
+    document.cookie = name+'='+val+';expires='+d.toUTCString()+';path=/;domain=.nantis.ca;SameSite=Lax;Secure';
+  }
+
+  /* Loop guard: if intro already played this session but PHP/cache re-served it,
+     skip straight to homepage with ?nxi=1 to bypass the PHP snippet URI check. */
+  if(sessionStorage.getItem('nxi_done')){
+    document.getElementById('nxi').style.display='none';
+    var lang = sessionStorage.getItem('nxi_lang') || 'en';
+    var base = window.location.origin + (lang === 'fr' ? '/fr/' : '/');
+    window.location.replace(base + '?nxi=1');
+    return;
+  }
+
+  var g = document.getElementById.bind(document);
+  var ov = g('nxi'), s1 = g('nxi-s1'), s2 = g('nxi-s2'), s15 = g('nxi-s15');
+  var motto1 = g('nxi-motto-s1');
+  var bar = g('nxi-bar'), pctEl = g('nxi-pct'), statusEl = g('nxi-status');
+
+  if (!ov) return;
+
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+
+  /* ── Language buttons ──────────────────────────────── */
+
+  var targetLang = '';
+
+  var btns = document.querySelectorAll('.nxi-btn');
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].addEventListener('click', function(e){
+      e.preventDefault();
+      targetLang = this.getAttribute('data-lang');
+
+      /* Set cookie — 30 minute expiry */
+      setCookie('nx_intro','1',30);
+
+      /* ── Black hole effect: everything gets sucked into the logo ── */
+      var logo = g('nxi-logo');
+      var logoRect = logo.getBoundingClientRect();
+      var cx = logoRect.left + logoRect.width/2;
+      var cy = logoRect.top + logoRect.height/2;
+
+      /* Elements to swallow — everything on Screen 1 except the logo */
+      var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, .nxi-btns, .nxi-btn, .nxi-s1-weather, .nxi-contact, #nxi-line');
+      var mottoSpan = motto1.querySelector('span');
+
+      /* Animate each element toward the logo center */
+      targets.forEach(function(el){
+        var cs = window.getComputedStyle(el);
+        if(cs.display === 'inline') el.style.display = 'inline-block';
+        var r = el.getBoundingClientRect();
+        var ex = r.left + r.width/2;
+        var ey = r.top + r.height/2;
+        var dx = cx - ex;
+        var dy = cy - ey;
+        el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+        el.style.transformOrigin = 'center center';
+        el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
+        el.style.opacity = '0';
+      });
+
+      /* Swallow the motto too */
+      if(mottoSpan){
+        mottoSpan.style.display = 'inline-block';
+        var mr = mottoSpan.getBoundingClientRect();
+        var mdx = cx - (mr.left + mr.width/2);
+        var mdy = cy - (mr.top + mr.height/2);
+        mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
+        mottoSpan.style.transform = 'translate('+mdx+'px,'+mdy+'px) scale(0)';
+        mottoSpan.style.opacity = '0';
+      }
+
+      /* Logo pulses as it absorbs everything */
+      logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
+      logo.style.transform = 'scale(1.15)';
+      logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
+
+      /* After absorption, logo shrinks away and we transition */
+      setTimeout(function(){
+        logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
+        logo.style.transform = 'scale(0)';
+        logo.style.opacity = '0';
+      }, 900);
+
+      setTimeout(function(){
+        s1.style.display = 'none';
+        motto1.style.display = 'none';
+        /* Show Screen 1.5: Product Selection */
+        s15.style.display = 'flex';
+        s15.style.opacity = '0';
+        s15.style.transition = 'opacity .5s ease';
+        /* Update FUNDS button label based on language */
+        g('nxi-btn-funds').textContent = targetLang === 'fr' ? 'FONDS' : 'FUNDS';
+        requestAnimationFrame(function(){ s15.style.opacity = '1'; });
+      }, 1400);
+    });
+  }
+
+  /* ── Product Selection buttons ──────────────────────── */
+
+  /* FUNDS / FONDS → go to Screen 2 (NAV, progress, buyback) */
+  g('nxi-btn-funds').addEventListener('click', function(e){
+    e.preventDefault();
+    s15.style.transition = 'opacity .5s ease';
+    s15.style.opacity = '0';
+    setTimeout(function(){
+      s15.style.display = 'none';
+      s2.style.display = 'flex';
+      s2.style.opacity = '0';
+      s2.style.transition = 'opacity .5s ease';
+      requestAnimationFrame(function(){ s2.style.opacity = '1'; });
+      startLoading();
+    }, 500);
+  });
+
+  /* X-CHANGE™ → skip to Screen 3 (quote + motto + wolf) then redirect to X-CHANGE page */
+  g('nxi-btn-xchange').addEventListener('click', function(e){
+    e.preventDefault();
+    s15.style.transition = 'opacity .5s ease';
+    s15.style.opacity = '0';
+    setTimeout(function(){
+      s15.style.display = 'none';
+      /* Show Screen 3 directly */
+      var s3 = g('nxi-s3');
+      s3.style.display = 'flex';
+
+      var quoteEl = g('nxi-quote');
+      var quoteText = g('nxi-quote-text');
+      var quoteAuthor = g('nxi-quote-author');
+      quoteText.textContent = '\u201C' + todayQuote.text + '\u201D';
+      quoteAuthor.textContent = '\u2014 ' + todayQuote.author;
+
+      setTimeout(function(){ quoteEl.style.opacity = '1'; }, 300);
+
+      setTimeout(function(){
+        quoteEl.style.opacity = '0';
+        setTimeout(function(){
+          quoteEl.style.display = 'none';
+          var mottoS3 = g('nxi-motto-s3');
+          mottoS3.style.opacity = '1';
+          mottoS3.style.animation = 'nxMottoGlowFinal 2.5s ease-in-out infinite';
+
+          setTimeout(function(){
+            sessionStorage.setItem('nxi_done','1');
+            sessionStorage.setItem('nxi_lang', targetLang);
+            /* TODO: Replace these placeholder URLs with actual X-CHANGE page URLs */
+            var xchangeURL = targetLang === 'fr'
+              ? 'https://www.nantis.ca/fr/x-change/'
+              : 'https://www.nantis.ca/x-change/';
+            window.location.href = xchangeURL;
+          }, 2500);
+        }, 1000);
+      }, 6000);
+    }, 500);
+  });
+
+  /* ── Progress ──────────────────────────────────────── */
+
+  var progress = 0, barTimer = null;
+
+  function setProgress(v){
+    progress = Math.min(v,100);
+    bar.style.width = Math.round(progress)+'%';
+    pctEl.textContent = Math.round(progress)+'%';
+  }
+
+  function animProgress(target, ms){
+    var start = progress, t0 = Date.now();
+    if (barTimer) clearInterval(barTimer);
+    barTimer = setInterval(function(){
+      var p = Math.min((Date.now()-t0)/ms,1);
+      setProgress(start+(target-start)*p);
+      if (p>=1) clearInterval(barTimer);
+    },30);
+  }
+
+  var navDone = false, weatherDone = false;
+
+  function checkDone(){
+    if (navDone && weatherDone){ animProgress(100,400); setTimeout(doExit,3500); }
+  }
+
+  function startLoading(){
+    animProgress(25,1200);
+    loadNAV();
+    loadWeatherForS2();
+    setTimeout(doExit,10000);
+  }
+
+  /* ── NAV ───────────────────────────────────────────── */
+
+  function loadNAV(){
+    var url = 'https://docs.google.com/spreadsheets/d/e/' +
+      '2PACX-1vQT6dFLvqEDKW6UBHoMsr237H3mFu1WjmfKDOCJT1KGf2AQV3eU3jMFQQta_J8qGE9KCAadjIEZXoms' +
+      '/pub?output=csv';
+    var x = new XMLHttpRequest();
+    x.open('GET','https://api.codetabs.com/v1/proxy?quest='+encodeURIComponent(url));
+    x.timeout = 8000;
+    x.onload = function(){
+      navDone = true;
+      if (x.status<200||x.status>=300){setProgress(60);checkDone();return;}
+      var lines = x.responseText.trim().split('\n');
+      if (lines.length<2){setProgress(60);checkDone();return;}
+      var vals = lines[1].split(',');
+      var raised = parseFloat((vals[0]||'').replace(/[$,%\s]/g,''));
+      var net = parseFloat((vals[1]||'').replace(/[$,%\s]/g,''));
+      if (isNaN(raised)||isNaN(net)||net===0){setProgress(60);checkDone();return;}
+      var cF=(net/raised)*100, cA=cF*0.9475;
+      animProgress(60,500);
+      animNAV('nxi-ba','nxi-ad','nxi-ap',cA,200);
+      animNAV('nxi-bf','nxi-fd','nxi-fp',cF,500);
+      checkDone();
+    };
+    x.onerror = x.ontimeout = function(){navDone=true;setProgress(60);checkDone();};
+    x.send();
+  }
+
+  function fmt(n){return '$'+n.toLocaleString('en-CA',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+  function animNAV(fillId,dId,pId,val,delay){
+    setTimeout(function(){
+      var fill=g(fillId),dEl=g(dId),pEl=g(pId);
+      if(!fill||!dEl||!pEl)return;
+      fill.style.width=Math.min(val,100)+'%';
+      var t0=performance.now();
+      (function step(ts){
+        var p=Math.min((ts-t0)/1800,1), v=1-Math.pow(1-p,3);
+        dEl.textContent=fmt(val*v);
+        pEl.textContent=(val*v).toFixed(2)+'%';
+        if(p<1)requestAnimationFrame(step);
+      })(t0);
+    },delay);
+  }
+
+  /* ── Weather ───────────────────────────────────────── */
+
+  var weatherText = '';
+
+  function fetchWeatherNow(){
+    var x = new XMLHttpRequest();
+    x.open('GET','https://ipapi.co/json/');
+    x.timeout = 5000;
+    x.onload = function(){
+      if(x.status<200||x.status>=300)return;
+      try{
+        var d=JSON.parse(x.responseText);
+        if(!d.city||d.latitude==null)return;
+        var x2=new XMLHttpRequest();
+        x2.open('GET','https://api.open-meteo.com/v1/forecast?latitude='+d.latitude+'&longitude='+d.longitude+'&current_weather=true');
+        x2.timeout=5000;
+        x2.onload=function(){
+          try{
+            var wd=JSON.parse(x2.responseText);
+            if(wd.current_weather){
+              weatherText=d.city+'  |  '+Math.round(wd.current_weather.temperature)+'\u00B0C';
+              var s1w=g('nxi-s1-weather');
+              if(s1w){s1w.textContent=weatherText;s1w.style.display='block';}
+            }
+          }catch(e){}
+        };
+        x2.onerror=x2.ontimeout=function(){};
+        x2.send();
+      }catch(e){}
+    };
+    x.onerror=x.ontimeout=function(){};
+    x.send();
+  }
+
+  fetchWeatherNow();
+
+  function loadWeatherForS2(){
+    if(weatherText){
+      var el=g('nxi-weather');
+      if(el){el.textContent=weatherText;el.style.display='block';}
+      weatherDone=true; setProgress(Math.max(progress,85)); checkDone(); return;
+    }
+    var waited=0;
+    var poll=setInterval(function(){
+      waited+=300;
+      if(weatherText){
+        clearInterval(poll);
+        var el=g('nxi-weather');
+        if(el){el.textContent=weatherText;el.style.display='block';}
+        weatherDone=true;setProgress(Math.max(progress,85));checkDone();
+      }else if(waited>=4000){
+        clearInterval(poll);weatherDone=true;setProgress(Math.max(progress,80));checkDone();
+      }
+    },300);
+  }
+
+  /* ── Countdown – Buy Back / Rachat ──────────────────── */
+
+  var countdownTarget = new Date('2026-06-01T09:30:00-04:00').getTime(); // June 1, 2026 9:30 AM EST (EDT)
+  var countdownEl = g('nxi-countdown');
+  var buybackMsg = g('nxi-buyback-msg');
+  var countdownExpired = false;
+
+  function padZ(n){ return n < 10 ? '0' + n : '' + n; }
+
+  function updateCountdown(){
+    var now = Date.now();
+    var diff = countdownTarget - now;
+    if(diff <= 0){
+      if(!countdownExpired){
+        countdownExpired = true;
+        countdownEl.textContent = '00 : 00 : 00 : 00';
+        countdownEl.style.opacity = '0.3';
+        /* Show language-specific message */
+        if(targetLang === 'fr'){
+          buybackMsg.textContent = 'Veuillez vendre vos parts via votre plateforme de courtage en tant qu\u2019ordre au march\u00e9. La S.E.C. (NANTIS 2025) les rach\u00e8tera \u00e0 la valeur liquidative finale.';
+        } else {
+          buybackMsg.textContent = 'Please sell your shares via your trading platform as a market order. The LP (NANTIS 2025) will be buying them back at the final NAV value.';
+        }
+        buybackMsg.style.opacity = '1';
+      }
+      return;
+    }
+    var d = Math.floor(diff / 86400000);
+    var h = Math.floor((diff % 86400000) / 3600000);
+    var m = Math.floor((diff % 3600000) / 60000);
+    var s = Math.floor((diff % 60000) / 1000);
+    countdownEl.textContent = padZ(d) + ' : ' + padZ(h) + ' : ' + padZ(m) + ' : ' + padZ(s);
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  /* ── Exit ──────────────────────────────────────────── */
+
+  var exited = false;
+
+  function doExit(){
+    if(exited)return; exited=true;
+    if(barTimer)clearInterval(barTimer);
+    setProgress(100);
+
+    setTimeout(function(){
+      /* Fade out entire Screen 2 */
+      s2.style.transition = 'opacity .6s ease';
+      s2.style.opacity = '0';
+
+      setTimeout(function(){
+        s2.style.display = 'none';
+
+        /* Show Screen 3 */
+        var s3 = g('nxi-s3');
+        s3.style.display = 'flex';
+
+        /* Show daily quote */
+        var quoteEl = g('nxi-quote');
+        var quoteText = g('nxi-quote-text');
+        var quoteAuthor = g('nxi-quote-author');
+        quoteText.textContent = '\u201C' + todayQuote.text + '\u201D';
+        quoteAuthor.textContent = '\u2014 ' + todayQuote.author;
+
+        setTimeout(function(){ quoteEl.style.opacity = '1'; }, 300);
+
+        /* After 6 seconds, fade out quote and show motto */
+        setTimeout(function(){
+          quoteEl.style.opacity = '0';
+
+          setTimeout(function(){
+            quoteEl.style.display = 'none';
+            var mottoS3 = g('nxi-motto-s3');
+            mottoS3.style.opacity = '1';
+            mottoS3.style.animation = 'nxMottoGlowFinal 2.5s ease-in-out infinite';
+
+            /* Redirect after motto displays */
+            setTimeout(function(){
+              sessionStorage.setItem('nxi_done','1');
+              sessionStorage.setItem('nxi_lang', targetLang);
+              window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
+            }, 2500);
+          }, 1000);
+        }, 6000);
+      }, 700);
+    }, 500);
+  }
+
+})();
+</script>
+</body>
+</html>
