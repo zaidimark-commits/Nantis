@@ -115,7 +115,7 @@ body{margin:0;padding:0;overflow:hidden;background:#000;animation:nxBgPulse 8s e
     </div>
 
     <div class="nxi-btns" id="nxi-product-btns" style="display:none">
-      <button class="nxi-btn" id="nxi-btn-funds">FUNDS</button>
+      <button class="nxi-btn" id="nxi-btn-funds">HOME</button>
       <button class="nxi-btn" id="nxi-btn-xchange">X-CHANGE<sup class="nxi-tm">&trade;</sup></button>
     </div>
 
@@ -595,9 +595,6 @@ body{margin:0;padding:0;overflow:hidden;background:#000;animation:nxBgPulse 8s e
 
       /* Set cookie — 30 minute expiry */
       setCookie('nx_intro','1',30);
-
-      /* Update FUNDS button label based on language */
-      g('nxi-btn-funds').textContent = targetLang === 'fr' ? 'FONDS' : 'FUNDS';
 
       /* Fade out language buttons */
       langBtns.style.transition = 'opacity .4s ease';
