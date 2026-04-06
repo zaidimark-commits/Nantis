@@ -6,10 +6,8 @@
 <title>NANTIS</title>
 <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
 <style>
-body{margin:0;padding:0;overflow:hidden;background:#000}
-
-/* ── Shooting Stars ───────────────────────────────── */
-#nxi-stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999998;pointer-events:none}
+body{margin:0;padding:0;overflow:hidden;background:#000;animation:nxBgPulse 8s ease-in-out infinite}
+@keyframes nxBgPulse{0%,100%{background:#000}50%{background:#030a14}}
 
 /* ── Intro page styles ─────────────────────────────── */
 #nxi{position:fixed;top:0;left:0;width:100%;height:100%;z-index:9999999;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1.2s ease}
@@ -68,12 +66,11 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 @keyframes nxMottoGlowFinal{0%,100%{text-shadow:0 0 20px rgba(0,168,232,.4),0 0 60px rgba(0,168,232,.15)}50%{text-shadow:0 0 40px rgba(0,168,232,.9),0 0 100px rgba(0,168,232,.4)}}
 
 /* ── Screen 3: Quote + Motto ─────────────────────── */
-#nxi-s3{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 40px;gap:20px;background:url('https://nantis.ca/intro/lone%20wolf%20(1).jpg') center center / cover no-repeat;position:relative}
-#nxi-s3::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55)}
-#nxi-quote{opacity:0;text-align:center;max-width:600px;transition:opacity 1.2s ease;position:relative;z-index:1}
+#nxi-s3{display:none;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:30px 40px;gap:20px}
+#nxi-quote{opacity:0;text-align:center;max-width:600px;transition:opacity 1.2s ease}
 #nxi-quote-text{color:rgba(240,242,245,.55);font-size:1.05rem;letter-spacing:.06em;font-family:'Architects Daughter',sans-serif;line-height:1.7;text-shadow:0 0 15px rgba(240,242,245,.15);font-style:italic}
 #nxi-quote-author{color:rgba(240,242,245,.3);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;font-family:sans-serif;margin-top:12px}
-#nxi-motto-s3{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3);transition:opacity 1s ease;position:relative;z-index:1}
+#nxi-motto-s3{opacity:0;color:#00a8e8;font-size:2rem;letter-spacing:.12em;text-transform:uppercase;text-align:center;font-family:'Architects Daughter',sans-serif;text-shadow:0 0 30px rgba(0,168,232,.8),0 0 80px rgba(0,168,232,.3);transition:opacity 1s ease}
 
 /* ── Mobile ────────────────────────────────────────── */
 @media(max-height:650px){
@@ -98,9 +95,6 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 </style>
 </head>
 <body>
-
-<!-- Shooting Stars Canvas -->
-<canvas id="nxi-stars"></canvas>
 
 <div id="nxi">
   <!-- Screen 1: Branding + Language Selection -->
@@ -182,70 +176,6 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 <script>
 (function(){
   "use strict";
-
-  /* ── Ambient Sparkles ─────────────────────────────────── */
-  var canvas = document.getElementById('nxi-stars');
-  var ctx = canvas.getContext('2d');
-  var sparkles = [];
-  var SW, SH;
-  var MAX_SPARKLES = 60;
-
-  function resizeCanvas(){
-    SW = canvas.width = window.innerWidth;
-    SH = canvas.height = window.innerHeight;
-  }
-  resizeCanvas();
-  window.addEventListener('resize', resizeCanvas);
-
-  /* Pre-fill sparkles */
-  for(var si = 0; si < MAX_SPARKLES; si++){
-    sparkles.push({
-      x: Math.random() * SW,
-      y: Math.random() * SH,
-      r: 0.5 + Math.random() * 1.5,
-      phase: Math.random() * Math.PI * 2,
-      speed: 0.008 + Math.random() * 0.015,
-      drift: -0.08 + Math.random() * 0.16,
-      hue: Math.random() > 0.7 ? 200 : 0
-    });
-  }
-
-  function drawSparkles(){
-    ctx.clearRect(0, 0, SW, SH);
-    for(var i = 0; i < sparkles.length; i++){
-      var p = sparkles[i];
-      p.phase += p.speed;
-      p.y += p.drift;
-      p.x += p.drift * 0.3;
-      /* Wrap around */
-      if(p.y < -5) p.y = SH + 5;
-      if(p.y > SH + 5) p.y = -5;
-      if(p.x < -5) p.x = SW + 5;
-      if(p.x > SW + 5) p.x = -5;
-
-      var alpha = 0.15 + Math.sin(p.phase) * 0.35;
-      if(alpha < 0) alpha = 0;
-      var glow = p.r * (1.5 + Math.sin(p.phase) * 0.8);
-
-      if(p.hue > 0){
-        /* Blue-tinted sparkle */
-        ctx.fillStyle = 'rgba(140,200,255,' + alpha + ')';
-        ctx.shadowColor = 'rgba(100,180,255,' + (alpha * 0.6) + ')';
-      } else {
-        /* White sparkle */
-        ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
-        ctx.shadowColor = 'rgba(255,255,255,' + (alpha * 0.4) + ')';
-      }
-      ctx.shadowBlur = glow * 3;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.shadowBlur = 0;
-    requestAnimationFrame(drawSparkles);
-  }
-
-  drawSparkles();
 
   /* ── Daily Business Quotes ────────────────────────────── */
   var quotes = [
@@ -805,17 +735,22 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
           mottoS3.style.opacity = '1';
           mottoS3.style.animation = 'nxMottoGlowFinal 2.5s ease-in-out infinite';
 
+          /* After 3.5 seconds, fade out motto and redirect */
           setTimeout(function(){
-            sessionStorage.setItem('nxi_done','1');
-            sessionStorage.setItem('nxi_lang', targetLang);
-            /* TODO: Replace these placeholder URLs with actual X-CHANGE page URLs */
-            var xchangeURL = targetLang === 'fr'
-              ? 'https://www.nantis.ca/fr/x-change/'
-              : 'https://www.nantis.ca/x-change/';
-            window.location.href = xchangeURL;
-          }, 2500);
+            mottoS3.style.transition = 'opacity 1s ease';
+            mottoS3.style.opacity = '0';
+            setTimeout(function(){
+              sessionStorage.setItem('nxi_done','1');
+              sessionStorage.setItem('nxi_lang', targetLang);
+              /* TODO: Replace these placeholder URLs with actual X-CHANGE page URLs */
+              var xchangeURL = targetLang === 'fr'
+                ? 'https://www.nantis.ca/fr/x-change/'
+                : 'https://www.nantis.ca/x-change/';
+              window.location.href = xchangeURL;
+            }, 1000);
+          }, 3500);
         }, 1000);
-      }, 6000);
+      }, 5000);
     }, 1400);
   });
 
@@ -1020,7 +955,7 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
 
         setTimeout(function(){ quoteEl.style.opacity = '1'; }, 300);
 
-        /* After 6 seconds, fade out quote and show motto */
+        /* After 5 seconds, fade out quote and show motto */
         setTimeout(function(){
           quoteEl.style.opacity = '0';
 
@@ -1030,14 +965,18 @@ body{margin:0;padding:0;overflow:hidden;background:#000}
             mottoS3.style.opacity = '1';
             mottoS3.style.animation = 'nxMottoGlowFinal 2.5s ease-in-out infinite';
 
-            /* Redirect after motto displays */
+            /* After 3.5 seconds, fade out motto and redirect */
             setTimeout(function(){
-              sessionStorage.setItem('nxi_done','1');
-              sessionStorage.setItem('nxi_lang', targetLang);
-              window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
-            }, 2500);
+              mottoS3.style.transition = 'opacity 1s ease';
+              mottoS3.style.opacity = '0';
+              setTimeout(function(){
+                sessionStorage.setItem('nxi_done','1');
+                sessionStorage.setItem('nxi_lang', targetLang);
+                window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
+              }, 1000);
+            }, 3500);
           }, 1000);
-        }, 6000);
+        }, 5000);
       }, 700);
     }, 500);
   }
