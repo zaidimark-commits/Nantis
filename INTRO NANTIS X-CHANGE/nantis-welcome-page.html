@@ -611,11 +611,11 @@ body{margin:0;padding:0;overflow:hidden;background:#000;animation:nxBgPulse 8s e
     });
   }
 
-  /* ── FUNDS / FONDS → black hole → Screen 2 (NAV, progress, buyback) ── */
-  g('nxi-btn-funds').addEventListener('click', function(e){
-    e.preventDefault();
+  /* ── Product choice tracking ──────────────────────────── */
+  var chosenProduct = 'home'; /* 'home' or 'xchange' */
 
-    /* Black hole effect */
+  /* ── Shared black hole → Screen 2 transition ─────────── */
+  function goToScreen2(){
     var logo = g('nxi-logo');
     var logoRect = logo.getBoundingClientRect();
     var cx = logoRect.left + logoRect.width/2;
@@ -663,92 +663,20 @@ body{margin:0;padding:0;overflow:hidden;background:#000;animation:nxBgPulse 8s e
       requestAnimationFrame(function(){ s2.style.opacity = '1'; });
       startLoading();
     }, 1400);
+  }
+
+  /* HOME → Screen 2 → Screen 3 → nantis.ca */
+  g('nxi-btn-funds').addEventListener('click', function(e){
+    e.preventDefault();
+    chosenProduct = 'home';
+    goToScreen2();
   });
 
-  /* ── X-CHANGE™ → black hole → Screen 3 (quote + wolf + motto) ── */
+  /* X-CHANGE™ → Screen 2 → Screen 3 → x-change page */
   g('nxi-btn-xchange').addEventListener('click', function(e){
     e.preventDefault();
-
-    /* Black hole effect */
-    var logo = g('nxi-logo');
-    var logoRect = logo.getBoundingClientRect();
-    var cx = logoRect.left + logoRect.width/2;
-    var cy = logoRect.top + logoRect.height/2;
-
-    var targets = s1.querySelectorAll('.nxi-title, .nxi-sub, .nxi-loc, #nxi-product-btns, .nxi-s1-weather, .nxi-contact, #nxi-line');
-    var mottoSpan = motto1.querySelector('span');
-
-    targets.forEach(function(el){
-      var cs = window.getComputedStyle(el);
-      if(cs.display === 'inline') el.style.display = 'inline-block';
-      var r = el.getBoundingClientRect();
-      var dx = cx - (r.left + r.width/2);
-      var dy = cy - (r.top + r.height/2);
-      el.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
-      el.style.transformOrigin = 'center center';
-      el.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
-      el.style.opacity = '0';
-    });
-
-    if(mottoSpan){
-      mottoSpan.style.display = 'inline-block';
-      var mr = mottoSpan.getBoundingClientRect();
-      mottoSpan.style.transition = 'transform .8s cubic-bezier(.6,.04,.98,.34), opacity .7s ease';
-      mottoSpan.style.transform = 'translate('+(cx-(mr.left+mr.width/2))+'px,'+(cy-(mr.top+mr.height/2))+'px) scale(0)';
-      mottoSpan.style.opacity = '0';
-    }
-
-    logo.style.transition = 'transform .6s ease .2s, filter .6s ease .2s';
-    logo.style.transform = 'scale(1.15)';
-    logo.style.filter = 'drop-shadow(0 0 40px rgba(0,168,232,.9)) brightness(1.3)';
-
-    setTimeout(function(){
-      logo.style.transition = 'transform .5s cubic-bezier(.6,.04,.98,.34), opacity .4s ease .1s';
-      logo.style.transform = 'scale(0)';
-      logo.style.opacity = '0';
-    }, 900);
-
-    setTimeout(function(){
-      s1.style.display = 'none';
-      motto1.style.display = 'none';
-
-      /* Show Screen 3 directly */
-      var s3 = g('nxi-s3');
-      s3.style.display = 'flex';
-
-      var quoteEl = g('nxi-quote');
-      var quoteText = g('nxi-quote-text');
-      var quoteAuthor = g('nxi-quote-author');
-      quoteText.textContent = '\u201C' + todayQuote.text + '\u201D';
-      quoteAuthor.textContent = '\u2014 ' + todayQuote.author;
-
-      setTimeout(function(){ quoteEl.style.opacity = '1'; }, 300);
-
-      setTimeout(function(){
-        quoteEl.style.opacity = '0';
-        setTimeout(function(){
-          quoteEl.style.display = 'none';
-          var mottoS3 = g('nxi-motto-s3');
-          mottoS3.style.opacity = '1';
-          mottoS3.style.animation = 'nxMottoGlowFinal 2.5s ease-in-out infinite';
-
-          /* After 3.5 seconds, fade out motto and redirect */
-          setTimeout(function(){
-            mottoS3.style.transition = 'opacity 1s ease';
-            mottoS3.style.opacity = '0';
-            setTimeout(function(){
-              sessionStorage.setItem('nxi_done','1');
-              sessionStorage.setItem('nxi_lang', targetLang);
-              /* TODO: Replace these placeholder URLs with actual X-CHANGE page URLs */
-              var xchangeURL = targetLang === 'fr'
-                ? 'https://www.nantis.ca/fr/x-change/'
-                : 'https://www.nantis.ca/x-change/';
-              window.location.href = xchangeURL;
-            }, 1000);
-          }, 3500);
-        }, 1000);
-      }, 5000);
-    }, 1400);
+    chosenProduct = 'xchange';
+    goToScreen2();
   });
 
   /* ── Progress ──────────────────────────────────────── */
@@ -969,7 +897,11 @@ body{margin:0;padding:0;overflow:hidden;background:#000;animation:nxBgPulse 8s e
               setTimeout(function(){
                 sessionStorage.setItem('nxi_done','1');
                 sessionStorage.setItem('nxi_lang', targetLang);
-                window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
+                if (chosenProduct === 'xchange') {
+                  window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/x-change/' : '/x-change/');
+                } else {
+                  window.location.href = window.location.origin + (targetLang === 'fr' ? '/fr/' : '/');
+                }
               }, 1000);
             }, 3500);
           }, 1000);
